@@ -47,7 +47,7 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 6,
+              itemCount: 10,
               itemBuilder: (context, index) {
                 return Column(
                   children: <Widget>[
@@ -58,57 +58,70 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => PlantInfoFromCategoryPage(
-                                plantName: plantIndex),
+                              plantName: plantIndex,
+                            ),
                           ),
                         );
                       },
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: List.generate(
-                                  8,
-                                  (i) => Container(
-                                    margin: const EdgeInsets.fromLTRB(
-                                        10, 10, 5, 10),
-                                    width: 120,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      // image: const DecorationImage(
-                                      //   image: AssetImage('assets/images/leaf.png'),
-                                      //   fit: BoxFit.fill,
-                                      // ),
-                                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: <Color>[
+                              Color.fromARGB(255, 195, 228, 255),
+                              Color.fromARGB(255, 69, 171, 255),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              offset: const Offset(0, 6),
+                              blurRadius: 6,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                image: const DecorationImage(
+                                  image: AssetImage('assets/images/leaf.png'),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Plant ${index + 1}',
+                                    style: const TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'Description',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 43, 75, 90)),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                            child: Text(
-                              'Plant ${index + 1}',
-                              style: const TextStyle(
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const Divider(
-                      thickness: 2,
-                      color: Color.fromARGB(255, 220, 220, 220),
+                      ),
                     ),
                   ],
                 );

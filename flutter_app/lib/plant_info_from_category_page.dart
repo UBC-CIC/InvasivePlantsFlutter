@@ -78,7 +78,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                 child: GestureDetector(
                   onTap: () {
                     _showImageFullScreenDialog(
-                      'assets/images/scotchbroom1.jpeg',
+                      'assets/images/swordfern1.jpeg',
                     );
                   },
                   child: Container(
@@ -86,7 +86,9 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: const DecorationImage(
-                        image: AssetImage('assets/images/scotchbroom1.jpeg'),
+                        image: AssetImage(
+                          'assets/images/swordfern1.jpeg',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -98,7 +100,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                 child: GestureDetector(
                   onTap: () {
                     _showImageFullScreenDialog(
-                      'assets/images/scotchbroom2.jpeg',
+                      'assets/images/swordfern2.jpeg',
                     );
                   },
                   child: Container(
@@ -106,7 +108,9 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: const DecorationImage(
-                        image: AssetImage('assets/images/scotchbroom2.jpeg'),
+                        image: AssetImage(
+                          'assets/images/swordfern2.jpeg',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -119,7 +123,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
           GestureDetector(
             onTap: () {
               _showImageFullScreenDialog(
-                'assets/images/scotchbroom3.jpeg',
+                'assets/images/swordfern3.jpeg',
               );
             },
             child: Container(
@@ -127,7 +131,9 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: const DecorationImage(
-                  image: AssetImage('assets/images/scotchbroom3.jpeg'),
+                  image: AssetImage(
+                    'assets/images/swordfern3.jpeg',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -138,14 +144,14 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
           const Padding(
             padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
             child: Text(
-              'Scotch Broom',
+              'Sword Fern',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
           ),
           const Padding(
             padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
             child: Text(
-              'Cytisus scoparius',
+              'Polystichum munitum',
               style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
             ),
           ),
@@ -156,7 +162,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                   Padding(
                     padding: EdgeInsets.fromLTRB(15, 0, 15, 30),
                     child: Text(
-                      'Scotch broom is a perennial evergreen shrub in the legume family. \n\nIt grows up to 10 feet tall. It has stiff, dark green branches, which grow more or less erect, and often have few leaves. The lower leaves have three lobes, while the upper leaves are simple. \n\nScotch broom has bright yellow flowers, which are shaped like pea flowers and are about ¾ inch long. The plants bloom from April to June, forming green seedpods, which turn black or brown as they mature. The pods each contain several seeds. There are several other introduced brooms, which are similar to Scotch broom and may also be invasive. \n\nScotch broom is a perennial evergreen shrub in the legume family. \n\nIt grows up to 10 feet tall. It has stiff, dark green branches, which grow more or less erect, and often have few leaves. The lower leaves have three lobes, while the upper leaves are simple. \n\nScotch broom has bright yellow flowers, which are shaped like pea flowers and are about ¾ inch long. The plants bloom from April to June, forming green seedpods, which turn black or brown as they mature. The pods each contain several seeds. There are several other introduced brooms, which are similar to Scotch broom and may also be invasive.',
+                      'British Columbia’s moist and mild coastal climate provides ideal conditions for ferns to thrive, so much so that several fern species are obvious and characteristic features of the conifer forest floor. \n\nMost abundant of all these ferns is the stately and lush sword fern of the Wood Fern Family (Dryopteridaceae). Sword ferns grow into a large perennial clump of leaves spreading out from a massive crown. \n\nThis crown consists of a woody mass of rhizomes (root-stems) buried in reddish brown scales and dead leaf bases. \n\nRoots explore the soil outward from the rhizome. In a mature well-established clump the crown may stretch half a meter (20”) or more in diameter. \n\nDark evergreen fronds stand stiffly from the crown. Fronds reach as tall as 1.5 metres (60”) and up to 25 cm (10″) wide. The lower third of the frond consists of a den­sely scaly brown stalk, called a stipe by botanists. The upper two-thirds of the frond have numerous narrow, pointed and toothed leaflets. \n\nNear the tip of the frond the leaflets become progressively shorter. Young unfolding leaves are at first curled like a shepherd’s crook or crozier, then gradually un­furl and expand.',
                       style: TextStyle(fontSize: 18),
                     ),
                   ),

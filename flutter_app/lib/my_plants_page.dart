@@ -5,18 +5,22 @@ import 'home_page.dart';
 import 'package:provider/provider.dart';
 
 class UserListsNotifier extends ChangeNotifier {
-  List<String> userLists = [];
+  Map<String, PlantListNotifier> userLists = {};
 
   void addNewList(String listName) {
-    userLists.add(listName);
+    final newListId = listName; // Create a unique ID for the list
+    userLists[newListId] =
+        PlantListNotifier(); // Initialize the PlantListNotifier
     notifyListeners();
   }
 
-  void removeList(int index) {
-    if (index >= 0 && index < userLists.length) {
-      userLists.removeAt(index);
-      notifyListeners();
-    }
+  void removeList(String listId) {
+    userLists.remove(listId);
+    notifyListeners();
+  }
+
+  PlantListNotifier getOrCreateList(String listId) {
+    return userLists.putIfAbsent(listId, () => PlantListNotifier());
   }
 }
 
@@ -182,10 +186,15 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
           Expanded(
             child: Consumer<UserListsNotifier>(
               builder: (context, userListsNotifier, child) {
-                final userLists = userListsNotifier.userLists;
+                final userLists = userListsNotifier.userLists.keys.toList();
+                // final listId = 'list_${userLists.keys.elementAt(index)}'; // Update this line
+                // final keys = userLists.keys.toList(); // Extract keys to a list
+
                 return ListView.builder(
                   itemCount: userLists.length,
                   itemBuilder: (context, index) {
+                    final listId = userLists[index];
+
                     return Container(
                       margin: const EdgeInsets.fromLTRB(35, 10, 35, 10),
                       padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
@@ -206,8 +215,13 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryInfoPage(
-                                categoryTitle: userLists[index],
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) =>
+                                    userListsNotifier.userLists[listId]!,
+                                child: CategoryInfoPage(
+                                  listId: listId,
+                                  categoryTitle: listId,
+                                ),
                               ),
                             ),
                           );
@@ -219,7 +233,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                 padding:
                                     const EdgeInsets.fromLTRB(30, 0, 30, 0),
                                 child: Text(
-                                  userLists[index],
+                                  listId,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w500,
@@ -240,7 +254,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                       return AlertDialog(
                                         title: const Text('Delete List'),
                                         content: Text(
-                                          'Are you sure you want to delete ${userLists[index]}?',
+                                          'Are you sure you want to delete $listId?',
                                         ),
                                         actions: [
                                           TextButton(
@@ -252,7 +266,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                           TextButton(
                                             onPressed: () {
                                               userListsNotifier
-                                                  .removeList(index);
+                                                  .removeList(listId);
                                               Navigator.pop(context);
                                             },
                                             child: const Text(
@@ -267,7 +281,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                     },
                                   );
                                 },
-                                icon: const Icon(Icons.more_horiz),
+                                icon: const Icon(Icons.delete),
                                 color: Colors.blueGrey,
                               ),
                             ),

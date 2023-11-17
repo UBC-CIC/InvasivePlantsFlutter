@@ -2,7 +2,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/plant_info_from_category_page.dart';
 import 'plant_info_from_category_invasive_page.dart';
 
 import 'camera_page.dart';

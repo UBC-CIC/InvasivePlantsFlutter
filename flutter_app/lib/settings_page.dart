@@ -54,8 +54,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const Spacer(),
                   const Icon(
-                    Icons.delete_forever,
-                    color: Colors.red,
+                    Icons.delete,
+                    color: Colors.blueGrey,
                   ),
                 ],
               ),

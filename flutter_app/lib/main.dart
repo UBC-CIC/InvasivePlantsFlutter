@@ -13,6 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserListsNotifier()),
+        ChangeNotifierProvider(create: (_) => PlantListNotifier()),
       ],
       child: const MyApp(),
     ),
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
             ),
         '/categoryInfo': (context) => const CategoryInfoPage(
               categoryTitle: '',
+              listId: '',
             ),
         '/plantInfoFromCategory': (context) => const PlantInfoFromCategoryPage(
               plantName: '',

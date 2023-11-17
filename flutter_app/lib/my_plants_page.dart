@@ -20,9 +20,14 @@ class UserListsNotifier extends ChangeNotifier {
   }
 }
 
-class MyPlantsPage extends StatelessWidget {
+class MyPlantsPage extends StatefulWidget {
   const MyPlantsPage({super.key});
 
+  @override
+  State<MyPlantsPage> createState() => _MyPlantsPageState();
+}
+
+class _MyPlantsPageState extends State<MyPlantsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,85 +35,150 @@ class MyPlantsPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: false,
         elevation: 0,
         title: const Text(
           'MY PLANTS',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            margin: const EdgeInsets.fromLTRB(120, 0, 120, 10),
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    String newListName = '';
-                    return AlertDialog(
-                      title: const Text('Enter Your List Name:'),
-                      content: TextField(
-                        onChanged: (text) {
-                          newListName = text;
-                        },
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      String newListName = '';
+                      return AlertDialog(
+                        title: const Text('Enter Your List Name:'),
+                        content: TextField(
+                          onChanged: (text) {
+                            newListName = text;
                           },
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(color: Colors.grey),
-                          ),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            if (newListName.trim().isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(milliseconds: 1000),
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  content: const Text('Please enter a name'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            } else {
-                              final userListsNotifier =
-                                  Provider.of<UserListsNotifier>(context,
-                                      listen: false);
-                              userListsNotifier.addNewList(newListName);
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
                               Navigator.of(context).pop();
-                            }
-                          },
-                          child: const Text(
-                            'Create',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            },
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              icon: const Icon(Icons.add, color: Colors.blue),
-              label:
-                  const Text('New List', style: TextStyle(color: Colors.blue)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
+                          TextButton(
+                            onPressed: () {
+                              if (newListName.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration:
+                                        const Duration(milliseconds: 1000),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    content: const Text('Please enter a name'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              } else {
+                                final userListsNotifier =
+                                    Provider.of<UserListsNotifier>(context,
+                                        listen: false);
+                                userListsNotifier.addNewList(newListName);
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: const Text(
+                              'Create',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.add, color: Colors.lightBlue),
               ),
             ),
           ),
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          // Container(
+          //   margin: const EdgeInsets.fromLTRB(120, 0, 120, 10),
+          //   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       showDialog(
+          //         context: context,
+          //         builder: (context) {
+          //           String newListName = '';
+          //           return AlertDialog(
+          //             title: const Text('Enter Your List Name:'),
+          //             content: TextField(
+          //               onChanged: (text) {
+          //                 newListName = text;
+          //               },
+          //             ),
+          //             actions: <Widget>[
+          //               TextButton(
+          //                 onPressed: () {
+          //                   Navigator.of(context).pop();
+          //                 },
+          //                 child: const Text(
+          //                   'Cancel',
+          //                   style: TextStyle(color: Colors.grey),
+          //                 ),
+          //               ),
+          //               TextButton(
+          //                 onPressed: () {
+          //                   if (newListName.trim().isEmpty) {
+          //                     ScaffoldMessenger.of(context).showSnackBar(
+          //                       SnackBar(
+          //                         duration: const Duration(milliseconds: 1000),
+          //                         behavior: SnackBarBehavior.floating,
+          //                         shape: RoundedRectangleBorder(
+          //                           borderRadius: BorderRadius.circular(10),
+          //                         ),
+          //                         content: const Text('Please enter a name'),
+          //                         backgroundColor: Colors.red,
+          //                       ),
+          //                     );
+          //                   } else {
+          //                     final userListsNotifier =
+          //                         Provider.of<UserListsNotifier>(context,
+          //                             listen: false);
+          //                     userListsNotifier.addNewList(newListName);
+          //                     Navigator.of(context).pop();
+          //                   }
+          //                 },
+          //                 child: const Text(
+          //                   'Create',
+          //                   style: TextStyle(fontWeight: FontWeight.bold),
+          //                 ),
+          //               ),
+          //             ],
+          //           );
+          //         },
+          //       );
+          //     },
+          //     icon: const Icon(Icons.add, color: Colors.blue),
+          //     label:
+          //         const Text('New List', style: TextStyle(color: Colors.blue)),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.white,
+          //       minimumSize: const Size(double.infinity, 40),
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(10.0),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Expanded(
             child: Consumer<UserListsNotifier>(
               builder: (context, userListsNotifier, child) {
@@ -116,37 +186,20 @@ class MyPlantsPage extends StatelessWidget {
                 return ListView.builder(
                   itemCount: userLists.length,
                   itemBuilder: (context, index) {
-                    return Dismissible(
-                      key: Key(userLists[index]),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (direction) {
-                        userListsNotifier.removeList(index);
-                      },
-                      background: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: <Color>[
-                              Color.fromARGB(255, 255, 157, 157),
-                              Color.fromARGB(255, 255, 17, 0)
-                            ],
+                    return Container(
+                      margin: const EdgeInsets.fromLTRB(35, 10, 35, 10),
+                      padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
                           ),
-                        ),
-                        padding: const EdgeInsets.fromLTRB(0, 27, 30, 0),
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: const Column(
-                          children: [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              "Delete",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
+                        ],
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -159,38 +212,61 @@ class MyPlantsPage extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(35, 10, 35, 10),
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: <Color>[
-                                Color.fromARGB(255, 0, 140, 255),
-                                Color.fromARGB(255, 139, 203, 255),
-                              ],
-                            ),
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 3,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                                child: Text(
+                                  userLists[index],
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.lightBlue,
+                                  ),
+                                ),
                               ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              userLists[index],
-                              style: const TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white),
                             ),
-                          ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              bottom: 0,
+                              child: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text('Delete'),
+                                        content: Text(
+                                          'Are you sure you want to delete ${userLists[index]}?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              userListsNotifier
+                                                  .removeList(index);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Delete'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Icon(Icons.more_horiz),
+                                color: Colors.lightBlue,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );

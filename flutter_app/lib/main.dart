@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/log_in_page.dart';
+import 'package:flutter_app/sign_up_page.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'settings_page.dart';
@@ -50,6 +52,8 @@ class MyApp extends StatelessWidget {
               imagePath: '',
             ),
         '/myPlants': (context) => const MyPlantsPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/login': (context) => const LogInPage(),
       },
     );
   }

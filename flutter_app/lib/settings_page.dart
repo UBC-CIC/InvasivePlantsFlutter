@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/home_page.dart';
+import 'package:flutter_app/log_in_page.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -20,10 +22,17 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           'SETTINGS',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          },
         ),
       ),
       body: Padding(
@@ -62,7 +71,14 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LogInPage(),
+                  ),
+                );
+              },
               icon: const Icon(Icons.add, color: Colors.black),
               label: const Text('Add Account',
                   style: TextStyle(color: Colors.black)),

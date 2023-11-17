@@ -230,7 +230,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                             ),
                             Positioned(
                               right: -10,
-                              top: -20,
+                              top: -10,
                               bottom: 0,
                               child: IconButton(
                                 onPressed: () {

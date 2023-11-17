@@ -11,6 +11,16 @@ class CategoryInfoPage extends StatefulWidget {
 }
 
 class _CategoryInfoPageState extends State<CategoryInfoPage> {
+  List<String> plants = List.generate(10, (index) => 'Plant ${index + 1}');
+
+  void removePlant(int index) {
+    setState(() {
+      if (index >= 0 && index < plants.length) {
+        plants.removeAt(index);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,13 +57,13 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: plants.length,
               itemBuilder: (context, index) {
                 return Column(
                   children: <Widget>[
                     GestureDetector(
                       onTap: () {
-                        final plantIndex = 'Plant ${index + 1}';
+                        final plantIndex = plants[index];
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -67,15 +77,11 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                         margin: const EdgeInsets.fromLTRB(20, 10, 20, 5),
                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: <Color>[
-                              Color.fromARGB(255, 195, 228, 255),
-                              Color.fromARGB(255, 69, 171, 255),
-                            ],
-                          ),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 236, 236, 236),
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
@@ -92,7 +98,8 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                               height: 100,
                               decoration: BoxDecoration(
                                 image: const DecorationImage(
-                                  image: AssetImage('assets/images/leaf.png'),
+                                  image: AssetImage(
+                                      'assets/images/swordfern2.jpeg'),
                                   fit: BoxFit.cover,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
@@ -104,7 +111,7 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Plant ${index + 1}',
+                                    plants[index],
                                     style: const TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.bold,
@@ -112,11 +119,54 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                   ),
                                   const SizedBox(height: 10),
                                   const Text(
-                                    'Description',
+                                    'Scientific Name',
                                     style: TextStyle(
-                                        color: Color.fromARGB(255, 43, 75, 90)),
+                                      color: Color.fromARGB(255, 43, 75, 90),
+                                    ),
                                   ),
                                 ],
+                              ),
+                            ),
+                            Positioned(
+                              top: -0,
+                              right: 0,
+                              child: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text('Delete Plant'),
+                                        content: Text(
+                                          'Are you sure you want to delete ${plants[index]}?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              removePlant(index);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Icon(Icons.more_horiz),
+                                color: Colors.blueGrey,
                               ),
                             ),
                           ],

@@ -238,7 +238,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        title: const Text('Delete'),
+                                        title: const Text('Delete List'),
                                         content: Text(
                                           'Are you sure you want to delete ${userLists[index]}?',
                                         ),

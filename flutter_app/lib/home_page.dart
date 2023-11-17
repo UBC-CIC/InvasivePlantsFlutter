@@ -3,6 +3,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/plant_info_from_category_page.dart';
+import 'plant_info_from_category_invasive_page.dart';
+
 import 'camera_page.dart';
 import 'my_plants_page.dart';
 import 'settings_page.dart';
@@ -187,7 +189,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlantInfoFromCategoryPage(
+            builder: (context) => PlantInfoFromCategoryInvasivePage(
               plantName: speciesName,
             ),
           ),

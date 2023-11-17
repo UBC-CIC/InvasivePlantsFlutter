@@ -221,7 +221,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                 child: Text(
                                   userLists[index],
                                   style: const TextStyle(
-                                    fontSize: 30,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.lightBlue,
                                   ),
@@ -229,8 +229,8 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                               ),
                             ),
                             Positioned(
-                              right: 0,
-                              top: 0,
+                              right: -10,
+                              top: -20,
                               bottom: 0,
                               child: IconButton(
                                 onPressed: () {
@@ -268,7 +268,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                   );
                                 },
                                 icon: const Icon(Icons.more_horiz),
-                                color: Colors.lightBlue,
+                                color: Colors.blueGrey,
                               ),
                             ),
                           ],

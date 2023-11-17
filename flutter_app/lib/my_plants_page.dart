@@ -255,7 +255,12 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                                   .removeList(index);
                                               Navigator.pop(context);
                                             },
-                                            child: const Text('Delete'),
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                         ],
                                       );

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/api_result_page.dart';
 
 class PlantIdentificationPage extends StatefulWidget {
   final String imagePath;
@@ -12,6 +13,22 @@ class PlantIdentificationPage extends StatefulWidget {
 }
 
 class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
+  String? selectedOrgan;
+  bool isItemSelected = false;
+
+  void _navigateToResultPage(BuildContext context) {
+    if (selectedOrgan != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => APIResultPage(
+            imagePath: widget.imagePath,
+            selectedOrgan: selectedOrgan!,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +38,10 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           'SELECT PLANT ORGAN',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: Column(
@@ -80,14 +100,16 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                   margin: const EdgeInsets.fromLTRB(5, 2, 7, 4),
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      debugPrint("Find Matches");
+                      _navigateToResultPage(context);
                     },
                     icon: const Icon(Icons.search, color: Colors.black),
                     label: const Text('Find Matches',
                         style: TextStyle(color: Colors.black)),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
-                      backgroundColor: const Color.fromARGB(255, 221, 221, 221),
+                      backgroundColor: isItemSelected
+                          ? Colors.green
+                          : const Color.fromARGB(255, 221, 221, 221),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -103,9 +125,21 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
   }
 
   Widget _buildGridItem(String text, String imageUrl) {
+    bool isSelected = selectedOrgan == text;
+
     return GestureDetector(
       onTap: () {
-        debugPrint(text);
+        setState(
+          () {
+            if (isSelected) {
+              selectedOrgan = null;
+              isItemSelected = false;
+            } else {
+              selectedOrgan = text;
+              isItemSelected = true;
+            }
+          },
+        );
       },
       child: Container(
         margin: const EdgeInsets.fromLTRB(4, 4, 4, 0),
@@ -117,14 +151,20 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
           borderRadius: BorderRadius.circular(5),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-              color: Colors.white,
-            ),
-          ),
+          child: isSelected
+              ? const Icon(
+                  Icons.check_circle,
+                  color: Colors.white,
+                  size: 60,
+                )
+              : Text(
+                  text,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                    color: Colors.white,
+                  ),
+                ),
         ),
       ),
     );

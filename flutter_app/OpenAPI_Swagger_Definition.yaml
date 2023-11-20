@@ -1,0 +1,901 @@
+openapi: 3.0.0
+servers: []
+info: 
+  title: Invasive Plant API
+  description: This API intended to deploy on aws API Gateway
+  version: "1.0.0"
+tags:
+  - name: Region
+    description: The Region route information
+  - name: Invasive Species
+    description: The Invasive Species route information
+  - name: Alternative Species
+    description: The alternative spcies route information
+  - name: Save List
+    description: The save list route information
+  - name: Images
+    description: The image route information
+x-amazon-apigateway-request-validators: 
+  all:
+    validateRequestParameters : true
+    validateRequestBody : true
+  params-only : 
+    validateRequestParameters" : true
+    validateRequestBody" : false
+x-amazon-apigateway-request-validator: params-only
+x-common-options: &commonOptions
+  options:
+    summary: CORS support
+    description: |
+      Enable CORS by returning correct headers
+    responses:
+      200:
+        $ref: '#/components/responses/Success'
+    x-amazon-apigateway-integration:
+      type: mock
+      requestTemplates:
+        application/json: |
+          {
+            "statusCode" : 200
+          }
+      responses:
+        default:
+          statusCode: "200"
+          responseParameters:
+            method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+            method.response.header.Access-Control-Allow-Methods: '''*'''
+            method.response.header.Access-Control-Allow-Origin: '''*'''
+          responseTemplates:
+            application/json: |
+              {}
+paths:
+  /region:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Region
+      summary: Get the list of available regions
+      operationId: region_GET
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post: 
+      tags:
+        - Region
+      summary: Add a region
+      operationId: region_POST
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error    
+      x-amazon-apigateway-request-validator: all        
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Region'      
+  /region/{region_id}:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Region
+      summary: Get a region beased on region_id
+      operationId: region_regionID_GET
+      parameters:
+        - in: path
+          name: region_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    put: 
+      tags:
+        - Region
+      summary: Update data of a region
+      description: Note that this is a replace operation based on the provided field (i.e., old data in DB will be replaces by incoming data)
+      operationId: region_regionID_PUT
+      parameters:
+        - in: path
+          name: region_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Region'
+                - type: object
+                  required:
+                  - region_code_name
+                  - region_fullname
+                  - country_fullname
+                  - geographic_coordinate
+    delete: 
+      tags:
+        - Region
+      summary: Delete a region from region table
+      operationId: region_regionID_DELETE
+      parameters:
+        - in: path
+          name: region_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"  
+  /invasiveSpecies:
+    <<: *commonOptions
+    get:
+      tags:
+        - Invasive Species
+      summary: Get the list of available invasive species
+      description: This will return all invasive species or a species if scientific_name provided and its corresponding alternative species
+      operationId: invasiveSpecies_GET
+      parameters:
+        - in: query
+          name: scientific_name
+          required: false
+          description: Scientific name following lowercase and underscore for space format
+          schema: 
+            type: string
+        - in: query
+          name: region_id
+          required: false
+          description: uuid of a region
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error 
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"  
+    post: 
+      tags:
+        - Invasive Species
+      summary: Add invasive species to database
+      operationId: invasiveSpecies_POST
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvasiveSpecies'
+  /invasiveSpecies/{species_id}:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Invasive Species
+      summary: Get an invasive species beased on species_id
+      description: This will return invasive species of a species_id and its corresponding alternative species
+      operationId: invasiveSpecies_speciesID_GET
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    put: 
+      tags:
+        - Invasive Species
+      summary: Update invasive species details
+      description: Note that this is a replace operation based on the provided field (i.e., old data in DB will be replaces by incoming data)
+      operationId: invasiveSpecies_speciesID_PUT
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/InvasiveSpecies'
+                - type: object
+                  required:
+                  - scientific_name
+                  - region_id
+                  - resource_links
+                  - species_description
+                  - alternative_species
+    delete: 
+      tags:
+        - Invasive Species
+      summary: Delete an invasive species from invasive_species table
+      operationId: invasiveSpecies_speciesID_DELETE
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy" 
+  /alternativeSpecies:
+    <<: *commonOptions
+    get:
+      tags:
+        - Alternative Species
+      summary: Get the list of available alternative species
+      operationId: alternativeSpecies_GET
+      parameters:
+        - in: query
+          name: scientific_name
+          required: false
+          description: Scientific name following lowercase and underscore for space format
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error 
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"  
+    post: 
+      tags:
+        - Alternative Species
+      summary: Add alternative species to database
+      operationId: alternativeSpecies_POST
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy" 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlternativeSpecies'
+  /alternativeSpecies/{species_id}:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Alternative Species
+      summary: Get an alternative species beased on species_id
+      operationId: alternativeSpecies_speciesID_GET
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    put: 
+      tags:
+        - Alternative Species
+      summary: Update alternative species details
+      operationId: alternativeSpecies_speciesID_PUT
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AlternativeSpecies'
+                - type: object
+                  required:
+                  - scientific_name
+                  - common_name
+                  - resource_links
+                  - image_links
+                  - species_description
+    delete: 
+      tags:
+        - Alternative Species
+      summary: Delete an alternative species from alternative_species table
+      operationId: alternativeSpecies_speciesID_DELETE
+      parameters:
+        - in: path
+          name: species_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy" 
+  /plantsImages:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Images
+      summary: Get the list of available images
+      operationId: images_GET
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambImages.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post: 
+      tags:
+        - Images
+      summary: Add an image
+      operationId: images_POST
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error    
+      x-amazon-apigateway-request-validator: all        
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambImages.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image'
+  /plantsImages/{image_id}:
+    <<: *commonOptions
+    delete: 
+      tags:
+        - Images
+      summary: Delete an image from images table
+      operationId: image_imageID_DELETE
+      parameters:
+        - in: path
+          name: image_id
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambImages.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy" 
+  /saveList:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Save List
+      summary: List all lists in the to database ONLY FOR TESTING, TO BE REMOVE
+      operationId: saveList_GET
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    post: 
+      tags:
+        - Save List
+      summary: Add save list to database
+      operationId: saveList_POST
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedList'
+  /saveList/{list_id}:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Save List
+      summary: Get a save list based on list_id
+      operationId: saveList_listID_GET
+      parameters:
+        - in: path
+          name: list_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+    put: 
+      tags:
+        - Save List
+      summary: Update save list details
+      operationId: saveList_listID_PUT
+      parameters:
+        - in: path
+          name: list_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-request-validator: all
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedList'
+    delete: 
+      tags:
+        - Save List
+      summary: Delete an save list
+      operationId: savelist_listID_DELETE
+      parameters:
+        - in: path
+          name: list_id
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy" 
+
+components:
+  responses:
+    Success:
+      description: Request success
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content: {}
+  schemas:
+    Region:
+      type: object
+      required:
+        - region_code_name
+        - region_fullname
+        - country_fullname
+      properties:
+        region_code_name:
+          type: string
+          description: Region code should be all upper case
+        region_fullname:
+          type: string
+          description: Region fullname all lower case
+        country_fullname:
+          type: string
+          description: Country fullname of the region all lower case
+        geographic_coordinate: 
+          type: string
+          description: Geographic coordinate of the region following (latitude, longitude)
+          items:
+            type: string
+    InvasiveSpecies:
+      type: object
+      required:
+        - scientific_name
+        - region_id
+      properties: 
+        scientific_name:
+          type: array
+          description: Scientific name following lowercase and underscore for space format
+          items:
+            type: string
+          example: [ "panthera_tigris", "acinonyx_jubatus" ]
+        resource_links:
+          type: array
+          description: List of links to the resources
+          items:
+            type: string
+        species_description:
+          type: string
+          description: Description of the species
+          example: "A large predatory cat native to Asia."
+        region_id:
+          type: array
+          description: List of region_id
+          items:
+            type: string
+            format: uuid
+        alternative_species:
+          type: array
+          description: List of alternative species based on alternative species_id
+          items:
+            type: string
+            format: uuid
+    AlternativeSpecies:
+      type: object
+      required:
+        - scientific_name
+      properties:
+        scientific_name:
+          type: array
+          description: Scientific name following lowercase and underscore for space format
+          items:
+            type: string
+        common_name:
+          type: array
+          description: Common name of species should be all lower case
+          items:
+            type: string
+        resource_links:
+          type: array
+          description: List of links to the resources
+          items:
+            type: string
+        image_links:
+          type: array
+          description: List of links to images
+          items:
+            type: string
+        species_description:
+          type: string
+          description: Description of the species
+    SavedList:
+      type: object
+      required:
+        - list_name
+        - saved_species
+      properties:
+        list_name:
+          type: string
+          description: Name of the saved list
+        saved_species:
+          type: array
+          description: List of saved species based on scientific name
+          items:
+            type: string
+    Image:
+      type: object
+      required:
+        - species_id
+      properties:
+        species_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the species.
+        s3_key:
+          type: string
+          description: The S3 key where the image is stored. Either s3_key or image_url is required.
+        image_url:
+          type: string
+          description: URL of the image. Either image_url or s3_key is required.
+        description:
+          type: string
+          description: Description of the image.
+        license:
+          type: string
+          description: License information for the image.

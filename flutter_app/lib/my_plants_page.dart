@@ -38,6 +38,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
       extendBody: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(

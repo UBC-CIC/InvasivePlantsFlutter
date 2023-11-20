@@ -184,7 +184,12 @@ class _CameraPageState extends State<CameraPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Take A Photo"),
+        title: const Text(
+          "Take A Photo",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Column(
         children: <Widget>[

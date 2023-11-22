@@ -1,9 +1,14 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, avoid_print
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'plant_info_from_category_invasive_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:path_provider/path_provider.dart';
 
+import 'plant_info_from_category_invasive_page.dart';
 import 'camera_page.dart';
 import 'my_plants_page.dart';
 import 'settings_page.dart';
@@ -19,6 +24,80 @@ class _HomePageState extends State<HomePage> {
   String selectedLocation = 'British Columbia';
   bool isBCSelected = true;
   String searchText = '';
+  late List<dynamic> speciesData = [];
+
+  final String regionIDBC = '7ae91c1e-3444-42b9-83a9-c0d9e25d1981';
+  final String regionIDON = '82c70f8d-e00a-47af-a312-e5dda299e1af';
+
+  late DefaultCacheManager _cacheManager;
+
+  @override
+  void initState() {
+    super.initState();
+    _cacheManager = DefaultCacheManager();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    const baseUrl =
+        'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod';
+    const endpoint = '/invasiveSpecies';
+    const cacheKey = '$baseUrl$endpoint';
+
+    // Check if the response is already cached
+    FileInfo? fileInfo = await _cacheManager.getFileFromCache(cacheKey);
+    if (fileInfo != null && fileInfo.file.existsSync()) {
+      // If cached, read from the cache
+      String response = await fileInfo.file.readAsString();
+      final jsonResponse = json.decode(response);
+      setState(() {
+        speciesData = jsonResponse as List<dynamic>;
+      });
+      // Print the path of the cached file
+      debugPrint('Cached file path: ${fileInfo.file.path}');
+    } else {
+      // If not cached, fetch data from the API
+      final response = await http.get(Uri.parse('$baseUrl$endpoint'));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        setState(() {
+          speciesData = jsonResponse as List<dynamic>;
+        });
+
+        // Get cache directory path and save response as a file
+        Directory tempDir = await getTemporaryDirectory();
+        String cachePath = '${tempDir.path}/cache_data.json';
+        File file = File(cachePath);
+        await file.writeAsString(response.body);
+
+        // Cache the response using flutter_cache_manager
+        _cacheManager.putFile(cacheKey, file.readAsBytesSync());
+      } else {
+        throw Exception('Failed to load data');
+      }
+    }
+  }
+
+  List<dynamic> getSpeciesByRegion(String regionId) {
+    return speciesData
+        .where((species) => species['region_id'].contains(regionId))
+        .toList();
+  }
+
+  String formatSpeciesName(String speciesName) {
+    String formattedName =
+        speciesName.replaceAll('_', ' '); // Replace underscore with space
+    List<String> words = formattedName.split(' '); // Split into words
+    List<String> capitalizedWords = words.map((word) {
+      if (word.isNotEmpty) {
+        return word.substring(0, 1).toUpperCase() +
+            word.substring(1).toLowerCase();
+      }
+      return ''; // Return an empty string if the word is empty
+    }).toList(); // Capitalize each word
+    return capitalizedWords.join('\n'); // Join words with newlines
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,40 +128,15 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const Icon(
-              Icons.location_on,
-              color: Colors.black,
-            ),
-            const SizedBox(width: 5),
-            DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: selectedLocation,
-                items:
-                    <String>['British Columbia', 'Ontario'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedLocation = newValue ?? selectedLocation;
-                    isBCSelected = newValue == 'British Columbia';
-                  });
-                },
-              ),
-            ),
-          ],
+        title: const Text(
+          "Invasive Species",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: CupertinoSearchTextField(
               placeholder: 'Search',
               onChanged: (value) {
@@ -92,11 +146,42 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Icon(
+                Icons.location_on,
+                color: Colors.black,
+              ),
+              const SizedBox(width: 5),
+              DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: selectedLocation,
+                  items: <String>['British Columbia', 'Ontario']
+                      .map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(
+                      () {
+                        selectedLocation = newValue ?? selectedLocation;
+                        isBCSelected = newValue == 'British Columbia';
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
           Expanded(
             child: ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -170,19 +255,30 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildMatchingItems() {
     List<Widget> matchingItems = [];
 
-    for (int index = 0; index < 12; index++) {
-      final speciesName =
-          '${isBCSelected ? 'BC' : 'ONTARIO'} SPECIES ${index + 1}';
+    List<dynamic> filteredSpecies = [];
+    if (speciesData.isNotEmpty) {
+      final regionId = isBCSelected ? regionIDBC : regionIDON;
+      filteredSpecies = getSpeciesByRegion(regionId);
+    }
+
+    for (int index = 0; index < filteredSpecies.length; index++) {
+      final species = filteredSpecies[index];
+      final speciesName = species['scientific_name'][0];
+      final speciesId = species['species_id']; // Fetch 'species_id'
+
       if (searchText.isEmpty ||
           speciesName.toLowerCase().contains(searchText.toLowerCase())) {
-        matchingItems.add(_buildGridItem(speciesName));
+        matchingItems.add(_buildGridItem(
+            speciesName, speciesId)); // Pass speciesId to _buildGridItem
       }
     }
 
     return matchingItems;
   }
 
-  Widget _buildGridItem(String speciesName) {
+  Widget _buildGridItem(String speciesName, String speciesId) {
+    String formattedName = formatSpeciesName(speciesName);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -190,26 +286,16 @@ class _HomePageState extends State<HomePage> {
           MaterialPageRoute(
             builder: (context) => PlantInfoFromCategoryInvasivePage(
               plantName: speciesName,
+              speciesId: speciesId,
             ),
           ),
         );
       },
       child: Container(
-        margin: const EdgeInsets.all(2.0),
+        margin: const EdgeInsets.all(2),
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: isBCSelected
-                ? <Color>[
-                    const Color.fromARGB(255, 0, 140, 255),
-                    const Color.fromARGB(255, 139, 203, 255),
-                  ]
-                : <Color>[
-                    Colors.green,
-                    const Color.fromARGB(255, 155, 218, 157),
-                  ],
-          ),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(10.0),
           boxShadow: [
             BoxShadow(
@@ -222,11 +308,13 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Center(
           child: Text(
-            speciesName,
+            formattedName,
             style: const TextStyle(
-              fontSize: 15,
-              color: Colors.white,
+              fontSize: 18,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),

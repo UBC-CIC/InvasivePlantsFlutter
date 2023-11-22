@@ -5,8 +5,10 @@ import 'package:flutter_app/plant_info_from_category_page.dart';
 
 class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
   final String plantName;
+  final String speciesId;
 
-  const PlantInfoFromCategoryInvasivePage({super.key, required this.plantName});
+  const PlantInfoFromCategoryInvasivePage(
+      {super.key, required this.plantName, required this.speciesId});
 
   @override
   _PlantInfoFromCategoryInvasivePageState createState() =>
@@ -38,6 +40,20 @@ class _PlantInfoFromCategoryInvasivePageState
         );
       },
     );
+  }
+
+  String formatSpeciesName(String speciesName) {
+    String formattedName =
+        speciesName.replaceAll('_', ' '); // Replace underscore with space
+    List<String> words = formattedName.split(' '); // Split into words
+    List<String> capitalizedWords = words.map((word) {
+      if (word.isNotEmpty) {
+        return word.substring(0, 1).toUpperCase() +
+            word.substring(1).toLowerCase();
+      }
+      return ''; // Return an empty string if the word is empty
+    }).toList(); // Capitalize each word
+    return capitalizedWords.join(' '); // Join words with space (no newlines)
   }
 
   @override
@@ -179,28 +195,29 @@ class _PlantInfoFromCategoryInvasivePageState
                   Expanded(
                     child: TabBarView(
                       children: [
-                        const SingleChildScrollView(
+                        SingleChildScrollView(
                           child: Column(
                             children: [
                               Padding(
-                                padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 child: Text(
-                                  'Scotch Broom',
-                                  style: TextStyle(
+                                  formatSpeciesName(
+                                      widget.plantName), // Handle null case
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 24),
                                 ),
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 child: Text(
-                                  'Cytisus scoparius',
+                                  'Scotch Broom',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 15),
                                 ),
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.fromLTRB(15, 10, 15, 30),
                                 child: Text(
                                   'Scotch broom is a perennial evergreen shrub in the legume family. \n\nIt grows up to 10 feet tall. It has stiff, dark green branches, which grow more or less erect, and often have few leaves. The lower leaves have three lobes, while the upper leaves are simple. \n\nScotch broom has bright yellow flowers, which are shaped like pea flowers and are about ¾ inch long. The plants bloom from April to June, forming green seedpods, which turn black or brown as they mature. \n\nThe pods each contain several seeds. There are several other introduced brooms, which are similar to Scotch broom and may also be invasive.',

@@ -252,31 +252,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<Widget> _buildMatchingItems() {
-    List<Widget> matchingItems = [];
-
-    List<dynamic> filteredSpecies = [];
-    if (speciesData.isNotEmpty) {
-      final regionId = isBCSelected ? regionIDBC : regionIDON;
-      filteredSpecies = getSpeciesByRegion(regionId);
-    }
-
-    for (int index = 0; index < filteredSpecies.length; index++) {
-      final species = filteredSpecies[index];
-      final speciesName = species['scientific_name'][0];
-      final speciesId = species['species_id']; // Fetch 'species_id'
-
-      if (searchText.isEmpty ||
-          speciesName.toLowerCase().contains(searchText.toLowerCase())) {
-        matchingItems.add(_buildGridItem(
-            speciesName, speciesId)); // Pass speciesId to _buildGridItem
-      }
-    }
-
-    return matchingItems;
-  }
-
-  Widget _buildGridItem(String speciesName, String speciesId) {
+  Widget _buildGridItem(Map<String, dynamic> species) {
+    String speciesName = species['scientific_name'][0];
     String formattedName = formatSpeciesName(speciesName);
 
     return GestureDetector(
@@ -285,8 +262,7 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => PlantInfoFromCategoryInvasivePage(
-              plantName: speciesName,
-              speciesId: speciesId,
+              speciesObject: species, // Pass the entire species object
             ),
           ),
         );
@@ -319,5 +295,25 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+// In _buildMatchingItems function
+  List<Widget> _buildMatchingItems() {
+    List<Widget> matchingItems = [];
+
+    List<dynamic> filteredSpecies = [];
+    if (speciesData.isNotEmpty) {
+      final regionId = isBCSelected ? regionIDBC : regionIDON;
+      filteredSpecies = getSpeciesByRegion(regionId);
+    }
+
+    for (int index = 0; index < filteredSpecies.length; index++) {
+      final species = filteredSpecies[index];
+
+      // Pass the entire species object to _buildGridItem
+      matchingItems.add(_buildGridItem(species));
+    }
+
+    return matchingItems;
   }
 }

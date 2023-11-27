@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/category_info_page.dart';
+import 'category_info_page.dart';
 import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
-import 'plant_list_notifier.dart';
+import 'notifiers/plant_list_notifier.dart';
 
 class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};

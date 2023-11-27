@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'plant_info_from_category_page.dart';
 import 'package:provider/provider.dart';
 import 'my_plants_page.dart';
-import 'plant_list_notifier.dart';
+import 'notifiers/plant_list_notifier.dart';
 
 class CategoryInfoPage extends StatefulWidget {
   final String listId;

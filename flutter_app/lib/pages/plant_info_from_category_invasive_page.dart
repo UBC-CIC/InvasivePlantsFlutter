@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:flutter_app/plant_info_from_category_page.dart';
+import 'plant_info_from_category_page.dart';
 
 class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
   final Map<String, dynamic> speciesObject; // Define speciesObject here

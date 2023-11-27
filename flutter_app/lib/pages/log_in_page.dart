@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/home_page.dart';
-import 'package:flutter_app/settings_page.dart';
-import 'package:flutter_app/sign_up_page.dart';
+import 'home_page.dart';
+import 'settings_page.dart';
+import 'sign_up_page.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});

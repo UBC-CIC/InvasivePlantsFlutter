@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   final String regionIDBC = '7ae91c1e-3444-42b9-83a9-c0d9e25d1981';
   final String regionIDON = '82c70f8d-e00a-47af-a312-e5dda299e1af';
+  DateTime? lastFetchTime; // Track the last fetch time
 
   late DefaultCacheManager _cacheManager;
 
@@ -35,47 +36,54 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _cacheManager = DefaultCacheManager();
-    fetchData();
+    fetchDataIfNeeded();
+    lastFetchTime = DateTime.now();
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchDataIfNeeded() async {
     const baseUrl =
         'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod';
     const endpoint = '/invasiveSpecies';
     const cacheKey = '$baseUrl$endpoint';
 
-    // Check if the response is already cached
     FileInfo? fileInfo = await _cacheManager.getFileFromCache(cacheKey);
-    if (fileInfo != null && fileInfo.file.existsSync()) {
-      // If cached, read from the cache
+
+    if (fileInfo == null ||
+        DateTime.now().difference(lastFetchTime!) >
+            const Duration(minutes: 5)) {
+      await fetchData(cacheKey);
+      lastFetchTime = DateTime.now();
+    } else {
       String response = await fileInfo.file.readAsString();
       final jsonResponse = json.decode(response);
       setState(() {
         speciesData = jsonResponse as List<dynamic>;
       });
-      // Print the path of the cached file
       debugPrint('Cached file path: ${fileInfo.file.path}');
+    }
+  }
+
+  Future<void> fetchData(String cacheKey) async {
+    const baseUrl =
+        'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod';
+    const endpoint = '/invasiveSpecies';
+
+    final response = await http.get(Uri.parse('$baseUrl$endpoint'));
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      setState(() {
+        speciesData = jsonResponse as List<dynamic>;
+      });
+
+      Directory tempDir = await getTemporaryDirectory();
+      String cachePath = '${tempDir.path}/cache_data.json';
+      File file = File(cachePath);
+      await file.writeAsString(response.body);
+
+      _cacheManager.putFile(cacheKey, file.readAsBytesSync());
     } else {
-      // If not cached, fetch data from the API
-      final response = await http.get(Uri.parse('$baseUrl$endpoint'));
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        setState(() {
-          speciesData = jsonResponse as List<dynamic>;
-        });
-
-        // Get cache directory path and save response as a file
-        Directory tempDir = await getTemporaryDirectory();
-        String cachePath = '${tempDir.path}/cache_data.json';
-        File file = File(cachePath);
-        await file.writeAsString(response.body);
-
-        // Cache the response using flutter_cache_manager
-        _cacheManager.putFile(cacheKey, file.readAsBytesSync());
-      } else {
-        throw Exception('Failed to load data');
-      }
+      throw Exception('Failed to load data');
     }
   }
 

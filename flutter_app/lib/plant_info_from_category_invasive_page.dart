@@ -49,14 +49,14 @@ class _PlantInfoFromCategoryInvasivePageState
     String formattedName =
         speciesName.replaceAll('_', ' '); // Replace underscore with space
     List<String> words = formattedName.split(' '); // Split into words
-    List<String> capitalizedWords = words.map((word) {
-      if (word.isNotEmpty) {
-        return word.substring(0, 1).toUpperCase() +
-            word.substring(1).toLowerCase();
-      }
-      return ''; // Return an empty string if the word is empty
-    }).toList(); // Capitalize each word
-    return capitalizedWords.join(' '); // Join words with space (no newlines)
+    if (words.isNotEmpty) {
+      // Capitalize the first word and make the rest lowercase
+      String firstWord = words[0].substring(0, 1).toUpperCase() +
+          words[0].substring(1).toLowerCase();
+      // Join the first capitalized word with the rest of the words
+      formattedName = '$firstWord ${words.sublist(1).join(' ').toLowerCase()}';
+    }
+    return formattedName;
   }
 
   @override

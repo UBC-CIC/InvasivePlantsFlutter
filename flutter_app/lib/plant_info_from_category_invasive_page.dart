@@ -1,14 +1,17 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:flutter_app/plant_info_from_category_page.dart';
 
 class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
-  final String plantName;
-  final String speciesId;
+  final Map<String, dynamic> speciesObject; // Define speciesObject here
 
-  const PlantInfoFromCategoryInvasivePage(
-      {super.key, required this.plantName, required this.speciesId});
+  const PlantInfoFromCategoryInvasivePage({
+    super.key,
+    required this.speciesObject,
+  });
 
   @override
   _PlantInfoFromCategoryInvasivePageState createState() =>
@@ -59,6 +62,10 @@ class _PlantInfoFromCategoryInvasivePageState
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    String scientificName = widget.speciesObject['scientific_name'][0];
+    String speciesDescription = widget.speciesObject['species_description'];
+    List<String> resourceLinks =
+        List<String>.from(widget.speciesObject['resource_links'] ?? []);
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.white,
@@ -202,7 +209,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                 padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 child: Text(
                                   formatSpeciesName(
-                                      widget.plantName), // Handle null case
+                                      scientificName), // Handle null case
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 24),
@@ -211,19 +218,58 @@ class _PlantInfoFromCategoryInvasivePageState
                               const Padding(
                                 padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 child: Text(
-                                  'Scotch Broom',
+                                  'Common Name',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 15),
                                 ),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(15, 10, 15, 30),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(15, 10, 15, 10),
                                 child: Text(
-                                  'Scotch broom is a perennial evergreen shrub in the legume family. \n\nIt grows up to 10 feet tall. It has stiff, dark green branches, which grow more or less erect, and often have few leaves. The lower leaves have three lobes, while the upper leaves are simple. \n\nScotch broom has bright yellow flowers, which are shaped like pea flowers and are about ¾ inch long. The plants bloom from April to June, forming green seedpods, which turn black or brown as they mature. \n\nThe pods each contain several seeds. There are several other introduced brooms, which are similar to Scotch broom and may also be invasive.',
-                                  style: TextStyle(fontSize: 18),
+                                  speciesDescription,
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                               ),
+                              if (resourceLinks.isNotEmpty)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        'For more info:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      // Generate list of clickable URLs
+                                      ...resourceLinks.map(
+                                        (link) => GestureDetector(
+                                          onTap: () async {
+                                            if (await canLaunch(link)) {
+                                              await launch(link);
+                                            } else {
+                                              throw 'Could not launch $link';
+                                            }
+                                          },
+                                          child: Text(
+                                            link,
+                                            style: const TextStyle(
+                                                color: Colors.blue,
+                                                decoration:
+                                                    TextDecoration.underline),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              const SizedBox(height: 50),
                             ],
                           ),
                         ),

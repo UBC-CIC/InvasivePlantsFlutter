@@ -3,6 +3,7 @@ import 'package:flutter_app/category_info_page.dart';
 import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
+import 'plant_list_notifier.dart';
 
 class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};
@@ -21,6 +22,26 @@ class UserListsNotifier extends ChangeNotifier {
 
   PlantListNotifier getOrCreateList(String listId) {
     return userLists.putIfAbsent(listId, () => PlantListNotifier());
+  }
+}
+
+class PlantDetailsNotifier extends ChangeNotifier {
+  late String _imageUrl = 'assets/images/swordfern1.jpeg';
+  late int _itemCount = 10;
+
+  String get imageUrl => _imageUrl;
+
+  int get itemCount => _itemCount;
+
+  // Methods to update values
+  void setImageUrl(String newImageUrl) {
+    _imageUrl = newImageUrl;
+    notifyListeners();
+  }
+
+  void setItemCount(int newItemCount) {
+    _itemCount = newItemCount;
+    notifyListeners();
   }
 }
 
@@ -114,76 +135,6 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
       ),
       body: Column(
         children: <Widget>[
-          // Container(
-          //   margin: const EdgeInsets.fromLTRB(120, 0, 120, 10),
-          //   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          //   child: ElevatedButton.icon(
-          //     onPressed: () {
-          //       showDialog(
-          //         context: context,
-          //         builder: (context) {
-          //           String newListName = '';
-          //           return AlertDialog(
-          //             title: const Text('Enter Your List Name:'),
-          //             content: TextField(
-          //               onChanged: (text) {
-          //                 newListName = text;
-          //               },
-          //             ),
-          //             actions: <Widget>[
-          //               TextButton(
-          //                 onPressed: () {
-          //                   Navigator.of(context).pop();
-          //                 },
-          //                 child: const Text(
-          //                   'Cancel',
-          //                   style: TextStyle(color: Colors.grey),
-          //                 ),
-          //               ),
-          //               TextButton(
-          //                 onPressed: () {
-          //                   if (newListName.trim().isEmpty) {
-          //                     ScaffoldMessenger.of(context).showSnackBar(
-          //                       SnackBar(
-          //                         duration: const Duration(milliseconds: 1000),
-          //                         behavior: SnackBarBehavior.floating,
-          //                         shape: RoundedRectangleBorder(
-          //                           borderRadius: BorderRadius.circular(10),
-          //                         ),
-          //                         content: const Text('Please enter a name'),
-          //                         backgroundColor: Colors.red,
-          //                       ),
-          //                     );
-          //                   } else {
-          //                     final userListsNotifier =
-          //                         Provider.of<UserListsNotifier>(context,
-          //                             listen: false);
-          //                     userListsNotifier.addNewList(newListName);
-          //                     Navigator.of(context).pop();
-          //                   }
-          //                 },
-          //                 child: const Text(
-          //                   'Create',
-          //                   style: TextStyle(fontWeight: FontWeight.bold),
-          //                 ),
-          //               ),
-          //             ],
-          //           );
-          //         },
-          //       );
-          //     },
-          //     icon: const Icon(Icons.add, color: Colors.blue),
-          //     label:
-          //         const Text('New List', style: TextStyle(color: Colors.blue)),
-          //     style: ElevatedButton.styleFrom(
-          //       backgroundColor: Colors.white,
-          //       minimumSize: const Size(double.infinity, 40),
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(10.0),
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Expanded(
             child: Consumer<UserListsNotifier>(
               builder: (context, userListsNotifier, child) {
@@ -191,14 +142,53 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                 // final listId = 'list_${userLists.keys.elementAt(index)}'; // Update this line
                 // final keys = userLists.keys.toList(); // Extract keys to a list
 
+                if (userLists.isEmpty) {
+                  return Center(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Click ',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '+',
+                            style: TextStyle(
+                              color: Colors.lightBlue,
+                              fontSize: 25,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' to create a list of plants',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
                 return ListView.builder(
                   itemCount: userLists.length,
                   itemBuilder: (context, index) {
                     final listId = userLists[index];
+                    final plantListNotifier =
+                        userListsNotifier.getOrCreateList(listId);
+
+                    // Fetch individual values for each list
+                    String imageUrl = plantListNotifier.imageUrl;
+                    int itemCount = plantListNotifier.itemCount;
 
                     return Container(
-                      margin: const EdgeInsets.fromLTRB(35, 10, 35, 10),
-                      padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                      margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
@@ -212,13 +202,12 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                         ],
                       ),
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ChangeNotifierProvider(
-                                create: (context) =>
-                                    userListsNotifier.userLists[listId]!,
+                                create: (context) => plantListNotifier,
                                 child: CategoryInfoPage(
                                   listId: listId,
                                   categoryTitle: listId,
@@ -226,27 +215,69 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                               ),
                             ),
                           );
+
+                          if (result != null &&
+                              result is Map<String, dynamic>) {
+                            // Update the imageUrl and itemCount for the specific list
+                            plantListNotifier.setImageUrl(result['imageUrl']);
+                            plantListNotifier.setItemCount(result['itemCount']);
+                          }
                         },
-                        child: Stack(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                                child: Text(
-                                  listId,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.lightBlue,
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: AssetImage(imageUrl),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
                             ),
-                            Positioned(
-                              right: -10,
-                              top: -10,
-                              bottom: 0,
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    listId,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '# of plants: ',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.blueGrey,
+                                        ),
+                                      ),
+                                      Text(
+                                        '$itemCount',
+                                        style: const TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.lightBlue,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
                               child: IconButton(
                                 onPressed: () {
                                   showDialog(
@@ -273,8 +304,9 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                             child: const Text(
                                               'Delete',
                                               style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontWeight: FontWeight.bold),
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ],

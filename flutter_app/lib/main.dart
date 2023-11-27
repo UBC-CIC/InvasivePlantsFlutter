@@ -15,7 +15,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserListsNotifier()),
-        ChangeNotifierProvider(create: (_) => PlantListNotifier()),
+        ChangeNotifierProvider(create: (_) => PlantDetailsNotifier()),
       ],
       child: const MyApp(),
     ),

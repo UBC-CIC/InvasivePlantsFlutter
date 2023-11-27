@@ -4,17 +4,7 @@ import 'package:flutter/material.dart';
 import 'plant_info_from_category_page.dart';
 import 'package:provider/provider.dart';
 import 'my_plants_page.dart';
-
-class PlantListNotifier extends ChangeNotifier {
-  List<String> plants = List.generate(10, (index) => 'Plant ${index + 1}');
-
-  void removePlant(int index) {
-    if (index >= 0 && index < plants.length) {
-      plants.removeAt(index);
-      notifyListeners();
-    }
-  }
-}
+import 'plant_list_notifier.dart';
 
 class CategoryInfoPage extends StatefulWidget {
   final String listId;
@@ -29,6 +19,7 @@ class CategoryInfoPage extends StatefulWidget {
 
 class _CategoryInfoPageState extends State<CategoryInfoPage> {
   late PlantListNotifier plantListNotifier;
+  late String imageUrl;
 
   @override
   void initState() {
@@ -36,8 +27,7 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
     // Initialize the plant list for this specific list ID with 10 plants
     plantListNotifier =
         context.read<UserListsNotifier>().getOrCreateList(widget.listId);
-    // Load plants for this list from some data source using listId
-    // loadPlantsFromDataSource(widget.listId);
+    imageUrl = context.read<PlantDetailsNotifier>().imageUrl;
   }
 
   @override
@@ -56,6 +46,8 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final plantDetailsNotifier = Provider.of<PlantDetailsNotifier>(context);
+
     return ChangeNotifierProvider.value(
       value: plantListNotifier,
       builder: (context, child) {
@@ -71,6 +63,18 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
               style: const TextStyle(
                   color: Colors.black, fontWeight: FontWeight.bold),
             ),
+            leading: IconButton(
+              onPressed: () {
+                plantDetailsNotifier.setImageUrl(imageUrl);
+                plantDetailsNotifier
+                    .setItemCount(plantListNotifier.plants.length);
+                Navigator.pop(context, {
+                  'imageUrl': imageUrl,
+                  'itemCount': plantListNotifier.plants.length
+                });
+              },
+              icon: const Icon(Icons.arrow_back_ios),
+            ),
             actions: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -84,8 +88,10 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
               ),
             ],
           ),
-          body: Consumer<PlantListNotifier>(
-            builder: (context, plantList, _) {
+          body: Consumer2<PlantDetailsNotifier, PlantListNotifier>(
+            builder: (context, details, plantList, _) {
+              imageUrl = details.imageUrl;
+
               return ListView.builder(
                 itemCount: plantList.plants.length,
                 itemBuilder: (context, index) {
@@ -104,20 +110,17 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                           );
                         },
                         child: Container(
-                          margin: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                          margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
                           padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                                color:
-                                    const Color.fromARGB(255, 236, 236, 236)),
+                            borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey.withOpacity(0.5),
-                                offset: const Offset(0, 6),
-                                blurRadius: 6,
-                                spreadRadius: 0,
+                                spreadRadius: 3,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
@@ -127,9 +130,8 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                 width: 100,
                                 height: 100,
                                 decoration: BoxDecoration(
-                                  image: const DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/swordfern2.jpeg'),
+                                  image: DecorationImage(
+                                    image: AssetImage(imageUrl),
                                     fit: BoxFit.cover,
                                   ),
                                   borderRadius: BorderRadius.circular(10),
@@ -143,7 +145,7 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                     Text(
                                       plantList.plants[index],
                                       style: const TextStyle(
-                                        fontSize: 25,
+                                        fontSize: 22,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -151,7 +153,8 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                     const Text(
                                       'Scientific Name',
                                       style: TextStyle(
-                                        color: Color.fromARGB(255, 43, 75, 90),
+                                        color: Colors.blueGrey,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ],

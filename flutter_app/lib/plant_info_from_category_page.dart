@@ -72,58 +72,10 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
       ),
       body: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    _showImageFullScreenDialog(
-                      'assets/images/swordfern1.jpeg',
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(10, 0, 2.5, 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: AssetImage(
-                          'assets/images/swordfern1.jpeg',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    height: MediaQuery.of(context).size.height / 5,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    _showImageFullScreenDialog(
-                      'assets/images/swordfern2.jpeg',
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(2.5, 0, 10, 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: AssetImage(
-                          'assets/images/swordfern2.jpeg',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    height: MediaQuery.of(context).size.height / 5,
-                  ),
-                ),
-              ),
-            ],
-          ),
           GestureDetector(
             onTap: () {
               _showImageFullScreenDialog(
-                'assets/images/swordfern3.jpeg',
+                'assets/images/swordfern1.jpeg',
               );
             },
             child: Container(
@@ -132,12 +84,12 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                 borderRadius: BorderRadius.circular(10),
                 image: const DecorationImage(
                   image: AssetImage(
-                    'assets/images/swordfern3.jpeg',
+                    'assets/images/swordfern1.jpeg',
                   ),
                   fit: BoxFit.cover,
                 ),
               ),
-              height: 200,
+              height: MediaQuery.of(context).size.height / 2.5,
               width: double.infinity,
             ),
           ),

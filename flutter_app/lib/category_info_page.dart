@@ -4,7 +4,18 @@ import 'package:flutter/material.dart';
 import 'plant_info_from_category_page.dart';
 import 'package:provider/provider.dart';
 import 'my_plants_page.dart';
-import 'notifiers/plant_list_notifier.dart';
+import 'plant_list_notifier.dart';
+
+// class PlantListNotifier extends ChangeNotifier {
+//   List<String> plants = List.generate(10, (index) => 'Plant ${index + 1}');
+
+//   void removePlant(int index) {
+//     if (index >= 0 && index < plants.length) {
+//       plants.removeAt(index);
+//       notifyListeners();
+//     }
+//   }
+// }
 
 class CategoryInfoPage extends StatefulWidget {
   final String listId;
@@ -19,12 +30,11 @@ class CategoryInfoPage extends StatefulWidget {
 
 class _CategoryInfoPageState extends State<CategoryInfoPage> {
   late PlantListNotifier plantListNotifier;
-  late String imageUrl;
+  late String imageUrl; // Image URL variable
 
   @override
   void initState() {
     super.initState();
-    // Initialize the plant list for this specific list ID with 10 plants
     plantListNotifier =
         context.read<UserListsNotifier>().getOrCreateList(widget.listId);
     imageUrl = context.read<PlantDetailsNotifier>().imageUrl;

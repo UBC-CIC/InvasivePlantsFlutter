@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'api_result_page.dart';
+import 'package:flutter_app/api_result_page.dart';
 
 class PlantIdentificationPage extends StatefulWidget {
   final String imagePath;

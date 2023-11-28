@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'log_in_page.dart';
+import 'package:flutter_app/home_page.dart';
+import 'package:flutter_app/log_in_page.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class SettingsPage extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'category_info_page.dart';
+import 'package:flutter_app/category_info_page.dart';
 import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
-import 'notifiers/plant_list_notifier.dart';
+import 'plant_list_notifier.dart';
 
 class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};
@@ -25,9 +25,28 @@ class UserListsNotifier extends ChangeNotifier {
   }
 }
 
+// class PlantListNotifier extends ChangeNotifier {
+//   late String _imageUrl = 'assets/images/leaf.png';
+//   late int _itemCount = 10;
+
+//   String get imageUrl => _imageUrl;
+//   int get itemCount => _itemCount;
+
+//   void setImageUrl(String newImageUrl) {
+//     _imageUrl = newImageUrl;
+//     notifyListeners();
+//   }
+
+//   void setItemCount(int newItemCount) {
+//     _itemCount = newItemCount;
+//     notifyListeners();
+//   }
+// }
+
 class PlantDetailsNotifier extends ChangeNotifier {
-  late String _imageUrl = 'assets/images/swordfern1.jpeg';
-  late int _itemCount = 10;
+  late String _imageUrl =
+      'assets/images/swordfern1.jpeg'; // Initialize with default value
+  late int _itemCount = 10; // Initialize with default value
 
   String get imageUrl => _imageUrl;
 
@@ -55,6 +74,10 @@ class MyPlantsPage extends StatefulWidget {
 class _MyPlantsPageState extends State<MyPlantsPage> {
   @override
   Widget build(BuildContext context) {
+    final plantDetailsNotifier = Provider.of<PlantDetailsNotifier>(context);
+
+    String imageUrl = plantDetailsNotifier.imageUrl;
+    int itemCount = plantDetailsNotifier.itemCount;
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.white,

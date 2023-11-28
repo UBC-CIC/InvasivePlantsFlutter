@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'pages/log_in_page.dart';
-import 'pages/sign_up_page.dart';
+import 'package:flutter_app/log_in_page.dart';
+import 'package:flutter_app/sign_up_page.dart';
 import 'package:provider/provider.dart';
-import 'pages/home_page.dart';
-import 'pages/settings_page.dart';
-import 'pages/category_info_page.dart';
-import 'pages/plant_info_from_category_page.dart';
-import 'pages/camera_page.dart';
-import 'pages/plant_identification_page.dart';
-import 'pages/my_plants_page.dart';
+import 'home_page.dart';
+import 'settings_page.dart';
+import 'category_info_page.dart';
+import 'plant_info_from_category_page.dart';
+import 'camera_page.dart';
+import 'plant_identification_page.dart';
+import 'my_plants_page.dart';
 
 void main() {
   runApp(

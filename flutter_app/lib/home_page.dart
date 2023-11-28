@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   bool isBCSelected = true;
   String searchText = '';
   late List<dynamic> speciesData = [];
+  String? lastSpeciesId; // Track the last species ID
 
   final String regionIDBC = '7ae91c1e-3444-42b9-83a9-c0d9e25d1981';
   final String regionIDON = '82c70f8d-e00a-47af-a312-e5dda299e1af';
@@ -50,8 +51,9 @@ class _HomePageState extends State<HomePage> {
 
     if (fileInfo == null ||
         DateTime.now().difference(lastFetchTime!) >
-            const Duration(minutes: 5)) {
-      await fetchData(cacheKey);
+            const Duration(minutes: 0)) {
+      await fetchData(
+          cacheKey); // Fetch the initial page without last_species_id
       lastFetchTime = DateTime.now();
     } else {
       String response = await fileInfo.file.readAsString();
@@ -61,20 +63,60 @@ class _HomePageState extends State<HomePage> {
       });
       debugPrint('Cached file path: ${fileInfo.file.path}');
     }
+
+    // Fetch subsequent pages using last_species_id if speciesData is not empty
+    if (speciesData.isNotEmpty) {
+      bool reachedEnd = false;
+
+      while (!reachedEnd) {
+        final lastSpecies = speciesData.last;
+        final lastSpeciesId = lastSpecies['species_id'] as String?;
+
+        if (lastSpeciesId != null) {
+          await fetchData(cacheKey, lastSpeciesId: lastSpeciesId);
+          final newLastSpecies = speciesData.last;
+          final newLastSpeciesId = newLastSpecies['species_id'] as String?;
+
+          // Check if the last fetched page is the same as the previous one
+          if (newLastSpeciesId == lastSpeciesId) {
+            reachedEnd = true; // Indicates no more pages available
+          }
+        } else {
+          reachedEnd = true; // Indicates no more pages available
+        }
+      }
+    }
   }
 
-  Future<void> fetchData(String cacheKey) async {
+  Future<void> fetchData(String cacheKey, {String? lastSpeciesId}) async {
     const baseUrl =
         'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod';
     const endpoint = '/invasiveSpecies';
 
-    final response = await http.get(Uri.parse('$baseUrl$endpoint'));
+    // Modify URL to include last_species_id if available
+    String apiUrl = '$baseUrl$endpoint';
+    if (lastSpeciesId != null) {
+      apiUrl += '?last_species_id=$lastSpeciesId';
+    }
+
+    final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       setState(() {
-        speciesData = jsonResponse as List<dynamic>;
+        if (lastSpeciesId != null) {
+          // Append fetched data to existing speciesData
+          speciesData.addAll(jsonResponse as List<dynamic>);
+        } else {
+          speciesData = jsonResponse as List<dynamic>;
+        }
       });
+
+      // Get the ID of the last species in the fetched data
+      if (jsonResponse.isNotEmpty) {
+        final lastSpecies = jsonResponse.last;
+        lastSpeciesId = lastSpecies['species_id'] as String;
+      }
 
       Directory tempDir = await getTemporaryDirectory();
       String cachePath = '${tempDir.path}/cache_data.json';

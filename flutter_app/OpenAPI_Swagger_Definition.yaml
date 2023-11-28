@@ -15,6 +15,8 @@ tags:
     description: The save list route information
   - name: Images
     description: The image route information
+  - name: Other
+    description: The other route information
 x-amazon-apigateway-request-validators: 
   all:
     validateRequestParameters : true
@@ -56,6 +58,14 @@ paths:
         - Region
       summary: Get the list of available regions
       operationId: region_GET
+      parameters:
+        - in: query
+          name: last_region_id
+          required: false
+          description: the latest region_id of the latest recieved page, default is just the first page
+          schema: 
+            type: string
+            format: uuid
       responses:
         "200": 
           description: Data Available
@@ -225,6 +235,13 @@ paths:
           schema: 
             type: string
             format: uuid
+        - in: query
+          name: last_species_id
+          required: false
+          description: the latest species_id of the latest recieved page, default is just the first page
+          schema: 
+            type: string
+            format: uuid
       responses:
         "200": 
           description: Data Available
@@ -388,6 +405,13 @@ paths:
           description: Scientific name following lowercase and underscore for space format
           schema: 
             type: string
+        - in: query
+          name: last_species_id
+          required: false
+          description: the latest species_id of the latest recieved page, default is just the first page
+          schema: 
+            type: string
+            format: uuid
       responses:
         "200": 
           description: Data Available
@@ -765,7 +789,41 @@ paths:
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy" 
-
+  /getS3SignedURL:
+    <<: *commonOptions
+    get: 
+      tags:
+        - Other
+      summary: Get S3 bucket signed URL to grant access to uploading images
+      operationId: getS3SignedURL_GET
+      parameters:
+        - in: query
+          name: contentType
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: filename
+          required: false
+          schema: 
+            type: string
+      responses:
+        "200": 
+          description: Data Available
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error             
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getSignedURL.Arn}/invocations"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        type: "aws_proxy"
 components:
   responses:
     Success:

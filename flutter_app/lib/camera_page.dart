@@ -35,6 +35,8 @@ class _CameraPageState extends State<CameraPage> {
       if (cameras.isNotEmpty) {
         _controller = CameraController(cameras[0], ResolutionPreset.max);
         await _controller!.initialize();
+        await _controller!.lockCaptureOrientation();
+
         if (!mounted) return;
         setState(() {});
       }

@@ -29,7 +29,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Center(
-              child: imageUrl.startsWith('http')
+              child: imageUrl.startsWith('https')
                   ? Image.network(
                       imageUrl,
                       fit: BoxFit.contain,
@@ -62,9 +62,10 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
   @override
   Widget build(BuildContext context) {
     String imageUrl = widget.speciesObject['images'].isEmpty
-        ? 'assets/images/leaf.png'
-        : widget.speciesObject['images'][0]['image_url'] ??
-            'assets/images/leaf.png';
+        ? 'assets/images/noImageAvailable.png'
+        : (widget.speciesObject['images'][0]['image_url'].isEmpty
+            ? 'assets/images/noImageAvailable.png'
+            : widget.speciesObject['images'][0]['image_url']);
     String commonName = widget.speciesObject['common_name'].isNotEmpty
         ? widget.speciesObject['common_name'][0]
         : widget.speciesObject['scientific_name'][0];
@@ -119,7 +120,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: imageUrl.startsWith('http')
+                  image: imageUrl.startsWith('https')
                       ? NetworkImage(imageUrl)
                       : AssetImage(imageUrl) as ImageProvider,
                   fit: BoxFit.cover,
@@ -130,16 +131,18 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
             child: Text(
-              formatSpeciesName(commonName),
+              utf8.decode(formatSpeciesName(commonName).codeUnits),
+              textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
             child: Text(
-              formatSpeciesName(scientificName),
+              utf8.decode(formatSpeciesName(scientificName).codeUnits),
+              textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
             ),
           ),
@@ -156,7 +159,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                   ),
                   if (resourceLinks.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -178,6 +181,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                               },
                               child: Text(
                                 link,
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline),

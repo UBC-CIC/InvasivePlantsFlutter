@@ -137,7 +137,7 @@ class _PlantInfoFromCategoryInvasivePageState
           ),
           Expanded(
             child: DefaultTabController(
-              length: 2,
+              length: 3,
               child: Column(
                 children: <Widget>[
                   const Padding(
@@ -155,6 +155,9 @@ class _PlantInfoFromCategoryInvasivePageState
                           text: 'About',
                         ),
                         Tab(
+                          text: 'Wiki Info',
+                        ),
+                        Tab(
                           text: 'Alternatives',
                         ),
                       ],
@@ -167,10 +170,11 @@ class _PlantInfoFromCategoryInvasivePageState
                           child: Column(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 5, 10, 0),
                                 child: Text(
-                                  formatSpeciesName(
-                                      scientificName), // Handle null case
+                                  formatSpeciesName(scientificName),
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
@@ -180,6 +184,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                 padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 child: Text(
                                   'Common Name',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 15),
@@ -196,7 +201,7 @@ class _PlantInfoFromCategoryInvasivePageState
                               if (resourceLinks.isNotEmpty)
                                 Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      const EdgeInsets.fromLTRB(15, 0, 15, 0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
@@ -220,6 +225,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                           },
                                           child: Text(
                                             link,
+                                            textAlign: TextAlign.center,
                                             style: const TextStyle(
                                                 color: Colors.blue,
                                                 decoration:
@@ -233,6 +239,9 @@ class _PlantInfoFromCategoryInvasivePageState
                               const SizedBox(height: 30),
                             ],
                           ),
+                        ),
+                        Column(
+                          children: [Container()],
                         ),
                         Column(
                           children: [
@@ -270,10 +279,13 @@ class _PlantInfoFromCategoryInvasivePageState
 
                                     String imageUrl =
                                         alternativeSpecies['images'].isEmpty
-                                            ? 'assets/images/leaf.png'
-                                            : alternativeSpecies['images'][0]
-                                                    ['image_url'] ??
-                                                'assets/images/leaf.png';
+                                            ? 'assets/images/grey.jpeg'
+                                            : (alternativeSpecies['images'][0]
+                                                        ['image_url']
+                                                    .isEmpty
+                                                ? 'assets/images/grey.jpeg'
+                                                : alternativeSpecies['images']
+                                                    [0]['image_url']);
 
                                     return GestureDetector(
                                       onTap: () {
@@ -295,7 +307,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                             10, 5, 10, 5),
                                         padding: const EdgeInsets.fromLTRB(
                                             10, 10, 10, 10),
-                                        height: 100,
+                                        height: 120,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
@@ -322,7 +334,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                               decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                   image: imageUrl
-                                                          .startsWith('http')
+                                                          .startsWith('https')
                                                       ? NetworkImage(imageUrl)
                                                       : AssetImage(imageUrl)
                                                           as ImageProvider,
@@ -340,8 +352,10 @@ class _PlantInfoFromCategoryInvasivePageState
                                                 children: [
                                                   const SizedBox(height: 5),
                                                   Text(
-                                                    formatSpeciesName(
-                                                        commonName),
+                                                    utf8.decode(
+                                                        formatSpeciesName(
+                                                                commonName)
+                                                            .codeUnits),
                                                     style: const TextStyle(
                                                       fontSize: 20,
                                                       fontWeight:
@@ -353,11 +367,12 @@ class _PlantInfoFromCategoryInvasivePageState
                                                     padding: const EdgeInsets
                                                         .fromLTRB(1, 0, 0, 0),
                                                     child: Text(
-                                                      formatSpeciesName(
-                                                          alternativeSpecies[
-                                                                  'scientific_name']
-                                                              [0]),
+                                                      utf8.decode(formatSpeciesName(
+                                                              alternativeSpecies[
+                                                                  'scientific_name'][0])
+                                                          .codeUnits),
                                                       style: const TextStyle(
+                                                        fontSize: 10,
                                                         color: Color.fromARGB(
                                                             255, 43, 75, 90),
                                                       ),

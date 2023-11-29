@@ -1,11 +1,13 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert'; // Import dart:convert to use utf8 decoding
 
 class PlantInfoFromCategoryPage extends StatefulWidget {
-  final String plantName;
+  final Map<String, dynamic> speciesObject; // Define speciesObject here
 
-  const PlantInfoFromCategoryPage({super.key, required this.plantName});
+  const PlantInfoFromCategoryPage({super.key, required this.speciesObject});
 
   @override
   _PlantInfoFromCategoryPageState createState() =>
@@ -18,7 +20,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
   bool get wantKeepAlive => true;
   bool isBookmarked = false;
 
-  void _showImageFullScreenDialog(String imagePath) {
+  void _showImageFullScreenDialog(String imageUrl) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -27,10 +29,15 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Center(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-              ),
+              child: imageUrl.startsWith('http')
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.contain,
+                    )
+                  : Image.asset(
+                      imageUrl,
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
         );
@@ -38,8 +45,37 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
     );
   }
 
+  String formatSpeciesName(String speciesName) {
+    String formattedName =
+        speciesName.replaceAll('_', ' '); // Replace underscore with space
+    List<String> words = formattedName.split(' '); // Split into words
+    if (words.isNotEmpty) {
+      // Capitalize the first word and make the rest lowercase
+      String firstWord = words[0].substring(0, 1).toUpperCase() +
+          words[0].substring(1).toLowerCase();
+      // Join the first capitalized word with the rest of the words
+      formattedName = '$firstWord ${words.sublist(1).join(' ').toLowerCase()}';
+    }
+    return formattedName;
+  }
+
   @override
   Widget build(BuildContext context) {
+    String imageUrl = widget.speciesObject['images'].isEmpty
+        ? 'assets/images/leaf.png'
+        : widget.speciesObject['images'][0]['image_url'] ??
+            'assets/images/leaf.png';
+    String commonName = widget.speciesObject['common_name'].isNotEmpty
+        ? widget.speciesObject['common_name'][0]
+        : widget.speciesObject['scientific_name'][0];
+    String scientificName = widget.speciesObject['scientific_name'][0];
+    // Ensure UTF-8 decoding for the species description to remove special characters
+    String speciesDescription = utf8.decode(
+      widget.speciesObject['species_description'].codeUnits,
+    );
+    List<String> resourceLinks =
+        List<String>.from(widget.speciesObject['resource_links'] ?? []);
+
     super.build(context);
     return Scaffold(
       extendBody: true,
@@ -75,17 +111,17 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
           GestureDetector(
             onTap: () {
               _showImageFullScreenDialog(
-                'assets/images/swordfern1.jpeg',
+                imageUrl,
               );
             },
             child: Container(
               margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage(
-                    'assets/images/swordfern1.jpeg',
-                  ),
+                image: DecorationImage(
+                  image: imageUrl.startsWith('http')
+                      ? NetworkImage(imageUrl)
+                      : AssetImage(imageUrl) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -93,31 +129,65 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
               width: double.infinity,
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
             child: Text(
-              'Sword Fern',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              formatSpeciesName(commonName),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
             child: Text(
-              'Polystichum munitum',
-              style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+              formatSpeciesName(scientificName),
+              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
             ),
           ),
-          const Expanded(
+          Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.fromLTRB(15, 0, 15, 30),
+                    padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                     child: Text(
-                      'British Columbia’s moist and mild coastal climate provides ideal conditions for ferns to thrive, so much so that several fern species are obvious and characteristic features of the conifer forest floor. \n\nMost abundant of all these ferns is the stately and lush sword fern of the Wood Fern Family (Dryopteridaceae). Sword ferns grow into a large perennial clump of leaves spreading out from a massive crown. \n\nThis crown consists of a woody mass of rhizomes (root-stems) buried in reddish brown scales and dead leaf bases. \n\nRoots explore the soil outward from the rhizome. In a mature well-established clump the crown may stretch half a meter (20”) or more in diameter. \n\nDark evergreen fronds stand stiffly from the crown. Fronds reach as tall as 1.5 metres (60”) and up to 25 cm (10″) wide. The lower third of the frond consists of a den­sely scaly brown stalk, called a stipe by botanists. The upper two-thirds of the frond have numerous narrow, pointed and toothed leaflets. \n\nNear the tip of the frond the leaflets become progressively shorter. Young unfolding leaves are at first curled like a shepherd’s crook or crozier, then gradually un­furl and expand.',
-                      style: TextStyle(fontSize: 18),
+                      speciesDescription,
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ),
+                  if (resourceLinks.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'For more info:',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          const SizedBox(height: 5),
+                          // Generate list of clickable URLs
+                          ...resourceLinks.map(
+                            (link) => GestureDetector(
+                              onTap: () async {
+                                if (await canLaunch(link)) {
+                                  await launch(link);
+                                } else {
+                                  throw 'Could not launch $link';
+                                }
+                              },
+                              child: Text(
+                                link,
+                                style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),

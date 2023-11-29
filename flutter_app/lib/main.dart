@@ -10,7 +10,14 @@ import 'camera_page.dart';
 import 'plant_identification_page.dart';
 import 'my_plants_page.dart';
 
+import 'package:flutter/services.dart'; // Import SystemChrome class
+
 void main() {
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Ensure that the binding is initialized
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp]); // Lock to portrait mode
+
   runApp(
     MultiProvider(
       providers: [
@@ -45,7 +52,7 @@ class MyApp extends StatelessWidget {
               listId: '',
             ),
         '/plantInfoFromCategory': (context) => const PlantInfoFromCategoryPage(
-              plantName: '',
+              speciesObject: {},
             ),
         '/camera': (context) => const CameraPage(),
         '/plantIdentification': (context) => const PlantIdentificationPage(

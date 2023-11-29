@@ -347,7 +347,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-// In _buildMatchingItems function
   List<Widget> _buildMatchingItems() {
     List<Widget> matchingItems = [];
 
@@ -360,8 +359,13 @@ class _HomePageState extends State<HomePage> {
     for (int index = 0; index < filteredSpecies.length; index++) {
       final species = filteredSpecies[index];
 
-      // Pass the entire species object to _buildGridItem
-      matchingItems.add(_buildGridItem(species));
+      String speciesName = species['scientific_name'][0];
+      String formattedName = formatSpeciesName(speciesName);
+
+      // Check if the search text matches the formatted name
+      if (formattedName.toLowerCase().contains(searchText.toLowerCase())) {
+        matchingItems.add(_buildGridItem(species));
+      }
     }
 
     return matchingItems;

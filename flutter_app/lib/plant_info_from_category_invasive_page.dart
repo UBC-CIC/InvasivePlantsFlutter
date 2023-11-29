@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert'; // Import dart:convert to use utf8 decoding
 
 import 'package:flutter_app/plant_info_from_category_page.dart';
 
@@ -63,7 +64,11 @@ class _PlantInfoFromCategoryInvasivePageState
   Widget build(BuildContext context) {
     super.build(context);
     String scientificName = widget.speciesObject['scientific_name'][0];
-    String speciesDescription = widget.speciesObject['species_description'];
+    // Ensure UTF-8 decoding for the species description to remove special characters
+    String speciesDescription = utf8.decode(
+      widget.speciesObject['species_description'].codeUnits,
+    );
+
     List<String> resourceLinks =
         List<String>.from(widget.speciesObject['resource_links'] ?? []);
     return Scaffold(
@@ -168,7 +173,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                       scientificName), // Handle null case
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 24),
+                                      fontSize: 20),
                                 ),
                               ),
                               const Padding(
@@ -191,7 +196,7 @@ class _PlantInfoFromCategoryInvasivePageState
                               if (resourceLinks.isNotEmpty)
                                 Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                      const EdgeInsets.fromLTRB(10, 0, 10, 0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
@@ -225,97 +230,150 @@ class _PlantInfoFromCategoryInvasivePageState
                                     ],
                                   ),
                                 ),
-                              const SizedBox(height: 50),
+                              const SizedBox(height: 30),
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context)
-                                  .size
-                                  .height - // Set height relative to the available height
-                              kToolbarHeight - // subtract the app bar height
-                              200, // subtract any other fixed heights
-                          child: ListView.builder(
-                            itemCount: 10,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  final plantIndex = 'Plant ${index + 1}';
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          PlantInfoFromCategoryPage(
-                                        plantName: plantIndex,
-                                      ),
+                        Column(
+                          children: [
+                            if (widget
+                                .speciesObject['alternative_species'].isEmpty)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(50, 90, 50, 0),
+                                  child: Text(
+                                    'Sorry, there are no alternative species for this plant.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 18,
                                     ),
-                                  );
-                                },
-                                child: Container(
-                                    margin:
-                                        const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                    padding: const EdgeInsets.fromLTRB(
-                                        10, 10, 10, 10),
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                          color: const Color.fromARGB(
-                                              255, 236, 236, 236)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          offset: const Offset(0, 6),
-                                          blurRadius: 6,
-                                          spreadRadius: 0,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 100,
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            image: const DecorationImage(
-                                              image: AssetImage(
-                                                  'assets/images/swordfern2.jpeg'),
-                                              fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                            else
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: widget
+                                      .speciesObject['alternative_species']
+                                      .length,
+                                  itemBuilder: (context, index) {
+                                    final alternativeSpecies =
+                                        widget.speciesObject[
+                                            'alternative_species'][index];
+
+                                    String commonName = alternativeSpecies[
+                                                'common_name']
+                                            .isNotEmpty
+                                        ? alternativeSpecies['common_name'][0]
+                                        : alternativeSpecies['scientific_name']
+                                            [0];
+
+                                    String imageUrl =
+                                        alternativeSpecies['images'].isEmpty
+                                            ? 'assets/images/leaf.png'
+                                            : alternativeSpecies['images'][0]
+                                                    ['image_url'] ??
+                                                'assets/images/leaf.png';
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        final selectedSpecies =
+                                            widget.speciesObject[
+                                                'alternative_species'][index];
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                PlantInfoFromCategoryPage(
+                                              speciesObject: selectedSpecies,
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
                                           ),
+                                        );
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.fromLTRB(
+                                            10, 5, 10, 5),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            10, 10, 10, 10),
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: const Color.fromARGB(
+                                                255, 236, 236, 236),
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              offset: const Offset(0, 6),
+                                              blurRadius: 6,
+                                              spreadRadius: 0,
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                'Plant ${index + 1}',
-                                                style: const TextStyle(
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold,
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 100,
+                                              height: 100,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: imageUrl
+                                                          .startsWith('http')
+                                                      ? NetworkImage(imageUrl)
+                                                      : AssetImage(imageUrl)
+                                                          as ImageProvider,
+                                                  fit: BoxFit.cover,
                                                 ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
-                                              const SizedBox(height: 10),
-                                              const Text(
-                                                'Scientific Name',
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 43, 75, 90)),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const SizedBox(height: 5),
+                                                  Text(
+                                                    formatSpeciesName(
+                                                        commonName),
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(1, 0, 0, 0),
+                                                    child: Text(
+                                                      formatSpeciesName(
+                                                          alternativeSpecies[
+                                                                  'scientific_name']
+                                                              [0]),
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 43, 75, 90),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    )),
-                              );
-                            },
-                          ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),

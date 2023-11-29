@@ -109,15 +109,15 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          final plantIndex = plantList.plants[index];
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlantInfoFromCategoryPage(
-                                plantName: plantIndex,
-                              ),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         const PlantInfoFromCategoryPage(
+                          //       speciesObject: {},
+                          //     ),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),

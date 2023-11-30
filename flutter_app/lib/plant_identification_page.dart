@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api_result_page.dart';
+import 'package:flutter_app/camera_page.dart';
 
 class PlantIdentificationPage extends StatefulWidget {
   final String imagePath;
@@ -15,18 +16,93 @@ class PlantIdentificationPage extends StatefulWidget {
 class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
   String? selectedOrgan;
   bool isItemSelected = false;
+  int imageCounter = 1;
+  int organCounter = 1;
+
+  Map<String, String> plantnetParams = {
+    'service': 'https://my-api.plantnet.org/v2/identify/all',
+    'api-key': 'api-key=2b101Rx4lIHUaJFkbbPAccFmGO',
+  };
 
   void _navigateToResultPage(BuildContext context) {
     if (selectedOrgan != null) {
+      _addImageAndOrganToParams();
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => APIResultPage(
-            imagePath: widget.imagePath,
-            selectedOrgan: selectedOrgan!,
+              imagePath: widget.imagePath,
+              plantnetParams: plantnetParams,
+              imageCounter: imageCounter,
+              organCounter: organCounter),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(milliseconds: 1000),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
+          content: const Text('Please select an organ first'),
+          backgroundColor: Colors.red,
         ),
       );
     }
+  }
+
+  void _addImageAndOrganToParams() {
+    final imagePathKey = 'image_$imageCounter';
+    final organKey = 'organ_$organCounter';
+
+    if (imageCounter <= 5 && organCounter <= 5) {
+      if (selectedOrgan != null &&
+          !plantnetParams.containsValue(widget.imagePath) &&
+          !plantnetParams.containsValue(selectedOrgan)) {
+        plantnetParams[organKey] = 'organs=${selectedOrgan!.toLowerCase()}';
+        plantnetParams[imagePathKey] = 'images=${widget.imagePath}';
+        imageCounter++;
+        organCounter++;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(milliseconds: 1000),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            content: const Text('Please select an organ first'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(milliseconds: 1000),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          content: const Text('You have uploaded the maximum amount of photos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    debugPrint('Plantnet Params: $plantnetParams');
+  }
+
+  @override
+  void dispose() {
+    // Clear images and organs when back button is pressed
+    for (var key in plantnetParams.keys.toList()) {
+      if (key != 'service' && key != 'api-key') {
+        plantnetParams.remove(key);
+      }
+    }
+    super.dispose();
+    debugPrint('Plantnet Params: $plantnetParams');
   }
 
   @override
@@ -36,6 +112,17 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.clear, color: Colors.black),
+          onPressed: () {
+            dispose();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CameraPage(),
+              ),
+            );
+          },
+        ),
         title: const Text(
           'SELECT PLANT ORGAN',
           style: TextStyle(
@@ -80,7 +167,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                   margin: const EdgeInsets.fromLTRB(7, 2, 5, 4),
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      debugPrint("+ Upload Another");
+                      _addImageAndOrganToParams();
                     },
                     icon: const Icon(Icons.add, color: Colors.black),
                     label: const Text('Upload Another',

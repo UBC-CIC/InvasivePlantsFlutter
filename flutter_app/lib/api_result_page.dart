@@ -1,14 +1,20 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/camera_page.dart';
 
 class APIResultPage extends StatefulWidget {
   final String imagePath;
-  final String selectedOrgan;
-
-  const APIResultPage({
+  final Map<String, String> plantnetParams;
+  int imageCounter;
+  int organCounter;
+  APIResultPage({
     super.key,
     required this.imagePath,
-    required this.selectedOrgan,
+    required this.plantnetParams,
+    required this.imageCounter,
+    required this.organCounter,
   });
 
   @override
@@ -17,6 +23,21 @@ class APIResultPage extends StatefulWidget {
 
 class _APIResultPageState extends State<APIResultPage> {
   @override
+  void dispose() {
+    // Clear images and organs when back button is pressed
+    for (var key in widget.plantnetParams.keys.toList()) {
+      if (key != 'service' && key != 'api-key') {
+        widget.plantnetParams.remove(key);
+      }
+    }
+    // Reset the image counter and organ counter to 1
+    widget.imageCounter = 1;
+    widget.organCounter = 1;
+    super.dispose();
+    debugPrint('Plantnet Params: ${widget.plantnetParams}');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -24,6 +45,17 @@ class _APIResultPageState extends State<APIResultPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.clear, color: Colors.black),
+          onPressed: () {
+            dispose();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const CameraPage(),
+              ),
+            );
+          },
+        ),
         title: const Text(
           'RESULT',
           style: TextStyle(
@@ -44,16 +76,12 @@ class _APIResultPageState extends State<APIResultPage> {
             ),
           ),
           const SizedBox(height: 20),
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Selected Organ: ',
-                style: TextStyle(fontSize: 18),
-              ),
               Text(
-                widget.selectedOrgan,
-                style: const TextStyle(
+                "a",
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

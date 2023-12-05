@@ -6,8 +6,10 @@ import 'dart:convert'; // Import dart:convert to use utf8 decoding
 
 class PlantInfoFromCategoryPage extends StatefulWidget {
   final Map<String, dynamic> speciesObject; // Define speciesObject here
-
-  const PlantInfoFromCategoryPage({super.key, required this.speciesObject});
+  const PlantInfoFromCategoryPage({
+    super.key,
+    required this.speciesObject,
+  });
 
   @override
   _PlantInfoFromCategoryPageState createState() =>

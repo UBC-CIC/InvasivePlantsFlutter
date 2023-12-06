@@ -12,6 +12,7 @@ import 'plant_info_from_category_invasive_page.dart';
 import 'camera_page.dart';
 import 'my_plants_page.dart';
 import 'settings_page.dart';
+import 'wiki_webscrape.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,6 +40,9 @@ class _HomePageState extends State<HomePage> {
     _cacheManager = DefaultCacheManager();
     fetchDataIfNeeded();
     lastFetchTime = DateTime.now();
+
+    // Testing Wikipedia webscraping
+    webscrapeWikipedia("nymphaea odorata");
   }
 
   Future<void> fetchDataIfNeeded() async {
@@ -90,7 +94,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchData(String cacheKey, {String? lastSpeciesId}) async {
     const baseUrl =
-        'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod';
+        'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod';
     const endpoint = '/invasiveSpecies';
 
     // Modify URL to include last_species_id if available

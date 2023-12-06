@@ -67,7 +67,7 @@ class _APIResultPageState extends State<APIResultPage>
               color: Colors.green,
             ),
             Text(
-              ' Non-Invasive Plant ',
+              ' Safe Plant ',
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),

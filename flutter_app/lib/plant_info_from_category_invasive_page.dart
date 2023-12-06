@@ -1,18 +1,22 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert'; // Import dart:convert to use utf8 decoding
 
 import 'package:flutter_app/plant_info_from_category_page.dart';
 
 class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
-  final Map<String, dynamic> speciesObject; // Define speciesObject here
+  final Map<String, dynamic> speciesObject;
+  final String? commonName, regionId, plantNetImageURL;
 
-  const PlantInfoFromCategoryInvasivePage({
-    super.key,
-    required this.speciesObject,
-  });
+  const PlantInfoFromCategoryInvasivePage(
+      {super.key,
+      required this.speciesObject,
+      this.commonName,
+      this.regionId,
+      this.plantNetImageURL});
 
   @override
   _PlantInfoFromCategoryInvasivePageState createState() =>
@@ -35,10 +39,15 @@ class _PlantInfoFromCategoryInvasivePageState
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Center(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-              ),
+              child: widget.plantNetImageURL != null
+                  ? Image.network(
+                      widget.plantNetImageURL!,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      imagePath,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
         );
@@ -78,6 +87,20 @@ class _PlantInfoFromCategoryInvasivePageState
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            if (widget.regionId != null) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CameraPage(),
+                ),
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -126,10 +149,15 @@ class _PlantInfoFromCategoryInvasivePageState
               margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/scotchbroom3.jpeg'),
-                  fit: BoxFit.cover,
-                ),
+                image: widget.plantNetImageURL != null
+                    ? DecorationImage(
+                        image: NetworkImage(widget.plantNetImageURL!),
+                        fit: BoxFit.cover,
+                      )
+                    : const DecorationImage(
+                        image: AssetImage('assets/images/scotchbroom3.jpeg'),
+                        fit: BoxFit.cover,
+                      ),
               ),
               height: MediaQuery.of(context).size.height / 2.5,
               width: double.infinity,
@@ -173,23 +201,49 @@ class _PlantInfoFromCategoryInvasivePageState
                                 padding:
                                     const EdgeInsets.fromLTRB(10, 5, 10, 0),
                                 child: Text(
-                                  formatSpeciesName(scientificName),
+                                  widget.commonName == null
+                                      ? formatSpeciesName(scientificName)
+                                      : widget.commonName!,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
                                 ),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                                 child: Text(
-                                  'Common Name',
+                                  formatSpeciesName(scientificName),
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 15),
                                 ),
                               ),
+                              if (widget.regionId != null)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        'Region: ',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
+                                      ),
+                                      Text(
+                                        '${widget.regionId}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               Padding(
                                 padding:
                                     const EdgeInsets.fromLTRB(15, 10, 15, 10),

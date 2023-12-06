@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchDataIfNeeded() async {
     const baseUrl =
-        'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod';
+        'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod';
     const endpoint = '/invasiveSpecies';
     const cacheKey = '$baseUrl$endpoint';
 

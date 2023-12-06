@@ -96,26 +96,26 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Colors.grey,
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                const Icon(Icons.translate_rounded),
-                ToggleSwitch(
-                  minWidth: 120,
-                  activeBgColor: const [Colors.blue],
-                  inactiveBgColor: Colors.grey[300],
-                  inactiveFgColor: Colors.black,
-                  initialLabelIndex: currentLanguageIndex,
-                  labels: const ['English', 'French'],
-                  onToggle: (index) {
-                    setState(() {
-                      currentLanguageIndex = index!;
-                    });
-                    debugPrint(currentLanguageIndex.toString());
-                  },
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //   children: <Widget>[
+            //     const Icon(Icons.translate_rounded),
+            //     ToggleSwitch(
+            //       minWidth: 120,
+            //       activeBgColor: const [Colors.blue],
+            //       inactiveBgColor: Colors.grey[300],
+            //       inactiveFgColor: Colors.black,
+            //       initialLabelIndex: currentLanguageIndex,
+            //       labels: const ['English', 'French'],
+            //       onToggle: (index) {
+            //         setState(() {
+            //           currentLanguageIndex = index!;
+            //         });
+            //         debugPrint(currentLanguageIndex.toString());
+            //       },
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

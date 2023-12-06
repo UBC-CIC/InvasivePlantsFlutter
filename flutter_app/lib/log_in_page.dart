@@ -128,39 +128,25 @@ class _LogInPageState extends State<LogInPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("Or Log In With"),
-                  ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildLogoButton('assets/images/facebooklogo.png'),
-                  _buildLogoButton('assets/images/googlelogo.png'),
-                  _buildLogoButton('assets/images/applelogo.png'),
-                ],
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+                  const Expanded(child: Divider()),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Continue as Guest",
                     ),
-                  );
-                },
-                child: const Text(
-                  "Continue as Guest",
-                ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
               ),
               const SizedBox(height: 10),
               RichText(

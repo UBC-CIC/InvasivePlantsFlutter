@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_app/home_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'plant_identification_page.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -186,6 +187,17 @@ class _CameraPageState extends State<CameraPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.clear, color: Colors.white),
+          onPressed: () {
+            dispose();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
+          },
+        ),
         title: const Text(
           "Take A Photo",
           style: TextStyle(

@@ -1,54 +1,57 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: library_private_types_in_public_api
 
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 
 class APIResultPage extends StatefulWidget {
-  final String imagePath;
-  final Map<String, String> plantnetParams;
-  int imageCounter;
-  int organCounter;
-  APIResultPage({
-    super.key,
-    required this.imagePath,
-    required this.plantnetParams,
-    required this.imageCounter,
-    required this.organCounter,
-  });
+  final String? commonName, scientificName, imageUrl;
+
+  const APIResultPage(
+      {super.key, this.commonName, this.scientificName, this.imageUrl});
 
   @override
-  State<APIResultPage> createState() => _APIResultPageState();
+  _APIResultPageState createState() => _APIResultPageState();
 }
 
-class _APIResultPageState extends State<APIResultPage> {
+class _APIResultPageState extends State<APIResultPage>
+    with AutomaticKeepAliveClientMixin<APIResultPage> {
   @override
-  void dispose() {
-    // Clear images and organs when back button is pressed
-    for (var key in widget.plantnetParams.keys.toList()) {
-      if (key != 'service' && key != 'api-key') {
-        widget.plantnetParams.remove(key);
-      }
-    }
-    // Reset the image counter and organ counter to 1
-    widget.imageCounter = 1;
-    widget.organCounter = 1;
-    super.dispose();
-    debugPrint('Plantnet Params: ${widget.plantnetParams}');
+  bool get wantKeepAlive => true;
+  bool isBookmarked = false;
+
+  void _showImageFullScreenDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Center(
+              child: Image.network(
+                widget.imageUrl!,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
+      extendBody: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         leading: IconButton(
-          icon: const Icon(Icons.clear, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            dispose();
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const CameraPage(),
@@ -56,37 +59,94 @@ class _APIResultPageState extends State<APIResultPage> {
             );
           },
         ),
-        title: const Text(
-          'RESULT',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.check_box,
+              color: Colors.green,
+            ),
+            Text(
+              ' Safe Plant ',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            Icon(
+              Icons.check_box,
+              color: Colors.green,
+            ),
+          ],
         ),
+        actions: [
+          IconButton(
+            icon: isBookmarked
+                ? const Icon(
+                    Icons.bookmark,
+                    color: Colors.lightBlue,
+                  )
+                : const Icon(Icons.bookmark_border),
+            onPressed: () {
+              setState(
+                () {
+                  isBookmarked = !isBookmarked;
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 400,
-            width: double.infinity,
-            child: Image.file(
-              File(widget.imagePath),
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "a",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              _showImageFullScreenDialog();
+            },
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: NetworkImage(widget.imageUrl!),
+                  fit: BoxFit.cover,
                 ),
               ),
-            ],
+              height: MediaQuery.of(context).size.height / 2.5,
+              width: double.infinity,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+            child: Text(
+              widget.commonName!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+            child: Text(
+              widget.scientificName!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+            ),
+          ),
+          const Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                    child: Text(
+                      "“Elephant ears” is the common name for a group of tropical perennial plants grown for their large, heart-shaped leaves. Most of these herbaceous species in the arum or aroid family (Araceae) that are offered as ornamentals belong to the genera Colocasia, Alocasia, and Xanthosoma, although there are others that have similar appearance and growth habits.\n\nThe first two genera are native to tropical southern Asia, Indonesia, Malaysia, New Guinea, parts of Australia, or the Pacific Islands, while Xanthosoma is native to tropical America. Many of the species have long been grown for the edible starchy corms or tubers as an important staple food in tropical regions.",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  )
+                ],
+              ),
+            ),
           ),
         ],
       ),

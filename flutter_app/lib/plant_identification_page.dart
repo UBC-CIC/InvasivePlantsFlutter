@@ -134,7 +134,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
             try {
               // Create the URL for the GET request
               final apiUrl =
-                  'https://jfz3gup42l.execute-api.ca-central-1.amazonaws.com/prod/invasiveSpecies?scientific_name=$lowerCaseScientificName';
+                  'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod/invasiveSpecies?scientific_name=$lowerCaseScientificName';
 
               // Make the GET request
               var getResponse = await http.get(Uri.parse(apiUrl));

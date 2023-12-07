@@ -7,7 +7,7 @@ import 'package:html/dom.dart';
 const String mediaWikiApiEndpoint_baseURL = 'en.wikipedia.org';
 const String mediaWikiApiEndpoint_path = '/w/api.php';
 
-Future<List<dynamic>> webscrapeWikipedia(String scientificName) async {
+Future<Map<String, Object>> webscrapeWikipedia(String scientificName) async {
   try {
     var params = {
       'action': 'query',
@@ -74,10 +74,10 @@ Future<List<dynamic>> webscrapeWikipedia(String scientificName) async {
 		};
 
     // Return the final wikiInfo map
-    return sectionData;
+    return wikiInfo;
   } catch (error) {
     print('Error while fetching Wikipedia data: ${error.toString()}');
-    return [];
+    return {};
   }
 }
 

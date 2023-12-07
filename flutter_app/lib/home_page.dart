@@ -13,6 +13,7 @@ import 'camera_page.dart';
 import 'my_plants_page.dart';
 import 'settings_page.dart';
 import 'wiki_webscrape.dart';
+import 'location_function.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,7 +43,8 @@ class _HomePageState extends State<HomePage> {
     lastFetchTime = DateTime.now();
 
     // Testing Wikipedia webscraping
-    webscrapeWikipedia("nymphaea odorata");
+    // webscrapeWikipedia("nymphaea odorata");
+    getCurrentProvince();
   }
 
   Future<void> fetchDataIfNeeded() async {

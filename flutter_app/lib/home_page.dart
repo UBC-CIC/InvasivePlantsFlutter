@@ -14,6 +14,7 @@ import 'my_plants_page.dart';
 import 'settings_page.dart';
 import 'wiki_webscrape.dart';
 import 'location_function.dart';
+import 'lib.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,14 +48,14 @@ class _HomePageState extends State<HomePage> {
 
     // Testing Wikipedia webscraping
     // webscrapeWikipedia("nymphaea odorata");
-    getCurrentProvince();
+    // getCurrentProvince();
   }
 
   Future<void> fetchDataIfNeeded() async {
-    const baseUrl =
-        'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod';
-    const endpoint = '/invasiveSpecies';
-    const cacheKey = '$baseUrl$endpoint';
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    const endpoint = 'invasiveSpecies';
+    String cacheKey = '$baseUrl$endpoint';
     bool isMoreData = true;
 
     FileInfo? fileInfo = await _cacheManager.getFileFromCache(cacheKey);
@@ -82,10 +83,9 @@ class _HomePageState extends State<HomePage> {
 
   // Return true if more data is expected, else false
   Future<bool> fetchData(String cacheKey) async {
-    const baseUrl =
-        'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod';
-    const endpoint = '/invasiveSpecies?rows_per_page=$pageSize';
-
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    const endpoint = 'invasiveSpecies?rows_per_page=$pageSize';
     bool returnValue = true;
 
     // Modify URL to include last_species_id if available

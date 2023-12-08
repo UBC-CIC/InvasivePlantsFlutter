@@ -4,6 +4,10 @@ import 'package:flutter_app/home_page.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'package:flutter_app/settings_page.dart';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'amplifyconfiguration.dart';
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
@@ -23,6 +27,61 @@ class _SignUpPageState extends State<SignUpPage> {
   String? _emailError;
   String? _passwordError;
   String? _confirmPasswordError;
+
+  String username = "visal.saosuo@gmail.com";
+  String password = "Liger72724";
+
+  Future<void> signInUser(String username, String password) async {
+    try {
+      final result = await Amplify.Auth.signIn(
+        username: username,
+        password: password,
+      );
+      await _handleSignInResult(result);
+    } on AuthException catch (e) {
+      safePrint('Error signing in: ${e.message}');
+    }
+  }
+
+  Future<void> _handleSignInResult(SignInResult result) async {
+    switch (result.nextStep.signInStep) {
+      case AuthSignInStep.confirmSignInWithSmsMfaCode:
+        final codeDeliveryDetails = result.nextStep.codeDeliveryDetails!;
+        _handleCodeDelivery(codeDeliveryDetails);
+        break;
+      case AuthSignInStep.confirmSignInWithNewPassword:
+        safePrint('Enter a new password to continue signing in');
+        break;
+      case AuthSignInStep.confirmSignInWithCustomChallenge:
+        final parameters = result.nextStep.additionalInfo;
+        final prompt = parameters['prompt']!;
+        safePrint(prompt);
+        break;
+      // case AuthSignInStep.resetPassword:
+      //   final resetResult = await Amplify.Auth.resetPassword(
+      //     username: username,
+      //   );
+      //   await _handleResetPasswordResult(resetResult);
+      //   break;
+      case AuthSignInStep.confirmSignUp:
+        // Resend the sign up code to the registered device.
+        final resendResult = await Amplify.Auth.resendSignUpCode(
+          username: username,
+        );
+        _handleCodeDelivery(resendResult.codeDeliveryDetails);
+        break;
+      case AuthSignInStep.done:
+        debugPrint('Sign in is complete');
+        break;
+    }
+  }
+
+  void _handleCodeDelivery(AuthCodeDeliveryDetails codeDeliveryDetails) {
+    safePrint(
+      'A confirmation code has been sent to ${codeDeliveryDetails.destination}. '
+      'Please check your ${codeDeliveryDetails.deliveryMedium.name} for the code.',
+    );
+  }
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -128,6 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ElevatedButton(
                 onPressed: () {
                   _validateFields();
+                  signInUser(username, password);
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 5,

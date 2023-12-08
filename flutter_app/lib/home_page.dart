@@ -12,6 +12,8 @@ import 'plant_info_from_category_invasive_page.dart';
 import 'camera_page.dart';
 import 'my_plants_page.dart';
 import 'settings_page.dart';
+import 'wiki_webscrape.dart';
+import 'location_function.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,10 +23,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static const pageSize = 20; // Number of species per page
+
   String selectedLocation = 'British Columbia';
   bool isBCSelected = true;
   String searchText = '';
   late List<dynamic> speciesData = [];
+  int? nextOffset; // Track the next offset of pagination
   String? lastSpeciesId; // Track the last species ID
 
   final String regionIDBC = '7ae91c1e-3444-42b9-83a9-c0d9e25d1981';
@@ -39,6 +44,10 @@ class _HomePageState extends State<HomePage> {
     _cacheManager = DefaultCacheManager();
     fetchDataIfNeeded();
     lastFetchTime = DateTime.now();
+
+    // Testing Wikipedia webscraping
+    // webscrapeWikipedia("nymphaea odorata");
+    getCurrentProvince();
   }
 
   Future<void> fetchDataIfNeeded() async {
@@ -46,77 +55,66 @@ class _HomePageState extends State<HomePage> {
         'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod';
     const endpoint = '/invasiveSpecies';
     const cacheKey = '$baseUrl$endpoint';
+    bool isMoreData = true;
 
     FileInfo? fileInfo = await _cacheManager.getFileFromCache(cacheKey);
 
     if (fileInfo == null ||
         DateTime.now().difference(lastFetchTime!) >
             const Duration(minutes: 0)) {
-      await fetchData(
-          cacheKey); // Fetch the initial page without last_species_id
+      isMoreData = await fetchData(cacheKey); // Fetch the initial page without last_species_id
       lastFetchTime = DateTime.now();
     } else {
       String response = await fileInfo.file.readAsString();
       final jsonResponse = json.decode(response);
       setState(() {
-        speciesData = jsonResponse as List<dynamic>;
+        speciesData = jsonResponse["species"] as List<dynamic>;
+        nextOffset = jsonResponse["nextOffset"];
       });
       debugPrint('Cached file path: ${fileInfo.file.path}');
     }
 
-    // Fetch subsequent pages using last_species_id if speciesData is not empty
-    if (speciesData.isNotEmpty) {
-      bool reachedEnd = false;
-
-      while (!reachedEnd) {
-        final lastSpecies = speciesData.last;
-        final lastSpeciesId = lastSpecies['species_id'] as String?;
-
-        if (lastSpeciesId != null) {
-          await fetchData(cacheKey, lastSpeciesId: lastSpeciesId);
-          final newLastSpecies = speciesData.last;
-          final newLastSpeciesId = newLastSpecies['species_id'] as String?;
-
-          // Check if the last fetched page is the same as the previous one
-          if (newLastSpeciesId == lastSpeciesId) {
-            reachedEnd = true; // Indicates no more pages available
-          }
-        } else {
-          reachedEnd = true; // Indicates no more pages available
-        }
-      }
+    // Fetch subsequent pages
+    while(isMoreData){
+      isMoreData = await fetchData(cacheKey);
     }
   }
 
-  Future<void> fetchData(String cacheKey, {String? lastSpeciesId}) async {
+  // Return true if more data is expected, else false
+  Future<bool> fetchData(String cacheKey) async {
     const baseUrl =
         'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod';
-    const endpoint = '/invasiveSpecies';
+    const endpoint = '/invasiveSpecies?rows_per_page=$pageSize';
+
+    bool returnValue = true;
 
     // Modify URL to include last_species_id if available
     String apiUrl = '$baseUrl$endpoint';
-    if (lastSpeciesId != null) {
-      apiUrl += '?last_species_id=$lastSpeciesId';
+    if (nextOffset != null) {
+      apiUrl += '&curr_offset=$nextOffset';
     }
 
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      setState(() {
-        if (lastSpeciesId != null) {
-          // Append fetched data to existing speciesData
-          speciesData.addAll(jsonResponse as List<dynamic>);
-        } else {
-          speciesData = jsonResponse as List<dynamic>;
-        }
-      });
-
-      // Get the ID of the last species in the fetched data
-      if (jsonResponse.isNotEmpty) {
-        final lastSpecies = jsonResponse.last;
-        lastSpeciesId = lastSpecies['species_id'] as String;
+      
+      // Check if incoming nextOffset is same as current nextOffset
+      if(jsonResponse["nextOffset"] == nextOffset || jsonResponse["species"].length < pageSize){
+        returnValue = false;
       }
+
+      setState(() {
+        if (nextOffset != null) {
+          // Append fetched data to existing speciesData
+          speciesData.addAll(jsonResponse["species"] as List<dynamic>);
+        } else {
+          speciesData = jsonResponse["species"] as List<dynamic>;
+        }
+
+        // Get offset of next page, provided by esponse
+        nextOffset = jsonResponse["nextOffset"];
+      });
 
       Directory tempDir = await getTemporaryDirectory();
       String cachePath = '${tempDir.path}/cache_data.json';
@@ -127,6 +125,8 @@ class _HomePageState extends State<HomePage> {
     } else {
       throw Exception('Failed to load data');
     }
+
+    return returnValue;
   }
 
   List<dynamic> getSpeciesByRegion(String regionId) {

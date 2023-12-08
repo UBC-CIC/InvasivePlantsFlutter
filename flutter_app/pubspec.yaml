@@ -42,9 +42,12 @@ dependencies:
   http: ^1.1.0
   flutter_cache_manager: ^3.3.1
   url_launcher: ^6.2.1
+  html: ^0.15.4
   http_parser: ^4.0.2
   amplify_flutter: ^1.0.0
   amplify_auth_cognito: ^1.0.0
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
 
 dev_dependencies:
   flutter_test:

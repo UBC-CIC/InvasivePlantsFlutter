@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/home_page.dart';
 import 'package:flutter_app/log_in_page.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+import 'package:flutter_app/sign_up_page.dart';
+// import 'package:toggle_switch/toggle_switch.dart';
 
 class SettingsPage extends StatefulWidget {
   final String profileImagePath;
@@ -75,7 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const LogInPage(),
+                    builder: (context) => const SignUpPage(),
                   ),
                 );
               },

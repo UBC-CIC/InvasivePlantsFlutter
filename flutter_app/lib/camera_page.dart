@@ -31,7 +31,7 @@ class _CameraPageState extends State<CameraPage> {
 
     if (cameraStatus.isGranted &&
         microphoneStatus.isGranted &&
-        galleryStatus.isGranted) {
+        (galleryStatus.isGranted || galleryStatus.isLimited)) {
       final cameras = await availableCameras();
       if (cameras.isNotEmpty) {
         _controller = CameraController(cameras[0], ResolutionPreset.max);
@@ -109,23 +109,82 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _takePicture() async {
-    if (!_controller!.value.isInitialized) {
-      return;
+    try{
+      if (!_controller!.value.isInitialized) {
+        return;
+      }
+
+      final cameraStatus = await Permission.camera.status;
+      final microphoneStatus = await Permission.microphone.status;
+      if (cameraStatus.isGranted && microphoneStatus.isGranted) {
+        final XFile image = await _controller!.takePicture();
+
+        navigateToPlantIdentificationPage(image.path);
+      } else if (cameraStatus.isDenied || microphoneStatus.isDenied) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Permission Denied"),
+                content: const Text(
+                    "Please enable camera permissions in settings to take a picture."),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      } else if (cameraStatus.isPermanentlyDenied || microphoneStatus.isPermanentlyDenied) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Permission Denied"),
+                content: const Text(
+                    "You have permanently denied camera permissions. Please enable them in device settings to use this feature."),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("Open Settings"),
+                    onPressed: () {
+                      openAppSettings();
+                    },
+                  ),
+                ],
+              );
+            });
+      }
+    } catch(error){
+      throw("Error: not enough permission with camera and microphone.");
     }
+  }
 
-    final status = await Permission.camera.status;
-    if (status.isGranted) {
-      final XFile image = await _controller!.takePicture();
+  Future<void> _selectImageFromGallery() async {
+    final galleryStatus = await Permission.photos.status;
 
-      navigateToPlantIdentificationPage(image.path);
-    } else if (status.isDenied) {
-      showDialog(
+    if (galleryStatus.isGranted || galleryStatus.isLimited){
+      final XFile? image =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        navigateToPlantIdentificationPage(image.path);
+      }
+    } else {
+      final statuses = await [
+        Permission.photos
+      ].request();
+
+      if (statuses[Permission.photos]!.isDenied) {
+        showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
               title: const Text("Permission Denied"),
               content: const Text(
-                  "Please enable camera permissions in settings to take a picture."),
+                  "Please enable camera, and gallery permissions in settings to use this feature."),
               actions: <Widget>[
                 TextButton(
                   child: const Text("OK"),
@@ -135,15 +194,16 @@ class _CameraPageState extends State<CameraPage> {
                 ),
               ],
             );
-          });
-    } else if (status.isPermanentlyDenied) {
-      showDialog(
+          }
+        );
+      } else if (statuses[Permission.photos]!.isPermanentlyDenied) {
+        showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
               title: const Text("Permission Denied"),
               content: const Text(
-                  "You have permanently denied camera permissions. Please enable them in device settings to use this feature."),
+                  "You have permanently denied camera, and gallery permissions. Please enable them in device settings to use this feature."),
               actions: <Widget>[
                 TextButton(
                   child: const Text("Open Settings"),
@@ -153,16 +213,9 @@ class _CameraPageState extends State<CameraPage> {
                 ),
               ],
             );
-          });
-    }
-  }
-
-  Future<void> _selectImageFromGallery() async {
-    final XFile? image =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      navigateToPlantIdentificationPage(image.path);
+          }
+        );
+      }
     }
   }
 

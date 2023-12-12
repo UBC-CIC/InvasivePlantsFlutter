@@ -26,15 +26,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static const pageSize = 20; // Number of species per page
 
-  String selectedLocation = 'British Columbia';
-  bool isBCSelected = true;
-  String searchText = '';
-  late List<dynamic> speciesData = [];
+  ///
+  /// STORAGE Variables
+  List<dynamic> regionList = [];  // List of regions in the server
+  var selectedRegion = {}; // Currently selected region 
+                            // Default, select based on the current regiont or the first region of the regionList[]
+                            // Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
+  late List<dynamic> speciesData = [];  // List of species available from the server
+  
+  ///
+  /// OPERATIONAL Variables
   int? nextOffset; // Track the next offset of pagination
-  String? lastSpeciesId; // Track the last species ID
-
-  final String regionIDBC = '7ae91c1e-3444-42b9-83a9-c0d9e25d1981';
-  final String regionIDON = '82c70f8d-e00a-47af-a312-e5dda299e1af';
+  String searchText = '';
   DateTime? lastFetchTime; // Track the last fetch time
 
   late DefaultCacheManager _cacheManager;
@@ -43,12 +46,93 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _cacheManager = DefaultCacheManager();
-    fetchDataIfNeeded();
     lastFetchTime = DateTime.now();
 
-    // Testing Wikipedia webscraping
+    // Get all data from region
+    getAllRegions().then((value) => {
+      // Select region based on current location
+      getRegionFromCurrentLocation().then((value) => {
+        if(selectedRegion.keys.isEmpty && regionList.length > 0){
+          // Select first element in the array as selected region
+          selectedRegion = regionList[0]
+        } else {
+          ///
+          /// ERROR CASE
+          /// Need to find a wait to throw errors
+        }
+      })
+    });
+
+    // Get all species from server
+    fetchDataIfNeeded();
+    
+    // Testing Functions
     // webscrapeWikipedia("nymphaea odorata");
-    // getCurrentProvince();
+    getCurrentProvince();
+
+  }
+
+  // Get region based on current location
+  Future<void> getRegionFromCurrentLocation() async{
+    // Get current locaiton
+    Map<String, dynamic> currRegion  = await getCurrentProvince();
+
+    if(currRegion["isError"]){
+      throw currRegion["errorMsg"];
+    }
+
+    // Make API request
+    var configuration = getConfiguration();
+    String? apiKey = configuration["apiKey"];
+    String? region_code_name = currRegion["regionCode"];
+    String country = currRegion["countryFullname"];
+
+    if(apiKey != null && apiKey.isNotEmpty && region_code_name != null && region_code_name.isNotEmpty){
+      String? baseUrl = configuration["apiBaseUrl"];
+      String endpoint = 'region?region_code_name=${region_code_name}';
+      String apiUrl = '$baseUrl$endpoint';
+
+      Uri req = Uri.parse(apiUrl);
+      final response = await http.get(req, headers: {'x-api-key': apiKey});
+      
+      var resDecode = jsonDecode(response.body);
+
+      // Check if the country is correct
+      for(int i = 0; i < resDecode["regions"].length; i++){
+        if(resDecode["regions"][i]["country_fullname"].toString().toLowerCase() == country.toLowerCase()){
+          setState(() {
+            selectedRegion = resDecode["regions"][i];
+          });
+          break;
+        }
+      }
+    } else {
+      throw ("Api key not found.");
+    }
+  }
+
+  // Get call regions from server
+  Future<void> getAllRegions() async{
+    // Make API request
+    var configuration = getConfiguration();
+    String? apiKey = configuration["apiKey"];
+
+    if(apiKey != null && apiKey.isNotEmpty){
+      String? baseUrl = configuration["apiBaseUrl"];
+      String endpoint = 'region';
+      String apiUrl = '$baseUrl$endpoint';
+
+      Uri req = Uri.parse(apiUrl);
+      final response = await http.get(req, headers: {'x-api-key': apiKey});
+      
+      var resDecode = jsonDecode(response.body);
+
+      setState(() {
+        regionList = resDecode["regions"];
+      });
+    } else {
+      throw ("Api key not found.");
+    }
   }
 
   Future<void> fetchDataIfNeeded() async {
@@ -207,19 +291,25 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 5),
               DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: selectedLocation,
-                  items: <String>['British Columbia', 'Ontario']
-                      .map((String value) {
+                  value: selectedRegion["region_fullname"], //, ${selectedRegion["country_fullname"]}"
+                  items: regionList.map((dynamic value) {
                     return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                      value: value["region_fullname"],//"${value["region_fullname"]}, ${value["country_fullname"]}",
+                      child: Text(value["region_fullname"]), //Text("${value["region_fullname"]}, ${value["country_fullname"]}"),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(
-                      () {
-                        selectedLocation = newValue ?? selectedLocation;
-                        isBCSelected = newValue == 'British Columbia';
+                      () {                        
+                        // Update currently selected
+                        if(newValue != null && newValue.isNotEmpty){
+                          for(int i = 0; i < regionList.length; i++){
+                            if(regionList[i]["region_fullname"] == newValue){
+                              selectedRegion = regionList[i];
+                              break;
+                            }
+                          }
+                        }
                       },
                     );
                   },
@@ -352,8 +442,10 @@ class _HomePageState extends State<HomePage> {
 
     List<dynamic> filteredSpecies = [];
     if (speciesData.isNotEmpty) {
-      final regionId = isBCSelected ? regionIDBC : regionIDON;
-      filteredSpecies = getSpeciesByRegion(regionId);
+      final regionId = selectedRegion["region_id"].toString();
+      if(regionId != Null){
+        filteredSpecies = getSpeciesByRegion(regionId);
+      }
     }
 
     for (int index = 0; index < filteredSpecies.length; index++) {

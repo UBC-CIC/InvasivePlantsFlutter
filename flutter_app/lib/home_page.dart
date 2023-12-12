@@ -178,39 +178,44 @@ class _HomePageState extends State<HomePage> {
       apiUrl += '&curr_offset=$nextOffset';
     }
 
-    final response = await http.get(Uri.parse(apiUrl));
+    String? apiKey = configuration["apiKey"];
+    if(apiKey != null && apiKey.isNotEmpty){
+      final response = await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
 
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      
-      // Check if incoming nextOffset is same as current nextOffset
-      if(jsonResponse["nextOffset"] == nextOffset || jsonResponse["species"].length < pageSize){
-        returnValue = false;
-      }
-
-      setState(() {
-        if (nextOffset != null) {
-          // Append fetched data to existing speciesData
-          speciesData.addAll(jsonResponse["species"] as List<dynamic>);
-        } else {
-          speciesData = jsonResponse["species"] as List<dynamic>;
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        
+        // Check if incoming nextOffset is same as current nextOffset
+        if(jsonResponse["nextOffset"] == nextOffset || jsonResponse["species"].length < pageSize){
+          returnValue = false;
         }
 
-        // Get offset of next page, provided by esponse
-        nextOffset = jsonResponse["nextOffset"];
-      });
+        setState(() {
+          if (nextOffset != null) {
+            // Append fetched data to existing speciesData
+            speciesData.addAll(jsonResponse["species"] as List<dynamic>);
+          } else {
+            speciesData = jsonResponse["species"] as List<dynamic>;
+          }
 
-      Directory tempDir = await getTemporaryDirectory();
-      String cachePath = '${tempDir.path}/cache_data.json';
-      File file = File(cachePath);
-      await file.writeAsString(response.body);
+          // Get offset of next page, provided by esponse
+          nextOffset = jsonResponse["nextOffset"];
+        });
 
-      _cacheManager.putFile(cacheKey, file.readAsBytesSync());
+        Directory tempDir = await getTemporaryDirectory();
+        String cachePath = '${tempDir.path}/cache_data.json';
+        File file = File(cachePath);
+        await file.writeAsString(response.body);
+
+        _cacheManager.putFile(cacheKey, file.readAsBytesSync());
+      } else {
+        throw Exception('Failed to load data.');
+      }
+
+      return returnValue;
     } else {
-      throw Exception('Failed to load data');
+      throw Exception('Invalid API key.');
     }
-
-    return returnValue;
   }
 
   List<dynamic> getSpeciesByRegion(String regionId) {

@@ -21,7 +21,7 @@ Future<Map<String, dynamic>> getCurrentProvince() async{
     // Prepare output
     var output = {
       "isError": false,
-      "provinceCode": placemarks[0].administrativeArea,
+      "regionCode": placemarks[0].administrativeArea,
       "countryFullname": placemarks[0].country
     };
     return output;

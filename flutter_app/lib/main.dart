@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'package:flutter_app/sign_up_page.dart';
@@ -12,6 +14,7 @@ import 'my_plants_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'amplifyconfiguration.dart';
+import 'lib.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
@@ -50,7 +53,23 @@ class _MyAppState extends State<MyApp> {
     try {
       final auth = AmplifyAuthCognito();
       await Amplify.addPlugin(auth);
-      await Amplify.configure(amplifyconfig);
+      final amplifyConfigString = jsonDecode(amplifyconfig);
+      var configuration = getConfiguration();
+      String? poolId = configuration["cognitoPoolId"];
+      String? clientId = configuration["cognitAppClientId"];
+      String? region = configuration["cognitoRegion"];
+
+      amplifyConfigString["auth"]["plugins"]["CognitoUserPool"]["Default"]
+          ["PoolId"] = poolId;
+      amplifyConfigString["auth"]["plugins"]["CognitoUserPool"]["Default"]
+          ["AppClientId"] = clientId;
+      amplifyConfigString["auth"]["plugins"]["CognitoUserPool"]["Default"]
+          ["Region"] = region;
+
+      var configString = json.encode(amplifyConfigString);
+      print(configString);
+
+      await Amplify.configure(json.encode(amplifyConfigString));
     } on Exception catch (e) {
       safePrint('An error occurred configuring Amplify: $e');
     }

@@ -8,6 +8,7 @@ import 'package:flutter_app/plant_info_from_category_invasive_page.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'lib.dart';
 
 class PlantIdentificationPage extends StatefulWidget {
   final String imagePath;
@@ -135,6 +136,21 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               // Create the URL for the GET request
               final apiUrl =
                   'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod/invasiveSpecies?scientific_name=$lowerCaseScientificName';
+
+              // if(lowerCaseScientificName != null && lowerCaseScientificName.isNotEmpty){
+              //   // Make API request
+              //   var configuration = getConfiguration();
+              //   String? apiKey = configuration["apiKey"];
+              //   String? baseUrl = configuration["apiBaseUrl"];
+              //   String endpoint = 'invasiveSpecies?scientific_name=$lowerCaseScientificName&region_id=${}';
+              //   String apiUrl = '$baseUrl$endpoint';
+
+
+
+              // }
+
+              // if(apiKey != null && apiKey.isNotEmpty && region_code_name != null && region_code_name.isNotEmpty){
+              // }
 
               // Make the GET request
               var getResponse = await http.get(Uri.parse(apiUrl));

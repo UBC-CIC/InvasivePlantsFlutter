@@ -30,7 +30,7 @@ class _LogInPageState extends State<LogInPage> {
   @override
   void initState() {
     super.initState();
-    signOutCurrentUser();
+    // signOutCurrentUser();
   }
 
   void _togglePasswordVisibility() {
@@ -76,6 +76,8 @@ class _LogInPageState extends State<LogInPage> {
         password: password,
       );
       await _handleSignInResult(result);
+      var user = await Amplify.Auth.getCurrentUser();
+      print("Something");
     } on AuthException catch (e) {
       _showErrorSnackBar('Invalid credentials. Please try again.');
     }

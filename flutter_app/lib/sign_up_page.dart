@@ -248,7 +248,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     super.initState();
-    signOutCurrentUser();
+    // signOutCurrentUser();
   }
 
   @override

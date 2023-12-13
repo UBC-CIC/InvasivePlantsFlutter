@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         platform: TargetPlatform.iOS,
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/signup',
+      initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),
         '/settings': (context) => const SettingsPage(

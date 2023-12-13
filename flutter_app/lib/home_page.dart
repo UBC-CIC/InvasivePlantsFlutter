@@ -253,6 +253,17 @@ class _HomePageState extends State<HomePage> {
     return formattedName;
   }
 
+  String formatRegionName(String? regionName){
+    if(regionName != null){
+      String formattedName = regionName.replaceAll('_', ' '); // Replace underscore with space
+      formattedName.split(' ').map((word) {
+        return word[0].toUpperCase() + word.substring(1).toLowerCase();
+      }).join(' '); 
+      return formattedName;
+    }
+    return "";
+  }
+
   Future<void> _showUserProfile() async {
     bool isSignedIn = await isUserSignedIn();
 
@@ -501,8 +512,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 5),
               DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: selectedRegion[
-                      "region_fullname"], //, ${selectedRegion["country_fullname"]}"
+                  value: formatRegionName(selectedRegion["region_fullname"]), //, ${selectedRegion["country_fullname"]}"
                   items: regionList.map((dynamic value) {
                     return DropdownMenuItem<String>(
                       value: value[

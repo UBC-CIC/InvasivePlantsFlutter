@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
 import 'plant_info_from_category_invasive_page.dart';
 import 'camera_page.dart';
@@ -15,6 +17,7 @@ import 'settings_page.dart';
 import 'wiki_webscrape.dart';
 import 'location_function.dart';
 import 'lib.dart';
+import 'package:flutter_app/log_in_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,12 +31,13 @@ class _HomePageState extends State<HomePage> {
 
   ///
   /// STORAGE Variables
-  List<dynamic> regionList = [];  // List of regions in the server
-  var selectedRegion = {}; // Currently selected region 
-                            // Default, select based on the current regiont or the first region of the regionList[]
-                            // Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
-  late List<dynamic> speciesData = [];  // List of species available from the server
-  
+  List<dynamic> regionList = []; // List of regions in the server
+  var selectedRegion = {}; // Currently selected region
+  // Default, select based on the current regiont or the first region of the regionList[]
+  // Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
+  late List<dynamic> speciesData =
+      []; // List of species available from the server
+
   ///
   /// OPERATIONAL Variables
   int? nextOffset; // Track the next offset of pagination
@@ -50,56 +54,64 @@ class _HomePageState extends State<HomePage> {
 
     // Get all data from region
     getAllRegions().then((value) => {
-      // Select region based on current location
-      getRegionFromCurrentLocation().then((value) => {
-        if(selectedRegion.keys.isEmpty && regionList.length > 0){
-          // Select first element in the array as selected region
-          selectedRegion = regionList[0]
-        } else {
-          ///
-          /// ERROR CASE
-          /// Need to find a wait to throw errors
-        }
-      })
-    });
+          // Select region based on current location
+          getRegionFromCurrentLocation().then((value) => {
+                if (selectedRegion.keys.isEmpty && regionList.isNotEmpty)
+                  {
+                    // Select first element in the array as selected region
+                    selectedRegion = regionList[0]
+                  }
+                else
+                  {
+                    ///
+                    /// ERROR CASE
+                    /// Need to find a wait to throw errors
+                  }
+              })
+        });
 
     // Get all species from server
     fetchDataIfNeeded();
-    
+
     // Testing Functions
     // webscrapeWikipedia("nymphaea odorata");
     getCurrentProvince();
-
   }
 
   // Get region based on current location
-  Future<void> getRegionFromCurrentLocation() async{
+  Future<void> getRegionFromCurrentLocation() async {
     // Get current locaiton
-    Map<String, dynamic> currRegion  = await getCurrentProvince();
+    Map<String, dynamic> currRegion = await getCurrentProvince();
 
-    if(currRegion["isError"]){
+    if (currRegion["isError"]) {
       throw currRegion["errorMsg"];
     }
 
     // Make API request
     var configuration = getConfiguration();
     String? apiKey = configuration["apiKey"];
-    String? region_code_name = currRegion["regionCode"];
+    String? regionCodeName = currRegion["regionCode"];
     String country = currRegion["countryFullname"];
 
-    if(apiKey != null && apiKey.isNotEmpty && region_code_name != null && region_code_name.isNotEmpty){
+    if (apiKey != null &&
+        apiKey.isNotEmpty &&
+        regionCodeName != null &&
+        regionCodeName.isNotEmpty) {
       String? baseUrl = configuration["apiBaseUrl"];
-      String endpoint = 'region?region_code_name=${region_code_name}';
+      String endpoint = 'region?region_code_name=$regionCodeName';
       String apiUrl = '$baseUrl$endpoint';
 
       Uri req = Uri.parse(apiUrl);
       final response = await http.get(req, headers: {'x-api-key': apiKey});
-      
+
       var resDecode = jsonDecode(response.body);
 
       // Check if the country is correct
-      for(int i = 0; i < resDecode["regions"].length; i++){
-        if(resDecode["regions"][i]["country_fullname"].toString().toLowerCase() == country.toLowerCase()){
+      for (int i = 0; i < resDecode["regions"].length; i++) {
+        if (resDecode["regions"][i]["country_fullname"]
+                .toString()
+                .toLowerCase() ==
+            country.toLowerCase()) {
           setState(() {
             selectedRegion = resDecode["regions"][i];
           });
@@ -112,19 +124,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Get call regions from server
-  Future<void> getAllRegions() async{
+  Future<void> getAllRegions() async {
     // Make API request
     var configuration = getConfiguration();
     String? apiKey = configuration["apiKey"];
 
-    if(apiKey != null && apiKey.isNotEmpty){
+    if (apiKey != null && apiKey.isNotEmpty) {
       String? baseUrl = configuration["apiBaseUrl"];
       String endpoint = 'region';
       String apiUrl = '$baseUrl$endpoint';
 
       Uri req = Uri.parse(apiUrl);
       final response = await http.get(req, headers: {'x-api-key': apiKey});
-      
+
       var resDecode = jsonDecode(response.body);
 
       setState(() {
@@ -147,7 +159,8 @@ class _HomePageState extends State<HomePage> {
     if (fileInfo == null ||
         DateTime.now().difference(lastFetchTime!) >
             const Duration(minutes: 0)) {
-      isMoreData = await fetchData(cacheKey); // Fetch the initial page without last_species_id
+      isMoreData = await fetchData(
+          cacheKey); // Fetch the initial page without last_species_id
       lastFetchTime = DateTime.now();
     } else {
       String response = await fileInfo.file.readAsString();
@@ -160,7 +173,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     // Fetch subsequent pages
-    while(isMoreData){
+    while (isMoreData) {
       isMoreData = await fetchData(cacheKey);
     }
   }
@@ -179,14 +192,16 @@ class _HomePageState extends State<HomePage> {
     }
 
     String? apiKey = configuration["apiKey"];
-    if(apiKey != null && apiKey.isNotEmpty){
-      final response = await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+    if (apiKey != null && apiKey.isNotEmpty) {
+      final response =
+          await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        
+
         // Check if incoming nextOffset is same as current nextOffset
-        if(jsonResponse["nextOffset"] == nextOffset || jsonResponse["species"].length < pageSize){
+        if (jsonResponse["nextOffset"] == nextOffset ||
+            jsonResponse["species"].length < pageSize) {
           returnValue = false;
         }
 
@@ -238,6 +253,203 @@ class _HomePageState extends State<HomePage> {
     return formattedName;
   }
 
+  Future<void> _showUserProfile() async {
+    bool isSignedIn = await isUserSignedIn();
+
+    if (isSignedIn) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Actions:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    await signOutCurrentUser();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(milliseconds: 2000),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        content: const Text('Signed out'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const LogInPage()),
+                    );
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 3,
+                    child: const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Sign Out',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Icon(
+                            Icons.exit_to_app,
+                            color: Colors.blue,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () async {
+                    bool deleteConfirmed =
+                        await showConfirmationDialog(context);
+                    if (deleteConfirmed) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(milliseconds: 2000),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          content: const Text('User Deleted'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const LogInPage()),
+                      );
+                    }
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 3,
+                    color: Colors.red,
+                    child: const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Delete User',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const LogInPage()),
+      );
+    }
+  }
+
+  Future<bool> showConfirmationDialog(BuildContext context) async {
+    bool? deleteConfirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Are you sure?',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'This will delete your user permanently. You cannot undo this action.',
+            style: TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                await deleteUser();
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Yes, Delete it',
+                  style: TextStyle(
+                      color: Colors.red, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
+
+    return deleteConfirmed ?? false; // Return false if deleteConfirmed is null
+  }
+
+  Future<bool> isUserSignedIn() async {
+    try {
+      final result = await Amplify.Auth.fetchAuthSession();
+      return result.isSignedIn;
+    } catch (e) {
+      print('Error checking auth session: $e');
+      return false;
+    }
+  }
+
+  Future<void> signOutCurrentUser() async {
+    final result = await Amplify.Auth.signOut();
+    if (result is CognitoCompleteSignOut) {
+      safePrint('Sign out completed successfully');
+    } else if (result is CognitoFailedSignOut) {
+      safePrint('Error signing user out: ${result.exception.message}');
+    }
+  }
+
+  Future<void> deleteUser() async {
+    try {
+      await Amplify.Auth.deleteUser();
+      print('user deleted');
+      safePrint('Delete user succeeded');
+    } on AuthException catch (e) {
+      safePrint('Delete user failed with error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -251,14 +463,7 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
           child: GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsPage(
-                    profileImagePath: 'assets/images/profile.png',
-                  ),
-                ),
-              );
+              _showUserProfile();
             },
             child: Image.asset(
               'assets/images/profile.png',
@@ -296,20 +501,23 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 5),
               DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: selectedRegion["region_fullname"], //, ${selectedRegion["country_fullname"]}"
+                  value: selectedRegion[
+                      "region_fullname"], //, ${selectedRegion["country_fullname"]}"
                   items: regionList.map((dynamic value) {
                     return DropdownMenuItem<String>(
-                      value: value["region_fullname"],//"${value["region_fullname"]}, ${value["country_fullname"]}",
-                      child: Text(value["region_fullname"]), //Text("${value["region_fullname"]}, ${value["country_fullname"]}"),
+                      value: value[
+                          "region_fullname"], //"${value["region_fullname"]}, ${value["country_fullname"]}",
+                      child: Text(value[
+                          "region_fullname"]), //Text("${value["region_fullname"]}, ${value["country_fullname"]}"),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(
-                      () {                        
+                      () {
                         // Update currently selected
-                        if(newValue != null && newValue.isNotEmpty){
-                          for(int i = 0; i < regionList.length; i++){
-                            if(regionList[i]["region_fullname"] == newValue){
+                        if (newValue != null && newValue.isNotEmpty) {
+                          for (int i = 0; i < regionList.length; i++) {
+                            if (regionList[i]["region_fullname"] == newValue) {
                               selectedRegion = regionList[i];
                               break;
                             }
@@ -448,7 +656,7 @@ class _HomePageState extends State<HomePage> {
     List<dynamic> filteredSpecies = [];
     if (speciesData.isNotEmpty) {
       final regionId = selectedRegion["region_id"].toString();
-      if(regionId != Null){
+      if (regionId != Null) {
         filteredSpecies = getSpeciesByRegion(regionId);
       }
     }

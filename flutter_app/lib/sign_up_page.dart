@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/home_page.dart';
@@ -6,7 +10,6 @@ import 'package:flutter_app/settings_page.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'amplifyconfiguration.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -28,61 +31,6 @@ class _SignUpPageState extends State<SignUpPage> {
   String? _passwordError;
   String? _confirmPasswordError;
 
-  String username = "visal.saosuo@gmail.com";
-  String password = "Liger72724";
-
-  Future<void> signInUser(String username, String password) async {
-    try {
-      final result = await Amplify.Auth.signIn(
-        username: username,
-        password: password,
-      );
-      await _handleSignInResult(result);
-    } on AuthException catch (e) {
-      safePrint('Error signing in: ${e.message}');
-    }
-  }
-
-  Future<void> _handleSignInResult(SignInResult result) async {
-    switch (result.nextStep.signInStep) {
-      case AuthSignInStep.confirmSignInWithSmsMfaCode:
-        final codeDeliveryDetails = result.nextStep.codeDeliveryDetails!;
-        _handleCodeDelivery(codeDeliveryDetails);
-        break;
-      case AuthSignInStep.confirmSignInWithNewPassword:
-        safePrint('Enter a new password to continue signing in');
-        break;
-      case AuthSignInStep.confirmSignInWithCustomChallenge:
-        final parameters = result.nextStep.additionalInfo;
-        final prompt = parameters['prompt']!;
-        safePrint(prompt);
-        break;
-      // case AuthSignInStep.resetPassword:
-      //   final resetResult = await Amplify.Auth.resetPassword(
-      //     username: username,
-      //   );
-      //   await _handleResetPasswordResult(resetResult);
-      //   break;
-      case AuthSignInStep.confirmSignUp:
-        // Resend the sign up code to the registered device.
-        final resendResult = await Amplify.Auth.resendSignUpCode(
-          username: username,
-        );
-        _handleCodeDelivery(resendResult.codeDeliveryDetails);
-        break;
-      case AuthSignInStep.done:
-        debugPrint('Sign in is complete');
-        break;
-    }
-  }
-
-  void _handleCodeDelivery(AuthCodeDeliveryDetails codeDeliveryDetails) {
-    safePrint(
-      'A confirmation code has been sent to ${codeDeliveryDetails.destination}. '
-      'Please check your ${codeDeliveryDetails.deliveryMedium.name} for the code.',
-    );
-  }
-
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
@@ -95,28 +43,212 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _validateFields() {
-    setState(() {
-      _emailError = _emailController.text.isEmpty
-          ? "Please enter an email"
-          : !_emailController.text.contains('@') ||
-                  (!_emailController.text.contains('.com') &&
-                      !_emailController.text.contains('.ca'))
-              ? "Please enter a valid email"
-              : null;
+  bool validateFields() {
+    _emailError = _emailController.text.isEmpty
+        ? "Please enter an email"
+        : !_emailController.text.contains('@') ||
+                (!_emailController.text.contains('.com') &&
+                    !_emailController.text.contains('.ca'))
+            ? "Please enter a valid email"
+            : null;
 
-      _passwordError = _passwordController.text.isEmpty
-          ? "Please enter a password"
-          : _passwordController.text.length < 8
-              ? "Make sure your password is at least 8 characters"
-              : null;
+    _passwordError = _passwordController.text.isEmpty
+        ? "Please enter a password"
+        : _passwordController.text.length < 8
+            ? "Make sure it's at least 8 characters"
+            : !_passwordController.text.contains(RegExp(r'[A-Z]'))
+                ? "Make sure it contains at least one capital letter"
+                : !_passwordController.text.contains(RegExp(r'[0-9]'))
+                    ? "Make sure it contains at least one number"
+                    : null;
 
-      _confirmPasswordError = _passwordController.text.isEmpty
-          ? "Please confirm your password"
-          : _passwordController.text != _confirmPasswordController.text
-              ? "Your password doesn't match"
-              : null;
-    });
+    _confirmPasswordError = _confirmPasswordController.text.isEmpty
+        ? "Please confirm your password"
+        : _passwordController.text != _confirmPasswordController.text
+            ? "Your passwords don't match"
+            : null;
+
+    // Return true if all fields are valid, otherwise return false
+    return _emailError == null &&
+        _passwordError == null &&
+        _confirmPasswordError == null;
+  }
+
+  /// Signs a user up with a username and email.
+  Future<void> signUpUser({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final userAttributes = {
+        AuthUserAttributeKey.email: email,
+      };
+      final result = await Amplify.Auth.signUp(
+        username: email,
+        password: password,
+        options: SignUpOptions(
+          userAttributes: userAttributes,
+        ),
+      );
+      await _handleSignUpResult(result);
+    } on AuthException catch (e) {
+      safePrint('Error signing up user: ${e.message}');
+    }
+  }
+
+  Future<void> _handleSignUpResult(SignUpResult result) async {
+    switch (result.nextStep.signUpStep) {
+      case AuthSignUpStep.confirmSignUp:
+        final codeDeliveryDetails = result.nextStep.codeDeliveryDetails!;
+        await _showCodeDeliveryDialog(codeDeliveryDetails);
+        break;
+      case AuthSignUpStep.done:
+        Navigator.of(context).pop();
+        await _showRegistrationSuccessSnackBar();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LogInPage()),
+        );
+        break;
+    }
+  }
+
+  Future<void> confirmUser({
+    required String username,
+    required String confirmationCode,
+  }) async {
+    try {
+      final result = await Amplify.Auth.confirmSignUp(
+        username: username,
+        confirmationCode: confirmationCode,
+      );
+      await _handleSignUpResult(result);
+    } on AuthException catch (e) {
+      rethrow; // Propagate exception for handling in _showConfirmationCodeDialog
+    }
+  }
+
+  Future<void> _showCodeDeliveryDialog(
+      AuthCodeDeliveryDetails codeDeliveryDetails) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Next Step:'),
+          content: Text(
+            'A confirmation code has been sent to ${codeDeliveryDetails.destination}. '
+            'Please check your ${codeDeliveryDetails.deliveryMedium.name} for the code.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _showConfirmationCodeDialog();
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showConfirmationCodeDialog() async {
+    String confirmationCode = '';
+    bool invalidCode = false;
+
+    while (!invalidCode) {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Enter Code:'),
+            content: TextField(
+              onChanged: (value) {
+                confirmationCode = value;
+              },
+              decoration: const InputDecoration(hintText: 'Confirmation Code'),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  if (confirmationCode.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(milliseconds: 1000),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        content: const Text('Please enter your code'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else {
+                    try {
+                      await confirmUser(
+                        username: _emailController.text,
+                        confirmationCode: confirmationCode,
+                      );
+                      invalidCode = true; // Set flag to exit loop on success
+                    } on AuthException {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(milliseconds: 1000),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          content: const Text('Invalid code. Please re-enter.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      // Stay in the dialog for re-entering code
+                    }
+                  }
+                },
+                child: const Text(
+                  'OK',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _showRegistrationSuccessSnackBar() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(milliseconds: 4000),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        content: const Text('Registration Success! Please log in.'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  Future<void> signOutCurrentUser() async {
+    final result = await Amplify.Auth.signOut();
+    if (result is CognitoCompleteSignOut) {
+      safePrint('Sign out completed successfully');
+    } else if (result is CognitoFailedSignOut) {
+      safePrint('Error signing user out: ${result.exception.message}');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    signOutCurrentUser();
   }
 
   @override
@@ -137,18 +269,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'SIGN UP',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const SettingsPage(
-                  profileImagePath: 'assets/images/profile.png',
-                ),
-              ),
-            );
-          },
-        ),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
@@ -168,7 +289,7 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 20),
               _buildPasswordTextFieldWithLabel(
                 "Create a Password",
-                hintText: "Must be at least 8 characters",
+                hintText: "At least 8 characters long",
                 obscureText: _obscurePassword,
                 toggleVisibility: _togglePasswordVisibility,
                 errorText: _passwordError,
@@ -186,8 +307,13 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
-                  _validateFields();
-                  signInUser(username, password);
+                  setState(() {
+                    if (validateFields()) {
+                      String email = _emailController.text;
+                      String password = _passwordController.text;
+                      signUpUser(email: email, password: password);
+                    }
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 5,
@@ -217,7 +343,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: [
                   const Expanded(child: Divider()),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await signOutCurrentUser();
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -322,14 +450,6 @@ class _SignUpPageState extends State<SignUpPage> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildLogoButton(String imagePath) {
-    return SizedBox(
-      width: 50,
-      height: 50,
-      child: Image.asset(imagePath),
     );
   }
 }

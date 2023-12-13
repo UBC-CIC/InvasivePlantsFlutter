@@ -1,9 +1,13 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/category_info_page.dart';
+import 'package:flutter_app/log_in_page.dart';
 import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
 import 'plant_list_notifier.dart';
+
+import 'package:amplify_flutter/amplify_flutter.dart';
 
 class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};
@@ -72,8 +76,149 @@ class MyPlantsPage extends StatefulWidget {
 }
 
 class _MyPlantsPageState extends State<MyPlantsPage> {
+  bool isSignedIn = false; // Add a boolean to track user sign-in status
+
+  @override
+  void initState() {
+    super.initState();
+    checkUserSignIn(); // Call a method to check user sign-in status on page load
+  }
+
+  Future<void> checkUserSignIn() async {
+    bool signedIn = await isUserSignedIn();
+    setState(() {
+      isSignedIn = signedIn; // Update the sign-in status
+    });
+  }
+
+  Future<bool> isUserSignedIn() async {
+    final result = await Amplify.Auth.fetchAuthSession();
+    return result.isSignedIn;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!isSignedIn) {
+      return Scaffold(
+        extendBody: true,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: const Text(
+            'MY PLANTS',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: Center(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'To create lists of plants,\n',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 23,
+                        ),
+                      ),
+                      const TextSpan(
+                        text: 'please ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 23,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Log In',
+                        style: const TextStyle(
+                          color: Colors.lightBlue,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LogInPage(),
+                              ),
+                            );
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 110),
+          ],
+        ),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(30), topLeft: Radius.circular(37)),
+            boxShadow: [
+              BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
+            child: BottomNavigationBar(
+              selectedFontSize: 0.0,
+              unselectedFontSize: 0.0,
+              backgroundColor: Colors.white,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.home_rounded,
+                    size: 40,
+                    color: Color.fromARGB(255, 118, 118, 118),
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.camera_alt_outlined, size: 40),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.bookmark,
+                    size: 40,
+                    color: Colors.blue,
+                  ),
+                  label: '',
+                ),
+              ],
+              onTap: (int index) {
+                if (index == 0) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                  );
+                } else if (index == 1) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CameraPage(),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        ),
+      );
+    }
     final plantDetailsNotifier = Provider.of<PlantDetailsNotifier>(context);
 
     String imageUrl = plantDetailsNotifier.imageUrl;
@@ -175,7 +320,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                             text: 'Click ',
                             style: TextStyle(
                               color: Colors.grey,
-                              fontSize: 20,
+                              fontSize: 23,
                             ),
                           ),
                           TextSpan(
@@ -189,7 +334,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                             text: ' to create a list of plants',
                             style: TextStyle(
                               color: Colors.grey,
-                              fontSize: 20,
+                              fontSize: 23,
                             ),
                           ),
                         ],
@@ -350,6 +495,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
               },
             ),
           ),
+          const SizedBox(height: 110)
         ],
       ),
       bottomNavigationBar: Container(

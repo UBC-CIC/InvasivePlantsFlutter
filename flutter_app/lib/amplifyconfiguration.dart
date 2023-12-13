@@ -1,11 +1,4 @@
-import 'lib.dart';
-
-var configuration = getConfiguration();
-String? poolId = configuration["cognitoPoolId"];
-String? clientId = configuration["cognitAppClientId"];
-String? region = configuration["cognitoRegion"];
-
-var amplifyconfig = ''' {
+const amplifyconfig = ''' {
   "UserAgent": "aws-amplify-cli/2.0",
   "Version": "1.0",
   "auth": {
@@ -16,9 +9,9 @@ var amplifyconfig = ''' {
         },
         "CognitoUserPool": {
           "Default": {
-            "PoolId": $poolId,                                           
-            "AppClientId": $clientId,                          
-            "Region": $region                                              
+            "PoolId": "[COGNITO USER POOL ID]",
+            "AppClientId": "[COGNITO USER POOL APP CLIENT ID]",
+            "Region": "[REGION]"
           }
         },
         "Auth": {

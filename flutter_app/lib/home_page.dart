@@ -512,7 +512,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 5),
               DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: formatRegionName(selectedRegion["region_fullname"]), //, ${selectedRegion["country_fullname"]}"
+                  value: selectedRegion["region_fullname"], //, ${selectedRegion["country_fullname"]}"
                   items: regionList.map((dynamic value) {
                     return DropdownMenuItem<String>(
                       value: value[

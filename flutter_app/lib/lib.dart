@@ -21,6 +21,6 @@ Map<String, String> getConfiguration() {
     "apiKey": apiKey,
     "cognitoRegion": cognitoRegion,
     "cognitoPoolId": cognitoPoolId,
-    "cognitAppClientId": cognitoAppClientId
+    "cognitoAppClientId": cognitoAppClientId
   };
 }

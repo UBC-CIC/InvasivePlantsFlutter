@@ -56,20 +56,25 @@ class _MyAppState extends State<MyApp> {
       final amplifyConfigString = jsonDecode(amplifyconfig);
       var configuration = getConfiguration();
       String? poolId = configuration["cognitoPoolId"];
-      String? clientId = configuration["cognitAppClientId"];
+      String? clientId = configuration["cognitoAppClientId"];
       String? region = configuration["cognitoRegion"];
+    
+      
 
-      amplifyConfigString["auth"]["plugins"]["CognitoUserPool"]["Default"]
-          ["PoolId"] = poolId;
-      amplifyConfigString["auth"]["plugins"]["CognitoUserPool"]["Default"]
-          ["AppClientId"] = clientId;
-      amplifyConfigString["auth"]["plugins"]["CognitoUserPool"]["Default"]
-          ["Region"] = region;
+      if(amplifyConfigString != null && poolId != null && clientId != null && region != null){
+        // amplifyConfigString.auth.plugins.awsCognitoAuthPlugin.CognitoUserPool.Default.PoolId = poolId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]["CognitoUserPool"]["Default"]["PoolId"] = poolId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]["CognitoUserPool"]["Default"]["AppClientId"] = clientId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]["CognitoUserPool"]["Default"]["Region"] = region;
 
-      var configString = json.encode(amplifyConfigString);
-      print(configString);
+        var configString = json.encode(amplifyConfigString);
+        print(configString);
 
-      await Amplify.configure(json.encode(amplifyConfigString));
+        await Amplify.configure(json.encode(amplifyConfigString));
+      } else {
+        throw Exception("Authentication failed.");
+      }
+      
     } on Exception catch (e) {
       safePrint('An error occurred configuring Amplify: $e');
     }

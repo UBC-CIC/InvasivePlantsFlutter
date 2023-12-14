@@ -18,10 +18,12 @@ import 'wiki_webscrape.dart';
 import 'location_function.dart';
 import 'lib.dart';
 import 'package:flutter_app/log_in_page.dart';
+import 'global_variables.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
+  const HomePage({
+    super.key
+  });
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -32,7 +34,8 @@ class _HomePageState extends State<HomePage> {
   ///
   /// STORAGE Variables
   List<dynamic> regionList = []; // List of regions in the server
-  var selectedRegion = {}; // Currently selected region
+  // var selectedRegion = selectedRegion;
+  // var selectedRegion = {}; // Currently selected region
   // Default, select based on the current regiont or the first region of the regionList[]
   // Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
   late List<dynamic> speciesData =
@@ -253,15 +256,12 @@ class _HomePageState extends State<HomePage> {
     return formattedName;
   }
 
-  String formatRegionName(String? regionName){
-    if(regionName != null){
-      String formattedName = regionName.replaceAll('_', ' '); // Replace underscore with space
-      formattedName.split(' ').map((word) {
-        return word[0].toUpperCase() + word.substring(1).toLowerCase();
-      }).join(' '); 
-      return formattedName;
-    }
-    return "";
+  String formatRegionName(String regionName){
+    String? formattedName = regionName.replaceAll('_', ' '); // Replace underscore with space
+    formattedName = formattedName.split(' ').map((word) {
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' '); 
+    return formattedName;
   }
 
   Future<void> _showUserProfile() async {
@@ -511,14 +511,13 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(width: 5),
               DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedRegion["region_fullname"], //, ${selectedRegion["country_fullname"]}"
+                child: selectedRegion != null && selectedRegion["region_fullname"] != null
+                ? DropdownButton<String>(
+                  value: formatRegionName(selectedRegion["region_fullname"]!),
                   items: regionList.map((dynamic value) {
                     return DropdownMenuItem<String>(
-                      value: value[
-                          "region_fullname"], //"${value["region_fullname"]}, ${value["country_fullname"]}",
-                      child: Text(value[
-                          "region_fullname"]), //Text("${value["region_fullname"]}, ${value["country_fullname"]}"),
+                      value: formatRegionName(value["region_fullname"]!),
+                      child: Text(formatRegionName(value["region_fullname"]!)),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -527,7 +526,7 @@ class _HomePageState extends State<HomePage> {
                         // Update currently selected
                         if (newValue != null && newValue.isNotEmpty) {
                           for (int i = 0; i < regionList.length; i++) {
-                            if (regionList[i]["region_fullname"] == newValue) {
+                            if (formatRegionName(regionList[i]["region_fullname"]!) == newValue) {
                               selectedRegion = regionList[i];
                               break;
                             }
@@ -536,7 +535,7 @@ class _HomePageState extends State<HomePage> {
                       },
                     );
                   },
-                ),
+                ): Text('No region selected'),
               ),
             ],
           ),

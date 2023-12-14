@@ -60,12 +60,25 @@ paths:
       operationId: region_GET
       parameters:
         - in: query
-          name: last_region_id
+          name: curr_offset
           required: false
-          description: the latest region_id of the latest recieved page, default is just the first page
+          description: the offset of the first region in the page from the first one
+          schema: 
+            type: integer
+            format: uuid
+        - in: query
+          name: rows_per_page
+          required: false
+          description: the number of user selected rows per page
           schema: 
             type: string
             format: uuid
+        - in: query
+          name: region_code_name
+          required: false
+          description: search parameter for region fullname
+          schema: 
+            type: string
       responses:
         "200": 
           description: Data Available
@@ -77,6 +90,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error
+      security:        
+        - ApiKeyAuth: []
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
@@ -99,6 +114,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error    
+      security:
+          - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all        
       x-amazon-apigateway-integration:
         uri:
@@ -135,7 +152,9 @@ paths:
         "429":
           description: Too Many Requests
         "500":
-          description: Internal Server Error             
+          description: Internal Server Error 
+      security:        
+        - ApiKeyAuth: []            
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
@@ -165,6 +184,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -207,6 +228,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambRegion.Arn}/invocations"
@@ -236,11 +259,11 @@ paths:
             type: string
             format: uuid
         - in: query
-          name: last_species_id
+          name: curr_offset
           required: false
-          description: the latest species_id of the latest recieved page, default is just the first page
+          description: the offset of the first species in the page from the first one
           schema: 
-            type: string
+            type: integer
             format: uuid
       responses:
         "200": 
@@ -253,6 +276,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error 
+      security:        
+        - ApiKeyAuth: []
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
@@ -275,6 +300,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+          - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -290,35 +317,6 @@ paths:
               $ref: '#/components/schemas/InvasiveSpecies'
   /invasiveSpecies/{species_id}:
     <<: *commonOptions
-    get: 
-      tags:
-        - Invasive Species
-      summary: Get an invasive species beased on species_id
-      description: This will return invasive species of a species_id and its corresponding alternative species
-      operationId: invasiveSpecies_speciesID_GET
-      parameters:
-        - in: path
-          name: species_id
-          required: true
-          schema: 
-            type: string
-      responses:
-        "200": 
-          description: Data Available
-        "400":
-          description: Bad Request
-        "401":
-          description: Unauthorized
-        "429":
-          description: Too Many Requests
-        "500":
-          description: Internal Server Error             
-      x-amazon-apigateway-integration:
-        uri:
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
-        passthroughBehavior: "when_no_match"
-        httpMethod: "POST"
-        type: "aws_proxy"
     put: 
       tags:
         - Invasive Species
@@ -342,6 +340,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -385,6 +385,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambInvasiveSpecies.Arn}/invocations"
@@ -406,11 +408,11 @@ paths:
           schema: 
             type: string
         - in: query
-          name: last_species_id
+          name: curr_offset
           required: false
-          description: the latest species_id of the latest recieved page, default is just the first page
+          description: the offset of the first species in the page from the first one
           schema: 
-            type: string
+            type: integer
             format: uuid
       responses:
         "200": 
@@ -423,6 +425,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error 
+      security:        
+        - ApiKeyAuth: []
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
@@ -445,6 +449,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -460,34 +466,6 @@ paths:
               $ref: '#/components/schemas/AlternativeSpecies'
   /alternativeSpecies/{species_id}:
     <<: *commonOptions
-    get: 
-      tags:
-        - Alternative Species
-      summary: Get an alternative species beased on species_id
-      operationId: alternativeSpecies_speciesID_GET
-      parameters:
-        - in: path
-          name: species_id
-          required: true
-          schema: 
-            type: string
-      responses:
-        "200": 
-          description: Data Available
-        "400":
-          description: Bad Request
-        "401":
-          description: Unauthorized
-        "429":
-          description: Too Many Requests
-        "500":
-          description: Internal Server Error             
-      x-amazon-apigateway-integration:
-        uri:
-          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
-        passthroughBehavior: "when_no_match"
-        httpMethod: "POST"
-        type: "aws_proxy"
     put: 
       tags:
         - Alternative Species
@@ -510,6 +488,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -553,6 +533,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambAlternativeSpecies.Arn}/invocations"
@@ -577,6 +559,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error
+      security:        
+        - ApiKeyAuth: []
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambImages.Arn}/invocations"
@@ -588,6 +572,17 @@ paths:
         - Images
       summary: Add an image
       operationId: images_POST
+      parameters:
+        - in: query
+          name: contentType
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: filename
+          required: false
+          schema: 
+            type: string
       responses:
         "200": 
           description: Data Available
@@ -599,6 +594,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error    
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-request-validator: all        
       x-amazon-apigateway-integration:
         uri:
@@ -637,6 +634,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - adminAuthorizer: [] 
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambImages.Arn}/invocations"
@@ -660,7 +659,9 @@ paths:
         "429":
           description: Too Many Requests
         "500":
-          description: Internal Server Error             
+          description: Internal Server Error  
+      security:        
+        - userAuthorizer: [] 
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
@@ -683,6 +684,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - userAuthorizer: []    
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -719,7 +722,9 @@ paths:
         "429":
           description: Too Many Requests
         "500":
-          description: Internal Server Error             
+          description: Internal Server Error       
+      security:
+        - userAuthorizer: []    
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
@@ -748,6 +753,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - userAuthorizer: []
       x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
@@ -783,6 +790,8 @@ paths:
           description: Too Many Requests
         "500":
           description: Internal Server Error             
+      security:
+        - userAuthorizer: []    
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IntegLambSaveList.Arn}/invocations"
@@ -825,6 +834,31 @@ paths:
         httpMethod: "POST"
         type: "aws_proxy"
 components:
+  securitySchemes:
+    adminAuthorizer:
+      type: "apiKey"
+      name: "Authorization"   # The header name where the token is provided
+      in: "header"
+      x-amazon-apigateway-authtype: "custom"
+      x-amazon-apigateway-authorizer:
+        type: token
+        authorizerUri: 
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${adminLambdaAuthorizer.Arn}/invocations"
+        identitySource: method.request.header.Authorization
+    userAuthorizer:
+      type: "apiKey"
+      name: "Authorization"   # The header name where the token is provided
+      in: "header"
+      x-amazon-apigateway-authtype: "custom"
+      x-amazon-apigateway-authorizer:
+        type: token
+        authorizerUri: 
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${userLambdaAuthorizer.Arn}/invocations"
+        identitySource: method.request.header.Authorization
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
   responses:
     Success:
       description: Request success

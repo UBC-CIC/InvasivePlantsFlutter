@@ -49,6 +49,8 @@ class _MyAppState extends State<MyApp> {
     _configureAmplify();
   }
 
+  String nameParameter = "Hello World";
+
   Future<void> _configureAmplify() async {
     try {
       final auth = AmplifyAuthCognito();
@@ -100,7 +102,7 @@ class _MyAppState extends State<MyApp> {
               listId: '',
             ),
         '/plantInfoFromCategory': (context) => const PlantInfoFromCategoryPage(
-              speciesObject: {},
+              speciesObject: {}
             ),
         '/camera': (context) => const CameraPage(),
         '/plantIdentification': (context) => const PlantIdentificationPage(

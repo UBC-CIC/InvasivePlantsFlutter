@@ -243,7 +243,7 @@ class _LogInPageState extends State<LogInPage> {
                   const Expanded(child: Divider()),
                   TextButton(
                     onPressed: () async {
-                      await signOutCurrentUser();
+                      // await signOutCurrentUser();
 
                       Navigator.push(
                         context,

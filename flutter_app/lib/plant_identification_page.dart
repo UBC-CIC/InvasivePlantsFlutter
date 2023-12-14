@@ -103,12 +103,17 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               firstResultCommonName,
               plantNetImageUrl,
               invasiveRegion,
-              lowerCaseScientificName;
+              lowerCaseScientificName,
+              accuracyScoreString;
+          double? accuracyScoreRaw;
 
           if (result.containsKey('results') &&
               result['results'] is List &&
               result['results'].isNotEmpty) {
             firstResult = result['results'][0];
+
+            accuracyScoreRaw = firstResult['score'] * 100;
+            accuracyScoreString = '${accuracyScoreRaw?.toStringAsFixed(0)}%';
 
             firstResultScientificName =
                 result['results'][0]['species']['scientificNameWithoutAuthor'];
@@ -138,33 +143,32 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               final apiUrl =
                   'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod/invasiveSpecies?scientific_name=$lowerCaseScientificName';
 
-
               // Get configurations
               var configuration = getConfiguration();
               String? apiKey = configuration["apiKey"];
               String? baseUrl = configuration["apiBaseUrl"];
 
-              if( lowerCaseScientificName != null && 
-                  lowerCaseScientificName.isNotEmpty && 
+              if (lowerCaseScientificName != null &&
+                  lowerCaseScientificName.isNotEmpty &&
                   selectedRegion["region_id"] != null &&
-                  apiKey != null && 
-                  apiKey.isNotEmpty){
-
+                  apiKey != null &&
+                  apiKey.isNotEmpty) {
                 // Make API request
-                String endpoint = 'invasiveSpecies?scientific_name=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
+                String endpoint =
+                    'invasiveSpecies?scientific_name=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
                 String apiUrl = '$baseUrl$endpoint';
                 // Make the GET request
-                var getResponse = await http.get(Uri.parse(apiUrl), headers: {
-                  'x-api-key': apiKey
-                });
+                var getResponse = await http
+                    .get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
 
                 if (getResponse.statusCode == 200) {
                   // Parse the response body
                   var parsedResponse = json.decode(getResponse.body);
-                  
-                  // 
+
+                  //
                   var matchingInvasiveSpecies = parsedResponse["species"][0]; //
-                  var invasiveRegionId = parsedResponse["species"][0]['region_id'][0];
+                  var invasiveRegionId =
+                      parsedResponse["species"][0]['region_id'][0];
 
                   if (invasiveRegionId ==
                       '7ae91c1e-3444-42b9-83a9-c0d9e25d1981') {
@@ -174,7 +178,8 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                     invasiveRegion = 'Ontario';
                   }
 
-                  debugPrint("matchingInvasiveSpecies: $matchingInvasiveSpecies");
+                  debugPrint(
+                      "matchingInvasiveSpecies: $matchingInvasiveSpecies");
                   debugPrint("firstResultCommonName: $firstResultCommonName");
                   debugPrint("invasiveRegionId: $invasiveRegion");
                   debugPrint("plantNetImageUrl: $plantNetImageUrl");
@@ -182,11 +187,11 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => PlantInfoFromCategoryInvasivePage(
-                        speciesObject: matchingInvasiveSpecies,
-                        commonName: firstResultCommonName,
-                        regionId: invasiveRegion,
-                        plantNetImageURL: plantNetImageUrl,
-                      ),
+                          speciesObject: matchingInvasiveSpecies,
+                          commonName: firstResultCommonName,
+                          regionId: invasiveRegion,
+                          plantNetImageURL: plantNetImageUrl,
+                          accuracyScoreString: accuracyScoreString),
                     ),
                   );
                   // Navigator.of(context).push(
@@ -203,8 +208,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                       'GET Request failed with status: ${getResponse.statusCode}');
                 }
               }
-
-              
             } catch (e) {
               debugPrint('Exception during GET request: $e');
               debugPrint(firstResultCommonName);
@@ -213,10 +216,10 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) => APIResultPage(
-                          commonName: firstResultCommonName,
-                          scientificName: firstResultScientificName,
-                          imageUrl: plantNetImageUrl,
-                        )),
+                        commonName: firstResultCommonName,
+                        scientificName: firstResultScientificName,
+                        imageUrl: plantNetImageUrl,
+                        accuracyScoreString: accuracyScoreString)),
               );
             }
           }

@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 
 class APIResultPage extends StatefulWidget {
-  final String? commonName, scientificName, imageUrl;
+  final String? commonName, scientificName, imageUrl, accuracyScoreString;
 
   const APIResultPage(
-      {super.key, this.commonName, this.scientificName, this.imageUrl});
+      {super.key,
+      this.commonName,
+      this.scientificName,
+      this.imageUrl,
+      this.accuracyScoreString});
 
   @override
   _APIResultPageState createState() => _APIResultPageState();
@@ -101,17 +105,57 @@ class _APIResultPageState extends State<APIResultPage>
             onTap: () {
               _showImageFullScreenDialog();
             },
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(widget.imageUrl!),
-                  fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                Container(
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(widget.imageUrl!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  height: MediaQuery.of(context).size.height / 2.5,
+                  width: double.infinity,
                 ),
-              ),
-              height: MediaQuery.of(context).size.height / 2.5,
-              width: double.infinity,
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.35),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    margin: const EdgeInsets.fromLTRB(115, 5, 115, 10),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Accuracy: ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            widget.accuracyScoreString!,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(

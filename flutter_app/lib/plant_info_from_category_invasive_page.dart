@@ -298,7 +298,7 @@ class _PlantInfoFromCategoryInvasivePageState
                               if (resourceLinks.isNotEmpty)
                                 Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                                      const EdgeInsets.fromLTRB(15, 10, 15, 0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
@@ -307,7 +307,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                         'For more info:',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18),
+                                            fontSize: 16),
                                       ),
                                       // Generate list of clickable URLs
                                       ...resourceLinks.map(
@@ -525,7 +525,8 @@ class _PlantInfoFromCategoryInvasivePageState
                                                     },
                                                     child: Padding(
                                                       padding: const EdgeInsets
-                                                          .fromLTRB(5, 5, 5, 5),
+                                                          .fromLTRB(
+                                                          0, 10, 5, 5),
                                                       child: ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
@@ -553,7 +554,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const SizedBox(height: 20),
+                                          const SizedBox(height: 10),
                                           const Text(
                                             'Link',
                                             style: TextStyle(

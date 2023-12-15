@@ -58,7 +58,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
 
     super.build(context);
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => true,
       child: Scaffold(
         extendBody: true,
         backgroundColor: Colors.white,

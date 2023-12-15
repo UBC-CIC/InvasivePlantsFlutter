@@ -34,30 +34,6 @@ class _PlantInfoFromCategoryInvasivePageState
   late Map<String, Object> wikiInfo;
   String firstImage = '';
 
-  @override
-  void initState() {
-    super.initState();
-    fetchData(); // Fetch data when the page initializes
-  }
-
-  // Function to fetch data from webscrapeWikipedia
-  Future<void> fetchData() async {
-    wikiInfo =
-        await webscrapeWikipedia(widget.speciesObject['scientific_name'][0]);
-
-    // Extract the first image URL if available
-    if (wikiInfo.containsKey('speciesImages') &&
-        (wikiInfo['speciesImages'] as List).isNotEmpty) {
-      final speciesImages = wikiInfo['speciesImages'] as List?;
-
-      if (speciesImages != null) {
-        firstImage = speciesImages[0];
-      }
-    }
-
-    setState(() {});
-  }
-
   String formatSpeciesName(String speciesName) {
     String formattedName =
         speciesName.replaceAll('_', ' '); // Replace underscore with space
@@ -144,47 +120,148 @@ class _PlantInfoFromCategoryInvasivePageState
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              widget.plantNetImageURL != null || firstImage != ''
-                  ? showDialog(
-                      context: context,
-                      builder: (_) => Dialog(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: widget.plantNetImageURL != null
-                              ? Image.network(
-                                  widget.plantNetImageURL!,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.network(
-                                  firstImage,
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                    )
-                  : print(1);
+              if (widget.plantNetImageURL != null || firstImage != '') {
+                showDialog(
+                  context: context,
+                  builder: (_) => Dialog(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: widget.plantNetImageURL != null
+                          ? Image.network(
+                              widget.plantNetImageURL!,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              firstImage,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                );
+              }
             },
             child: Stack(
               children: [
-                Container(
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: widget.plantNetImageURL != null
-                        ? DecorationImage(
-                            image: NetworkImage(widget.plantNetImageURL!),
-                            fit: BoxFit.cover,
-                          )
-                        : DecorationImage(
-                            image: NetworkImage(firstImage),
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                  height: MediaQuery.of(context).size.height / 2.5,
-                  width: double.infinity,
-                ),
+                widget.plantNetImageURL != null
+                    ? Container(
+                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NetworkImage(widget.plantNetImageURL!),
+                              fit: BoxFit.cover,
+                            )),
+                        height: MediaQuery.of(context).size.height / 2.5,
+                        width: double.infinity,
+                      )
+                    : FutureBuilder<Map<String, Object>>(
+                        future: webscrapeWikipedia(scientificName),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                                height:
+                                    MediaQuery.of(context).size.height / 2.5,
+                                width: double.infinity,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Retrieving image...',
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    CircularProgressIndicator(),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                                height:
+                                    MediaQuery.of(context).size.height / 2.5,
+                                width: double.infinity,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'No image is available',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return Center(
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                                height:
+                                    MediaQuery.of(context).size.height / 2.5,
+                                width: double.infinity,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'No image is available',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else {
+                            Map<String, Object> wikiInfo = snapshot.data!;
+                            if (wikiInfo['speciesImages'] != null &&
+                                (wikiInfo['speciesImages'] as List)
+                                    .isNotEmpty) {
+                              final speciesImages =
+                                  wikiInfo['speciesImages'] as List?;
+                              if (speciesImages != null &&
+                                  speciesImages.isNotEmpty) {
+                                firstImage = speciesImages[0];
+                                return Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(firstImage),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  height:
+                                      MediaQuery.of(context).size.height / 2.5,
+                                  width: double.infinity,
+                                );
+                              }
+                            }
+                            return Center(
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                                height:
+                                    MediaQuery.of(context).size.height / 2.5,
+                                width: double.infinity,
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'No image is available',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
                 Visibility(
                   visible: widget.accuracyScoreString != null,
                   child: Positioned(

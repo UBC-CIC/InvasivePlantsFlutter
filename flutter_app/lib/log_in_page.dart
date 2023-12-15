@@ -4,7 +4,6 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/home_page.dart';
-import 'package:flutter_app/settings_page.dart';
 import 'package:flutter_app/sign_up_page.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -18,6 +17,7 @@ class LogInPage extends StatefulWidget {
 
 class _LogInPageState extends State<LogInPage> {
   bool _obscurePassword = true;
+  bool isSignedIn = false;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -30,7 +30,7 @@ class _LogInPageState extends State<LogInPage> {
   @override
   void initState() {
     super.initState();
-    // signOutCurrentUser();
+    checkAuthStatus();
   }
 
   void _togglePasswordVisibility() {
@@ -76,8 +76,6 @@ class _LogInPageState extends State<LogInPage> {
         password: password,
       );
       await _handleSignInResult(result);
-      var user = await Amplify.Auth.getCurrentUser();
-      print("Something");
     } on AuthException catch (e) {
       _showErrorSnackBar('Invalid credentials. Please try again.');
     }
@@ -146,6 +144,23 @@ class _LogInPageState extends State<LogInPage> {
         backgroundColor: Colors.green,
       ),
     );
+  }
+
+  void checkAuthStatus() async {
+    try {
+      // Check if a user is already signed in
+      var currentUser = await Amplify.Auth.getCurrentUser();
+      setState(() {
+        isSignedIn = true;
+      });
+      // Navigate to the HomePage if the user is signed in
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } catch (e) {
+      print('Error checking authentication state: $e');
+    }
   }
 
   @override

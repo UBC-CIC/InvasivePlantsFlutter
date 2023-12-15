@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
@@ -31,30 +31,31 @@ class _PlantInfoFromCategoryInvasivePageState
   @override
   bool get wantKeepAlive => true;
   bool isBookmarked = false;
+  late Map<String, Object> wikiInfo;
+  String firstImage = '';
 
-  void _showImageFullScreenDialog(String imagePath) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Center(
-              child: widget.plantNetImageURL != null
-                  ? Image.network(
-                      widget.plantNetImageURL!,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.asset(
-                      imagePath,
-                      fit: BoxFit.cover,
-                    ),
-            ),
-          ),
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    fetchData(); // Fetch data when the page initializes
+  }
+
+  // Function to fetch data from webscrapeWikipedia
+  Future<void> fetchData() async {
+    wikiInfo =
+        await webscrapeWikipedia(widget.speciesObject['scientific_name'][0]);
+
+    // Extract the first image URL if available
+    if (wikiInfo.containsKey('speciesImages') &&
+        (wikiInfo['speciesImages'] as List).isNotEmpty) {
+      final speciesImages = wikiInfo['speciesImages'] as List?;
+
+      if (speciesImages != null) {
+        firstImage = speciesImages[0];
+      }
+    }
+
+    setState(() {});
   }
 
   String formatSpeciesName(String speciesName) {
@@ -78,7 +79,7 @@ class _PlantInfoFromCategoryInvasivePageState
     // Ensure UTF-8 decoding for the species description to remove special characters
     String speciesDescription = utf8.decode(
       widget.speciesObject['species_description'].codeUnits,
-    );
+    ); // Fetch data when the page initializes
 
     List<String> resourceLinks =
         List<String>.from(widget.speciesObject['resource_links'] ?? []);
@@ -143,9 +144,27 @@ class _PlantInfoFromCategoryInvasivePageState
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              _showImageFullScreenDialog(
-                'assets/images/scotchbroom3.jpeg',
-              );
+              widget.plantNetImageURL != null || firstImage != ''
+                  ? showDialog(
+                      context: context,
+                      builder: (_) => Dialog(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: widget.plantNetImageURL != null
+                              ? Image.network(
+                                  widget.plantNetImageURL!,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  firstImage,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                    )
+                  : print(1);
             },
             child: Stack(
               children: [
@@ -158,9 +177,8 @@ class _PlantInfoFromCategoryInvasivePageState
                             image: NetworkImage(widget.plantNetImageURL!),
                             fit: BoxFit.cover,
                           )
-                        : const DecorationImage(
-                            image:
-                                AssetImage('assets/images/scotchbroom3.jpeg'),
+                        : DecorationImage(
+                            image: NetworkImage(firstImage),
                             fit: BoxFit.cover,
                           ),
                   ),
@@ -246,7 +264,7 @@ class _PlantInfoFromCategoryInvasivePageState
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                                    const EdgeInsets.fromLTRB(10, 10, 10, 0),
                                 child: Text(
                                   widget.commonName == null
                                       ? formatSpeciesName(scientificName)

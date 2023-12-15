@@ -18,11 +18,47 @@ import 'lib.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
-void main() {
+void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // Ensure that the binding is initialized
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp]); // Lock to portrait mode
+
+  Future<void> configureAmplify() async {
+    try {
+      final auth = AmplifyAuthCognito();
+      await Amplify.addPlugin(auth);
+      final amplifyConfigString = jsonDecode(amplifyconfig);
+      var configuration = getConfiguration();
+      String? poolId = configuration["cognitoPoolId"];
+      String? clientId = configuration["cognitoAppClientId"];
+      String? region = configuration["cognitoRegion"];
+
+      if (amplifyConfigString != null &&
+          poolId != null &&
+          clientId != null &&
+          region != null) {
+        // amplifyConfigString.auth.plugins.awsCognitoAuthPlugin.CognitoUserPool.Default.PoolId = poolId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
+            ["CognitoUserPool"]["Default"]["PoolId"] = poolId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
+            ["CognitoUserPool"]["Default"]["AppClientId"] = clientId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
+            ["CognitoUserPool"]["Default"]["Region"] = region;
+
+        var configString = json.encode(amplifyConfigString);
+        print(configString);
+
+        await Amplify.configure(json.encode(amplifyConfigString));
+      } else {
+        throw Exception("Authentication failed.");
+      }
+    } on Exception catch (e) {
+      safePrint('An error occurred configuring Amplify: $e');
+    }
+  }
+
+  await configureAmplify(); // Configure Amplify before running the app
 
   runApp(
     MultiProvider(
@@ -46,40 +82,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _configureAmplify();
-  }
-
-  String nameParameter = "Hello World";
-
-  Future<void> _configureAmplify() async {
-    try {
-      final auth = AmplifyAuthCognito();
-      await Amplify.addPlugin(auth);
-      final amplifyConfigString = jsonDecode(amplifyconfig);
-      var configuration = getConfiguration();
-      String? poolId = configuration["cognitoPoolId"];
-      String? clientId = configuration["cognitoAppClientId"];
-      String? region = configuration["cognitoRegion"];
-    
-      
-
-      if(amplifyConfigString != null && poolId != null && clientId != null && region != null){
-        // amplifyConfigString.auth.plugins.awsCognitoAuthPlugin.CognitoUserPool.Default.PoolId = poolId;
-        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]["CognitoUserPool"]["Default"]["PoolId"] = poolId;
-        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]["CognitoUserPool"]["Default"]["AppClientId"] = clientId;
-        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]["CognitoUserPool"]["Default"]["Region"] = region;
-
-        var configString = json.encode(amplifyConfigString);
-        print(configString);
-
-        await Amplify.configure(json.encode(amplifyConfigString));
-      } else {
-        throw Exception("Authentication failed.");
-      }
-      
-    } on Exception catch (e) {
-      safePrint('An error occurred configuring Amplify: $e');
-    }
   }
 
   @override
@@ -101,9 +103,8 @@ class _MyAppState extends State<MyApp> {
               categoryTitle: '',
               listId: '',
             ),
-        '/plantInfoFromCategory': (context) => const PlantInfoFromCategoryPage(
-              speciesObject: {}
-            ),
+        '/plantInfoFromCategory': (context) =>
+            const PlantInfoFromCategoryPage(speciesObject: {}),
         '/camera': (context) => const CameraPage(),
         '/plantIdentification': (context) => const PlantIdentificationPage(
               imagePath: '',

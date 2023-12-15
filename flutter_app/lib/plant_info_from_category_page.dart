@@ -22,31 +22,6 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
   bool get wantKeepAlive => true;
   bool isBookmarked = false;
 
-  void _showImageFullScreenDialog(String imageUrl) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Center(
-              child: imageUrl.startsWith('https')
-                  ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.contain,
-                    )
-                  : Image.asset(
-                      imageUrl,
-                      fit: BoxFit.contain,
-                    ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   String formatSpeciesName(String speciesName) {
     String formattedName =
         speciesName.replaceAll('_', ' '); // Replace underscore with space
@@ -113,8 +88,24 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              _showImageFullScreenDialog(
-                imageUrl,
+              showDialog(
+                context: context,
+                builder: (_) => Dialog(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: imageUrl.startsWith('https')
+                        ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            imageUrl,
+                            fit: BoxFit.contain,
+                          ),
+                  ),
+                ),
               );
             },
             child: Container(

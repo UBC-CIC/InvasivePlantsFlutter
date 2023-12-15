@@ -25,26 +25,6 @@ class _APIResultPageState extends State<APIResultPage>
   bool get wantKeepAlive => true;
   bool isBookmarked = false;
 
-  void _showImageFullScreenDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Center(
-              child: Image.network(
-                widget.imageUrl!,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -105,7 +85,20 @@ class _APIResultPageState extends State<APIResultPage>
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              _showImageFullScreenDialog();
+              showDialog(
+                context: context,
+                builder: (_) => Dialog(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Image.network(
+                      widget.imageUrl!,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              );
             },
             child: Stack(
               children: [

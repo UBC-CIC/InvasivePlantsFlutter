@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'wiki_webscrape.dart';
 
 class APIResultPage extends StatefulWidget {
   final String? commonName, scientificName, imageUrl, accuracyScoreString;
@@ -174,22 +176,238 @@ class _APIResultPageState extends State<APIResultPage>
               style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
             ),
           ),
-          const Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    child: Text(
-                      "“Elephant ears” is the common name for a group of tropical perennial plants grown for their large, heart-shaped leaves. Most of these herbaceous species in the arum or aroid family (Araceae) that are offered as ornamentals belong to the genera Colocasia, Alocasia, and Xanthosoma, although there are others that have similar appearance and growth habits.\n\nThe first two genera are native to tropical southern Asia, Indonesia, Malaysia, New Guinea, parts of Australia, or the Pacific Islands, while Xanthosoma is native to tropical America. Many of the species have long been grown for the edible starchy corms or tubers as an important staple food in tropical regions.",
-                      style: TextStyle(fontSize: 18),
+          Expanded(
+            child: FutureBuilder<Map<String, Object>>(
+              future: webscrapeWikipedia(widget.scientificName!),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Gathering info...',
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 40,
+                      ),
+                    ],
+                  ));
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                      child: Text('No Wikipedia info available'));
+                } else {
+                  Map<String, Object> wikiInfo = snapshot.data!;
+                  // Display Wikipedia info
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Introduction',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(0, 0, 246, 0),
+                          child: Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          wikiInfo['overview'].toString(),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        // Display body if available
+                        if (wikiInfo['body'] != null &&
+                            wikiInfo['body'] is List &&
+                            (wikiInfo['body'] as List).isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 20),
+                              const Text(
+                                'Overview',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 274, 0),
+                                child: Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              ...List.generate(
+                                (wikiInfo['body'] as List).length,
+                                (index) {
+                                  final body = wikiInfo['body'] as List?;
+                                  if (body != null && index < body.length) {
+                                    final header = body[index]?['header'] ?? '';
+                                    final bodyContent =
+                                        body[index]?['body'] ?? '';
+
+                                    // Check if both header and body content are not empty
+                                    if (header.isNotEmpty &&
+                                        bodyContent.isNotEmpty) {
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '$header:',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            bodyContent,
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                          const SizedBox(height: 10),
+                                        ],
+                                      );
+                                    }
+                                  }
+                                  return const SizedBox(); // A placeholder or an empty widget
+                                },
+                              ),
+                            ],
+                          ),
+                        // Display speciesImages if available
+                        if (wikiInfo['speciesImages'] != null &&
+                            (wikiInfo['speciesImages'] as List).isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Images',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 294, 0),
+                                child: Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 150,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: (wikiInfo['speciesImages'] as List)
+                                      .length,
+                                  itemBuilder: (context, index) {
+                                    final speciesImages =
+                                        wikiInfo['speciesImages'] as List?;
+                                    if (speciesImages != null &&
+                                        index < speciesImages.length) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => Dialog(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Image.network(
+                                                  speciesImages[index],
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 10, 5, 5),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Image.network(
+                                              speciesImages[index],
+                                              width: 150,
+                                              height: 150,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        // Display wikiUrl as a clickable link
+                        if (wikiInfo['wikiUrl'] != null)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Link',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 321, 0),
+                                child: Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              GestureDetector(
+                                onTap: () async {
+                                  // Open Wikipedia link in the browser
+                                  String url = wikiInfo['wikiUrl'].toString();
+                                  if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else {
+                                    throw 'Could not launch $url';
+                                  }
+                                },
+                                child: Center(
+                                  child: Text(
+                                    wikiInfo['wikiUrl']!.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  )
-                ],
-              ),
+                  );
+                }
+              },
             ),
           ),
         ],

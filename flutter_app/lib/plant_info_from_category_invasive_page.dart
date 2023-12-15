@@ -37,6 +37,8 @@ class _PlantInfoFromCategoryInvasivePageState
   String formatSpeciesName(String speciesName) {
     String formattedName =
         speciesName.replaceAll('_', ' '); // Replace underscore with space
+    formattedName = formattedName.trim(); // Remove leading/trailing whitespace
+
     List<String> words = formattedName.split(' '); // Split into words
     if (words.isNotEmpty) {
       // Capitalize the first word and make the rest lowercase
@@ -820,6 +822,8 @@ class _PlantInfoFromCategoryInvasivePageState
                                                         formatSpeciesName(
                                                                 commonName)
                                                             .codeUnits),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     style: const TextStyle(
                                                       fontSize: 20,
                                                       fontWeight:
@@ -835,8 +839,10 @@ class _PlantInfoFromCategoryInvasivePageState
                                                               alternativeSpecies[
                                                                   'scientific_name'][0])
                                                           .codeUnits),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: const TextStyle(
-                                                        fontSize: 10,
+                                                        fontSize: 14,
                                                         color: Color.fromARGB(
                                                             255, 43, 75, 90),
                                                       ),

@@ -464,156 +464,160 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBody: true,
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        extendBody: true,
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-          child: GestureDetector(
-            onTap: () {
-              _showUserProfile();
-            },
-            child: Image.asset(
-              'assets/images/profile.png',
-              width: 24,
-              height: 24,
-            ),
-          ),
-        ),
-        title: const Text(
-          "Invasive Species",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-            child: CupertinoSearchTextField(
-              placeholder: 'Search',
-              onChanged: (value) {
-                setState(() {
-                  searchText = value;
-                });
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+            child: GestureDetector(
+              onTap: () {
+                _showUserProfile();
               },
+              child: Image.asset(
+                'assets/images/profile.png',
+                width: 24,
+                height: 24,
+              ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Icon(
-                Icons.location_on,
-                color: Colors.black,
+          title: const Text(
+            "Invasive Species",
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+              child: CupertinoSearchTextField(
+                placeholder: 'Search',
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value;
+                  });
+                },
               ),
-              const SizedBox(width: 5),
-              DropdownButtonHideUnderline(
-                child: selectedRegion["region_fullname"] != null
-                    ? DropdownButton<String>(
-                        value: formatRegionName(
-                            selectedRegion["region_fullname"]!),
-                        items: regionList.map((dynamic value) {
-                          return DropdownMenuItem<String>(
-                            value: formatRegionName(value["region_fullname"]!),
-                            child: Text(
-                                formatRegionName(value["region_fullname"]!)),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(
-                            () {
-                              // Update currently selected
-                              if (newValue != null && newValue.isNotEmpty) {
-                                for (int i = 0; i < regionList.length; i++) {
-                                  if (formatRegionName(
-                                          regionList[i]["region_fullname"]!) ==
-                                      newValue) {
-                                    selectedRegion = regionList[i];
-                                    break;
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Icon(
+                  Icons.location_on,
+                  color: Colors.black,
+                ),
+                const SizedBox(width: 5),
+                DropdownButtonHideUnderline(
+                  child: selectedRegion["region_fullname"] != null
+                      ? DropdownButton<String>(
+                          value: formatRegionName(
+                              selectedRegion["region_fullname"]!),
+                          items: regionList.map((dynamic value) {
+                            return DropdownMenuItem<String>(
+                              value:
+                                  formatRegionName(value["region_fullname"]!),
+                              child: Text(
+                                  formatRegionName(value["region_fullname"]!)),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(
+                              () {
+                                // Update currently selected
+                                if (newValue != null && newValue.isNotEmpty) {
+                                  for (int i = 0; i < regionList.length; i++) {
+                                    if (formatRegionName(regionList[i]
+                                            ["region_fullname"]!) ==
+                                        newValue) {
+                                      selectedRegion = regionList[i];
+                                      break;
+                                    }
                                   }
                                 }
-                              }
-                            },
-                          );
-                        },
-                      )
-                    : const Text('No region selected'),
-              ),
-            ],
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    children: _buildMatchingItems(),
-                  ),
+                              },
+                            );
+                          },
+                        )
+                      : const Text('No region selected'),
                 ),
-                const SizedBox(height: 10),
               ],
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-          boxShadow: [
-            BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
+            Expanded(
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      children: _buildMatchingItems(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          ),
-          child: BottomNavigationBar(
-            selectedFontSize: 0.0,
-            unselectedFontSize: 0.0,
-            backgroundColor: Colors.white,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded, size: 40),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.camera_alt_outlined, size: 40),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bookmark, size: 40),
-                label: '',
-              ),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+            boxShadow: [
+              BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
             ],
-            onTap: (int index) {
-              if (index == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CameraPage(),
-                  ),
-                );
-              } else if (index == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MyPlantsPage(),
-                  ),
-                );
-              }
-            },
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
+            child: BottomNavigationBar(
+              selectedFontSize: 0.0,
+              unselectedFontSize: 0.0,
+              backgroundColor: Colors.white,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_rounded, size: 40),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.camera_alt_outlined, size: 40),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.bookmark, size: 40),
+                  label: '',
+                ),
+              ],
+              onTap: (int index) {
+                if (index == 1) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CameraPage(),
+                    ),
+                  );
+                } else if (index == 2) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyPlantsPage(),
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),

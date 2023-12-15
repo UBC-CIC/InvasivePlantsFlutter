@@ -158,132 +158,135 @@ class _LogInPageState extends State<LogInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'LOG IN',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: const Text(
+            'LOG IN',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          automaticallyImplyLeading: false,
+          // leading: IconButton(
+          //   icon: const Icon(Icons.close, color: Colors.black),
+          //   onPressed: () {
+          //     Navigator.of(context).push(
+          //       MaterialPageRoute(
+          //         builder: (context) => const SettingsPage(
+          //           profileImagePath: 'assets/images/profile.png',
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
         ),
-        automaticallyImplyLeading: false,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.close, color: Colors.black),
-        //   onPressed: () {
-        //     Navigator.of(context).push(
-        //       MaterialPageRoute(
-        //         builder: (context) => const SettingsPage(
-        //           profileImagePath: 'assets/images/profile.png',
-        //         ),
-        //       ),
-        //     );
-        //   },
-        // ),
-      ),
-      body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildTextFieldWithLabel(
-                "Email",
-                errorText: _emailError,
-                controller: _emailController,
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordTextFieldWithLabel(
-                "Password",
-                obscureText: _obscurePassword,
-                toggleVisibility: _togglePasswordVisibility,
-                errorText: _passwordError,
-                controller: _passwordController,
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    bool isValid = _validateFields();
-                    if (isValid) {
-                      String username = _emailController.text;
-                      String password = _passwordController.text;
-                      signInUser(username, password);
-                    }
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+        body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Container(
+            color: Colors.white,
+            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildTextFieldWithLabel(
+                  "Email",
+                  errorText: _emailError,
+                  controller: _emailController,
                 ),
-                child: Container(
-                  height: 50,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: const Text(
-                    "Log In",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                const SizedBox(height: 20),
+                _buildPasswordTextFieldWithLabel(
+                  "Password",
+                  obscureText: _obscurePassword,
+                  toggleVisibility: _togglePasswordVisibility,
+                  errorText: _passwordError,
+                  controller: _passwordController,
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      bool isValid = _validateFields();
+                      if (isValid) {
+                        String username = _emailController.text;
+                        String password = _passwordController.text;
+                        signInUser(username, password);
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Expanded(child: Divider()),
-                  TextButton(
-                    onPressed: () async {
-                      // await signOutCurrentUser();
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                      );
-                    },
+                  child: Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                     child: const Text(
-                      "Continue as Guest",
+                      "Log In",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 10),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: "Don't have an account? ",
-                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextSpan(
-                      text: "Sign Up",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SignUpPage(),
-                            ),
-                          );
-                        },
+                    const Expanded(child: Divider()),
+                    TextButton(
+                      onPressed: () async {
+                        // await signOutCurrentUser();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Continue as Guest",
+                      ),
                     ),
+                    const Expanded(child: Divider()),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: "Don't have an account? ",
+                    style: const TextStyle(color: Colors.grey),
+                    children: [
+                      TextSpan(
+                        text: "Sign Up",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.blue),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignUpPage(),
+                              ),
+                            );
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

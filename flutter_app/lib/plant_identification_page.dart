@@ -312,130 +312,133 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: const Icon(Icons.clear, color: Colors.black),
-          onPressed: () {
-            dispose();
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const CameraPage(),
-              ),
-            );
-          },
-        ),
-        title: const Text(
-          'SELECT PLANT ORGAN',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          leading: IconButton(
+            icon: const Icon(Icons.clear, color: Colors.black),
+            onPressed: () {
+              dispose();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CameraPage(),
+                ),
+              );
+            },
+          ),
+          title: const Text(
+            'SELECT PLANT ORGAN',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          Column(
-            children: <Widget>[
-              Container(
-                height: 390,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+        body: Stack(
+          children: [
+            Column(
+              children: <Widget>[
+                Container(
+                  height: 390,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Image.file(
+                    File(widget.imagePath),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Image.file(
-                  File(widget.imagePath),
-                  fit: BoxFit.cover,
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.4,
+                  children: [
+                    _buildGridItem("LEAF", 'assets/images/leaf.png'),
+                    _buildGridItem("FLOWER", 'assets/images/flower.png'),
+                    _buildGridItem("FRUIT", 'assets/images/fruit.png'),
+                    _buildGridItem("BARK", 'assets/images/bark.png'),
+                  ],
                 ),
-              ),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                crossAxisCount: 2,
-                childAspectRatio: 1.4,
-                children: [
-                  _buildGridItem("LEAF", 'assets/images/leaf.png'),
-                  _buildGridItem("FLOWER", 'assets/images/flower.png'),
-                  _buildGridItem("FRUIT", 'assets/images/fruit.png'),
-                  _buildGridItem("BARK", 'assets/images/bark.png'),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Expanded(
-                  //   child: Container(
-                  //     margin: const EdgeInsets.fromLTRB(7, 2, 5, 4),
-                  //     child: ElevatedButton.icon(
-                  //       onPressed: () {
-                  //         _addImageAndOrganToParams();
-                  //       },
-                  //       icon: const Icon(Icons.add, color: Colors.black),
-                  //       label: const Text('Upload Another',
-                  //           style: TextStyle(color: Colors.black)),
-                  //       style: ElevatedButton.styleFrom(
-                  //         foregroundColor: Colors.black,
-                  //         backgroundColor: const Color.fromARGB(255, 221, 221, 221),
-                  //         shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(10.0),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(14, 0, 14, 4),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          _navigateToResultPage(context);
-                        },
-                        icon: const Icon(Icons.search, color: Colors.white),
-                        label: const Text('Find Matches',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isItemSelected
-                              ? Colors.green
-                              : const Color.fromARGB(255, 221, 221, 221),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Expanded(
+                    //   child: Container(
+                    //     margin: const EdgeInsets.fromLTRB(7, 2, 5, 4),
+                    //     child: ElevatedButton.icon(
+                    //       onPressed: () {
+                    //         _addImageAndOrganToParams();
+                    //       },
+                    //       icon: const Icon(Icons.add, color: Colors.black),
+                    //       label: const Text('Upload Another',
+                    //           style: TextStyle(color: Colors.black)),
+                    //       style: ElevatedButton.styleFrom(
+                    //         foregroundColor: Colors.black,
+                    //         backgroundColor: const Color.fromARGB(255, 221, 221, 221),
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(10.0),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(14, 0, 14, 4),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _navigateToResultPage(context);
+                          },
+                          icon: const Icon(Icons.search, color: Colors.white),
+                          label: const Text('Find Matches',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isItemSelected
+                                ? Colors.green
+                                : const Color.fromARGB(255, 221, 221, 221),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Identifying Species...',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    SizedBox(height: 20),
-                    CircularProgressIndicator(),
-                    SizedBox(height: 60),
                   ],
                 ),
-              ),
+              ],
             ),
-        ],
+            if (isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Identifying Species...',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      SizedBox(height: 20),
+                      CircularProgressIndicator(),
+                      SizedBox(height: 60),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

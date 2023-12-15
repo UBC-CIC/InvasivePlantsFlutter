@@ -99,121 +99,126 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
   @override
   Widget build(BuildContext context) {
     if (!isSignedIn) {
-      return Scaffold(
-        extendBody: true,
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
+      return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          extendBody: true,
           backgroundColor: Colors.white,
-          elevation: 0,
-          title: const Text(
-            'MY PLANTS',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: const Text(
+              'MY PLANTS',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: 'To create lists of plants,\n',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 23,
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'To create lists of plants,\n',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 23,
+                          ),
                         ),
-                      ),
-                      const TextSpan(
-                        text: 'please ',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 23,
+                        const TextSpan(
+                          text: 'please ',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 23,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: 'Log In',
-                        style: const TextStyle(
-                          color: Colors.lightBlue,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
+                        TextSpan(
+                          text: 'Log In',
+                          style: const TextStyle(
+                            color: Colors.lightBlue,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LogInPage(),
+                                ),
+                              );
+                            },
                         ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LogInPage(),
-                              ),
-                            );
-                          },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 110),
-          ],
-        ),
-        bottomNavigationBar: Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(30), topLeft: Radius.circular(37)),
-            boxShadow: [
-              BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
+              const SizedBox(height: 110),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              topRight: Radius.circular(30.0),
-            ),
-            child: BottomNavigationBar(
-              selectedFontSize: 0.0,
-              unselectedFontSize: 0.0,
-              backgroundColor: Colors.white,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.home_rounded,
-                    size: 40,
-                    color: Color.fromARGB(255, 118, 118, 118),
-                  ),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.camera_alt_outlined, size: 40),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.bookmark,
-                    size: 40,
-                    color: Colors.blue,
-                  ),
-                  label: '',
-                ),
+          bottomNavigationBar: Container(
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(30), topLeft: Radius.circular(37)),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black38, spreadRadius: 0, blurRadius: 10),
               ],
-              onTap: (int index) {
-                if (index == 0) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+            ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30.0),
+                topRight: Radius.circular(30.0),
+              ),
+              child: BottomNavigationBar(
+                selectedFontSize: 0.0,
+                unselectedFontSize: 0.0,
+                backgroundColor: Colors.white,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.home_rounded,
+                      size: 40,
+                      color: Color.fromARGB(255, 118, 118, 118),
                     ),
-                  );
-                } else if (index == 1) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CameraPage(),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.camera_alt_outlined, size: 40),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.bookmark,
+                      size: 40,
+                      color: Colors.blue,
                     ),
-                  );
-                }
-              },
+                    label: '',
+                  ),
+                ],
+                onTap: (int index) {
+                  if (index == 0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  } else if (index == 1) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CameraPage(),
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ),

@@ -167,42 +167,46 @@ class _PlantInfoFromCategoryInvasivePageState
                   height: MediaQuery.of(context).size.height / 2.5,
                   width: double.infinity,
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.35),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(20),
+                Visibility(
+                  visible: widget.accuracyScoreString != null,
+                  child: Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.35),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(20),
+                        ),
                       ),
-                    ),
-                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    margin: const EdgeInsets.fromLTRB(115, 5, 115, 10),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Accuracy: ',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            widget.accuracyScoreString!,
-                            style: const TextStyle(
+                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                      margin: const EdgeInsets.fromLTRB(115, 5, 115, 10),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Accuracy: ',
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                              ),
+                            ),
+                            Text(
+                              widget.accuracyScoreString ?? 'N/A',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           ),

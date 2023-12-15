@@ -410,7 +410,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                         CrossAxisAlignment.center,
                                     children: [
                                       const Text(
-                                        'For more info:',
+                                        'Source:',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16),
@@ -662,14 +662,14 @@ class _PlantInfoFromCategoryInvasivePageState
                                         children: [
                                           const SizedBox(height: 10),
                                           const Text(
-                                            'Link',
+                                            'Source',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           const Padding(
                                             padding: EdgeInsets.fromLTRB(
-                                                0, 0, 321, 0),
+                                                0, 0, 296, 0),
                                             child: Divider(
                                               height: 1,
                                               thickness: 1,

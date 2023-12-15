@@ -159,7 +159,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                            'For more info:',
+                            'Source:',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),

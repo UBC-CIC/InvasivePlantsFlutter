@@ -359,12 +359,12 @@ class _APIResultPageState extends State<APIResultPage>
                             children: [
                               const SizedBox(height: 10),
                               const Text(
-                                'Link',
+                                'Source',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               const Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 321, 0),
+                                padding: EdgeInsets.fromLTRB(0, 0, 296, 0),
                                 child: Divider(
                                   height: 1,
                                   thickness: 1,

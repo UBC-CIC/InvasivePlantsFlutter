@@ -261,130 +261,133 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'SIGN UP',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: const Text(
+            'SIGN UP',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          automaticallyImplyLeading: false,
         ),
-        automaticallyImplyLeading: false,
-      ),
-      body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildTextFieldWithLabel(
-                "Email",
-                hintText: "example@gmail.com",
-                errorText: _emailError,
-                controller: _emailController,
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordTextFieldWithLabel(
-                "Create a Password",
-                hintText: "At least 8 characters long",
-                obscureText: _obscurePassword,
-                toggleVisibility: _togglePasswordVisibility,
-                errorText: _passwordError,
-                controller: _passwordController,
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordTextFieldWithLabel(
-                "Confirm Password",
-                hintText: "Repeat password",
-                obscureText: _obscureConfirmPassword,
-                toggleVisibility: _toggleConfirmPasswordVisibility,
-                errorText: _confirmPasswordError,
-                controller: _confirmPasswordController,
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (validateFields()) {
-                      String email = _emailController.text;
-                      String password = _passwordController.text;
-                      signUpUser(email: email, password: password);
-                    }
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+        body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Container(
+            color: Colors.white,
+            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildTextFieldWithLabel(
+                  "Email",
+                  hintText: "example@gmail.com",
+                  errorText: _emailError,
+                  controller: _emailController,
                 ),
-                child: Container(
-                  height: 50,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                const SizedBox(height: 20),
+                _buildPasswordTextFieldWithLabel(
+                  "Create a Password",
+                  hintText: "At least 8 characters long",
+                  obscureText: _obscurePassword,
+                  toggleVisibility: _togglePasswordVisibility,
+                  errorText: _passwordError,
+                  controller: _passwordController,
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordTextFieldWithLabel(
+                  "Confirm Password",
+                  hintText: "Repeat password",
+                  obscureText: _obscureConfirmPassword,
+                  toggleVisibility: _toggleConfirmPasswordVisibility,
+                  errorText: _confirmPasswordError,
+                  controller: _confirmPasswordController,
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (validateFields()) {
+                        String email = _emailController.text;
+                        String password = _passwordController.text;
+                        signUpUser(email: email, password: password);
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Expanded(child: Divider()),
-                  TextButton(
-                    onPressed: () async {
-                      await signOutCurrentUser();
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                      );
-                    },
+                  child: Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                     child: const Text(
-                      "Continue as Guest",
+                      "Sign Up",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 10),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: "Already have an account? ",
-                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextSpan(
-                      text: "Log in",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LogInPage(),
-                            ),
-                          );
-                        },
+                    const Expanded(child: Divider()),
+                    TextButton(
+                      onPressed: () async {
+                        await signOutCurrentUser();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Continue as Guest",
+                      ),
                     ),
+                    const Expanded(child: Divider()),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: "Already have an account? ",
+                    style: const TextStyle(color: Colors.grey),
+                    children: [
+                      TextSpan(
+                        text: "Log in",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.blue),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LogInPage(),
+                              ),
+                            );
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

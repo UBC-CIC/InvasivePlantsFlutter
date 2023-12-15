@@ -109,7 +109,7 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _takePicture() async {
-    try{
+    try {
       if (!_controller!.value.isInitialized) {
         return;
       }
@@ -138,7 +138,8 @@ class _CameraPageState extends State<CameraPage> {
                 ],
               );
             });
-      } else if (cameraStatus.isPermanentlyDenied || microphoneStatus.isPermanentlyDenied) {
+      } else if (cameraStatus.isPermanentlyDenied ||
+          microphoneStatus.isPermanentlyDenied) {
         showDialog(
             context: context,
             builder: (context) {
@@ -157,64 +158,60 @@ class _CameraPageState extends State<CameraPage> {
               );
             });
       }
-    } catch(error){
-      throw("Error: not enough permission with camera and microphone.");
+    } catch (error) {
+      throw ("Error: not enough permission with camera and microphone.");
     }
   }
 
   Future<void> _selectImageFromGallery() async {
     final galleryStatus = await Permission.photos.status;
 
-    if (galleryStatus.isGranted || galleryStatus.isLimited){
+    if (galleryStatus.isGranted || galleryStatus.isLimited) {
       final XFile? image =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+          await ImagePicker().pickImage(source: ImageSource.gallery);
 
       if (image != null) {
         navigateToPlantIdentificationPage(image.path);
       }
     } else {
-      final statuses = await [
-        Permission.photos
-      ].request();
+      final statuses = await [Permission.photos].request();
 
       if (statuses[Permission.photos]!.isDenied) {
         showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Permission Denied"),
-              content: const Text(
-                  "Please enable camera, and gallery permissions in settings to use this feature."),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          }
-        );
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Permission Denied"),
+                content: const Text(
+                    "Please enable camera, and gallery permissions in settings to use this feature."),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
       } else if (statuses[Permission.photos]!.isPermanentlyDenied) {
         showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Permission Denied"),
-              content: const Text(
-                  "You have permanently denied camera, and gallery permissions. Please enable them in device settings to use this feature."),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("Open Settings"),
-                  onPressed: () {
-                    openAppSettings();
-                  },
-                ),
-              ],
-            );
-          }
-        );
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Permission Denied"),
+                content: const Text(
+                    "You have permanently denied camera, and gallery permissions. Please enable them in device settings to use this feature."),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("Open Settings"),
+                    onPressed: () {
+                      openAppSettings();
+                    },
+                  ),
+                ],
+              );
+            });
       }
     }
   }
@@ -234,57 +231,60 @@ class _CameraPageState extends State<CameraPage> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.clear, color: Colors.white),
-          onPressed: () {
-            dispose();
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
-            );
-          },
-        ),
-        title: const Text(
-          "Take A Photo",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.clear, color: Colors.white),
+            onPressed: () {
+              dispose();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                ),
+              );
+            },
           ),
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: CameraPreview(_controller!),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: _selectImageFromGallery,
-                  child: const Icon(Icons.image_outlined,
-                      color: Colors.white, size: 60),
-                ),
-                const SizedBox(
-                  width: 90,
-                ),
-                GestureDetector(
-                  onTap: _takePicture,
-                  child: const Icon(Icons.camera_alt_outlined,
-                      color: Colors.white, size: 60),
-                ),
-              ],
+          title: const Text(
+            "Take A Photo",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
+        ),
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: CameraPreview(_controller!),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 50),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: _selectImageFromGallery,
+                    child: const Icon(Icons.image_outlined,
+                        color: Colors.white, size: 60),
+                  ),
+                  const SizedBox(
+                    width: 90,
+                  ),
+                  GestureDetector(
+                    onTap: _takePicture,
+                    child: const Icon(Icons.camera_alt_outlined,
+                        color: Colors.white, size: 60),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

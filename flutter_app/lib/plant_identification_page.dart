@@ -103,12 +103,17 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               firstResultCommonName,
               plantNetImageUrl,
               invasiveRegion,
-              lowerCaseScientificName;
+              lowerCaseScientificName,
+              accuracyScoreString;
+          double? accuracyScoreRaw;
 
           if (result.containsKey('results') &&
               result['results'] is List &&
               result['results'].isNotEmpty) {
             firstResult = result['results'][0];
+
+            accuracyScoreRaw = firstResult['score'] * 100;
+            accuracyScoreString = '${accuracyScoreRaw?.toStringAsFixed(0)}%';
 
             firstResultScientificName =
                 result['results'][0]['species']['scientificNameWithoutAuthor'];
@@ -138,33 +143,32 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               final apiUrl =
                   'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod/invasiveSpecies?scientific_name=$lowerCaseScientificName';
 
-
               // Get configurations
               var configuration = getConfiguration();
               String? apiKey = configuration["apiKey"];
               String? baseUrl = configuration["apiBaseUrl"];
 
-              if( lowerCaseScientificName != null && 
-                  lowerCaseScientificName.isNotEmpty && 
+              if (lowerCaseScientificName != null &&
+                  lowerCaseScientificName.isNotEmpty &&
                   selectedRegion["region_id"] != null &&
-                  apiKey != null && 
-                  apiKey.isNotEmpty){
-
+                  apiKey != null &&
+                  apiKey.isNotEmpty) {
                 // Make API request
-                String endpoint = 'invasiveSpecies?scientific_name=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
+                String endpoint =
+                    'invasiveSpecies?scientific_name=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
                 String apiUrl = '$baseUrl$endpoint';
                 // Make the GET request
-                var getResponse = await http.get(Uri.parse(apiUrl), headers: {
-                  'x-api-key': apiKey
-                });
+                var getResponse = await http
+                    .get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
 
                 if (getResponse.statusCode == 200) {
                   // Parse the response body
                   var parsedResponse = json.decode(getResponse.body);
-                  
-                  // 
+
+                  //
                   var matchingInvasiveSpecies = parsedResponse["species"][0]; //
-                  var invasiveRegionId = parsedResponse["species"][0]['region_id'][0];
+                  var invasiveRegionId =
+                      parsedResponse["species"][0]['region_id'][0];
 
                   if (invasiveRegionId ==
                       '7ae91c1e-3444-42b9-83a9-c0d9e25d1981') {
@@ -174,7 +178,8 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                     invasiveRegion = 'Ontario';
                   }
 
-                  debugPrint("matchingInvasiveSpecies: $matchingInvasiveSpecies");
+                  debugPrint(
+                      "matchingInvasiveSpecies: $matchingInvasiveSpecies");
                   debugPrint("firstResultCommonName: $firstResultCommonName");
                   debugPrint("invasiveRegionId: $invasiveRegion");
                   debugPrint("plantNetImageUrl: $plantNetImageUrl");
@@ -182,11 +187,11 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => PlantInfoFromCategoryInvasivePage(
-                        speciesObject: matchingInvasiveSpecies,
-                        commonName: firstResultCommonName,
-                        regionId: invasiveRegion,
-                        plantNetImageURL: plantNetImageUrl,
-                      ),
+                          speciesObject: matchingInvasiveSpecies,
+                          commonName: firstResultCommonName,
+                          regionId: invasiveRegion,
+                          plantNetImageURL: plantNetImageUrl,
+                          accuracyScoreString: accuracyScoreString),
                     ),
                   );
                   // Navigator.of(context).push(
@@ -203,8 +208,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                       'GET Request failed with status: ${getResponse.statusCode}');
                 }
               }
-
-              
             } catch (e) {
               debugPrint('Exception during GET request: $e');
               debugPrint(firstResultCommonName);
@@ -213,10 +216,10 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) => APIResultPage(
-                          commonName: firstResultCommonName,
-                          scientificName: firstResultScientificName,
-                          imageUrl: plantNetImageUrl,
-                        )),
+                        commonName: firstResultCommonName,
+                        scientificName: firstResultScientificName,
+                        imageUrl: plantNetImageUrl,
+                        accuracyScoreString: accuracyScoreString)),
               );
             }
           }
@@ -309,130 +312,133 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: const Icon(Icons.clear, color: Colors.black),
-          onPressed: () {
-            dispose();
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const CameraPage(),
-              ),
-            );
-          },
-        ),
-        title: const Text(
-          'SELECT PLANT ORGAN',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          leading: IconButton(
+            icon: const Icon(Icons.clear, color: Colors.black),
+            onPressed: () {
+              dispose();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CameraPage(),
+                ),
+              );
+            },
+          ),
+          title: const Text(
+            'SELECT PLANT ORGAN',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          Column(
-            children: <Widget>[
-              Container(
-                height: 390,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+        body: Stack(
+          children: [
+            Column(
+              children: <Widget>[
+                Container(
+                  height: 390,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Image.file(
+                    File(widget.imagePath),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Image.file(
-                  File(widget.imagePath),
-                  fit: BoxFit.cover,
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.4,
+                  children: [
+                    _buildGridItem("LEAF", 'assets/images/leaf.png'),
+                    _buildGridItem("FLOWER", 'assets/images/flower.png'),
+                    _buildGridItem("FRUIT", 'assets/images/fruit.png'),
+                    _buildGridItem("BARK", 'assets/images/bark.png'),
+                  ],
                 ),
-              ),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                crossAxisCount: 2,
-                childAspectRatio: 1.4,
-                children: [
-                  _buildGridItem("LEAF", 'assets/images/leaf.png'),
-                  _buildGridItem("FLOWER", 'assets/images/flower.png'),
-                  _buildGridItem("FRUIT", 'assets/images/fruit.png'),
-                  _buildGridItem("BARK", 'assets/images/bark.png'),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Expanded(
-                  //   child: Container(
-                  //     margin: const EdgeInsets.fromLTRB(7, 2, 5, 4),
-                  //     child: ElevatedButton.icon(
-                  //       onPressed: () {
-                  //         _addImageAndOrganToParams();
-                  //       },
-                  //       icon: const Icon(Icons.add, color: Colors.black),
-                  //       label: const Text('Upload Another',
-                  //           style: TextStyle(color: Colors.black)),
-                  //       style: ElevatedButton.styleFrom(
-                  //         foregroundColor: Colors.black,
-                  //         backgroundColor: const Color.fromARGB(255, 221, 221, 221),
-                  //         shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(10.0),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(14, 0, 14, 4),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          _navigateToResultPage(context);
-                        },
-                        icon: const Icon(Icons.search, color: Colors.white),
-                        label: const Text('Find Matches',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isItemSelected
-                              ? Colors.green
-                              : const Color.fromARGB(255, 221, 221, 221),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Expanded(
+                    //   child: Container(
+                    //     margin: const EdgeInsets.fromLTRB(7, 2, 5, 4),
+                    //     child: ElevatedButton.icon(
+                    //       onPressed: () {
+                    //         _addImageAndOrganToParams();
+                    //       },
+                    //       icon: const Icon(Icons.add, color: Colors.black),
+                    //       label: const Text('Upload Another',
+                    //           style: TextStyle(color: Colors.black)),
+                    //       style: ElevatedButton.styleFrom(
+                    //         foregroundColor: Colors.black,
+                    //         backgroundColor: const Color.fromARGB(255, 221, 221, 221),
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(10.0),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(14, 0, 14, 4),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _navigateToResultPage(context);
+                          },
+                          icon: const Icon(Icons.search, color: Colors.white),
+                          label: const Text('Find Matches',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isItemSelected
+                                ? Colors.green
+                                : const Color.fromARGB(255, 221, 221, 221),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Identifying Species...',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    SizedBox(height: 20),
-                    CircularProgressIndicator(),
-                    SizedBox(height: 60),
                   ],
                 ),
-              ),
+              ],
             ),
-        ],
+            if (isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Identifying Species...',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      SizedBox(height: 20),
+                      CircularProgressIndicator(),
+                      SizedBox(height: 60),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

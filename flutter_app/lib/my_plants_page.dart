@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/category_info_page.dart';
@@ -6,17 +7,76 @@ import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
 import 'plant_list_notifier.dart';
+import 'lib.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};
 
-  void addNewList(String listName) {
+  Future<void> addNewList(String listName) async {
     final newListId = listName; // Create a unique ID for the list
     userLists[newListId] =
         PlantListNotifier(); // Initialize the PlantListNotifier
     notifyListeners();
+
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final body = jsonEncode({'list_name': newListId, 'saved_species': []});
+      final response = await http.post(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        var resDecode = jsonDecode(response.body);
+        print('Result: $resDecode');
+
+        // Extract and print the value of list_id
+        if (resDecode.containsKey('list_id')) {
+          var listIdValue = resDecode['list_id'];
+          print('List ID: $listIdValue');
+        } else {
+          print('list_id not found in the response');
+        }
+      } else {
+        print('Failed to send API request: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending API request: $e');
+    }
+  }
+
+  Future<String> _extractAccessToken() async {
+    final rawResult = await Amplify.Auth.fetchAuthSession();
+    final result = jsonDecode(rawResult.toString());
+    final userPoolTokens = result['userPoolTokens'];
+
+    try {
+      final accessToken = extractAccessToken(userPoolTokens);
+      return accessToken;
+    } catch (e) {
+      print('Error extracting access token: $e');
+    }
+    return "";
+  }
+
+  String extractAccessToken(String inputString) {
+    final accessTokenStart =
+        inputString.indexOf('"accessToken": "') + '"accessToken": "'.length;
+    final accessTokenEnd = inputString.indexOf('"', accessTokenStart);
+    return inputString.substring(accessTokenStart, accessTokenEnd);
   }
 
   void removeList(String listId) {

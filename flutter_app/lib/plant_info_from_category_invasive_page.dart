@@ -257,14 +257,19 @@ class _PlantInfoFromCategoryInvasivePageState
                                       fontSize: 20),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                child: Text(
-                                  formatSpeciesName(scientificName),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                              Visibility(
+                                visible: widget.commonName != null,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                  child: Text(
+                                    formatSpeciesName(scientificName),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w400,
-                                      fontSize: 15),
+                                      fontSize: 15,
+                                    ),
+                                  ),
                                 ),
                               ),
                               if (widget.regionId != null)

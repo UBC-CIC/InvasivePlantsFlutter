@@ -21,9 +21,7 @@ import 'package:flutter_app/log_in_page.dart';
 import 'global_variables.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({
-    super.key
-  });
+  const HomePage({super.key});
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -245,6 +243,8 @@ class _HomePageState extends State<HomePage> {
   String formatSpeciesName(String speciesName) {
     String formattedName =
         speciesName.replaceAll('_', ' '); // Replace underscore with space
+    formattedName = formattedName.trim(); // Remove leading/trailing whitespace
+
     List<String> words = formattedName.split(' '); // Split into words
     if (words.isNotEmpty) {
       // Capitalize the first word and make the rest lowercase
@@ -256,11 +256,12 @@ class _HomePageState extends State<HomePage> {
     return formattedName;
   }
 
-  String formatRegionName(String regionName){
-    String? formattedName = regionName.replaceAll('_', ' '); // Replace underscore with space
+  String formatRegionName(String regionName) {
+    String? formattedName =
+        regionName.replaceAll('_', ' '); // Replace underscore with space
     formattedName = formattedName.split(' ').map((word) {
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' '); 
+    }).join(' ');
     return formattedName;
   }
 
@@ -511,31 +512,36 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(width: 5),
               DropdownButtonHideUnderline(
-                child: selectedRegion != null && selectedRegion["region_fullname"] != null
-                ? DropdownButton<String>(
-                  value: formatRegionName(selectedRegion["region_fullname"]!),
-                  items: regionList.map((dynamic value) {
-                    return DropdownMenuItem<String>(
-                      value: formatRegionName(value["region_fullname"]!),
-                      child: Text(formatRegionName(value["region_fullname"]!)),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(
-                      () {
-                        // Update currently selected
-                        if (newValue != null && newValue.isNotEmpty) {
-                          for (int i = 0; i < regionList.length; i++) {
-                            if (formatRegionName(regionList[i]["region_fullname"]!) == newValue) {
-                              selectedRegion = regionList[i];
-                              break;
-                            }
-                          }
-                        }
-                      },
-                    );
-                  },
-                ): Text('No region selected'),
+                child: selectedRegion["region_fullname"] != null
+                    ? DropdownButton<String>(
+                        value: formatRegionName(
+                            selectedRegion["region_fullname"]!),
+                        items: regionList.map((dynamic value) {
+                          return DropdownMenuItem<String>(
+                            value: formatRegionName(value["region_fullname"]!),
+                            child: Text(
+                                formatRegionName(value["region_fullname"]!)),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(
+                            () {
+                              // Update currently selected
+                              if (newValue != null && newValue.isNotEmpty) {
+                                for (int i = 0; i < regionList.length; i++) {
+                                  if (formatRegionName(
+                                          regionList[i]["region_fullname"]!) ==
+                                      newValue) {
+                                    selectedRegion = regionList[i];
+                                    break;
+                                  }
+                                }
+                              }
+                            },
+                          );
+                        },
+                      )
+                    : const Text('No region selected'),
               ),
             ],
           ),

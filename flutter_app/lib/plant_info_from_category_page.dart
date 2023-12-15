@@ -25,6 +25,8 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
   String formatSpeciesName(String speciesName) {
     String formattedName =
         speciesName.replaceAll('_', ' '); // Replace underscore with space
+    formattedName = formattedName.trim(); // Remove leading/trailing whitespace
+
     List<String> words = formattedName.split(' '); // Split into words
     if (words.isNotEmpty) {
       // Capitalize the first word and make the rest lowercase

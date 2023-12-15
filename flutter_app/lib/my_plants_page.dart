@@ -322,9 +322,9 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                     return Center(
                       child: RichText(
                         textAlign: TextAlign.center,
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
-                            TextSpan(
+                            const TextSpan(
                               text: 'Click ',
                               style: TextStyle(
                                 color: Colors.grey,
@@ -333,12 +333,80 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                             ),
                             TextSpan(
                               text: '+',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.lightBlue,
                                 fontSize: 25,
                               ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      String newListName = '';
+                                      return AlertDialog(
+                                        title:
+                                            const Text('Enter Your List Name:'),
+                                        content: TextField(
+                                          onChanged: (text) {
+                                            newListName = text;
+                                          },
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text(
+                                              'Cancel',
+                                              style:
+                                                  TextStyle(color: Colors.grey),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              if (newListName.trim().isEmpty) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    duration: const Duration(
+                                                        milliseconds: 1000),
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    content: const Text(
+                                                        'Please enter a name'),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              } else {
+                                                final userListsNotifier =
+                                                    Provider.of<
+                                                            UserListsNotifier>(
+                                                        context,
+                                                        listen: false);
+                                                userListsNotifier
+                                                    .addNewList(newListName);
+                                                Navigator.of(context).pop();
+                                              }
+                                            },
+                                            child: const Text(
+                                              'Create',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: ' to create a list of plants',
                               style: TextStyle(
                                 color: Colors.grey,

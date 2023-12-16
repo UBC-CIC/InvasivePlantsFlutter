@@ -27,48 +27,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const pageSize = 20; // Number of species per page
-
-  ///
-  /// STORAGE Variables
-  List<dynamic> regionList = []; // List of regions in the server
-  // var selectedRegion = selectedRegion;
-  // var selectedRegion = {}; // Currently selected region
-  // Default, select based on the current regiont or the first region of the regionList[]
-  // Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
-  late List<dynamic> speciesData =
-      []; // List of species available from the server
+  static const pageSize = 20;   // Number of species per page
+  static const maxCacheDay = 3; // Number of day for each cache
 
   ///
   /// OPERATIONAL Variables
   int? nextOffset; // Track the next offset of pagination
   String searchText = '';
-  DateTime? lastFetchTime; // Track the last fetch time
-
-  late DefaultCacheManager _cacheManager;
+  late DefaultCacheManager _apiCache;
 
   @override
   void initState() {
     super.initState();
-    _cacheManager = DefaultCacheManager();
-    lastFetchTime = DateTime.now();
+    _apiCache = DefaultCacheManager();
 
     // Get all data from region
     getAllRegions().then((value) => {
           // Select region based on current location
-          getRegionFromCurrentLocation().then((value) => {
-                if (selectedRegion.keys.isEmpty && regionList.isNotEmpty)
-                  {
-                    // Select first element in the array as selected region
-                    selectedRegion = regionList[0]
-                  }
-                else
-                  {
-                    ///
-                    /// ERROR CASE
-                    /// Need to find a wait to throw errors
-                  }
-              })
+          if(selectedRegion.keys.isEmpty){
+            getRegionFromCurrentLocation().then((value) => {
+                  if (selectedRegion.keys.isEmpty && regionList.isNotEmpty)
+                    {
+                      // Select first element in the array as selected region
+                      selectedRegion = regionList[0]
+                    }
+                  else
+                    {
+                      ///
+                      /// ERROR CASE
+                      /// Need to find a wait to throw errors
+                    }
+                })
+          }
         });
 
     // Get all species from server
@@ -126,6 +116,9 @@ class _HomePageState extends State<HomePage> {
 
   // Get call regions from server
   Future<void> getAllRegions() async {
+    if(regionList.length > 0){
+      return ;
+    }
     // Make API request
     var configuration = getConfiguration();
     String? apiKey = configuration["apiKey"];
@@ -134,53 +127,59 @@ class _HomePageState extends State<HomePage> {
       String? baseUrl = configuration["apiBaseUrl"];
       String endpoint = 'region';
       String apiUrl = '$baseUrl$endpoint';
+      
+      String stringResponseBody;
+      bool isResponseWeb = false;
 
-      Uri req = Uri.parse(apiUrl);
-      final response = await http.get(req, headers: {'x-api-key': apiKey});
 
-      var resDecode = jsonDecode(response.body);
+      // Try reading data from cache
+      String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
+      FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+      if (file != null && file.file.existsSync()) {
+        stringResponseBody = await file.file.readAsString();
+      } 
+      // Cache missed, get result from the api
+      else{
+        final response = await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+        if (response.statusCode == 200) {
+          stringResponseBody = response.body;
+          isResponseWeb = true;
+        } else{
+          throw Exception('Failed to load data.');
+        }
+      }
+      
+      var resDecode = jsonDecode(stringResponseBody);
 
       setState(() {
         regionList = resDecode["regions"];
       });
+
+      // Save only if response come from api
+      if(isResponseWeb){
+        Directory tempDir = await getTemporaryDirectory();
+        String cachePath = '${tempDir.path}/cache_data.json';
+        File file = File(cachePath);
+        await file.writeAsString(stringResponseBody);
+
+        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(), maxAge: Duration(days: maxCacheDay));
+      }
     } else {
       throw ("Api key not found.");
     }
   }
 
   Future<void> fetchDataIfNeeded() async {
-    var configuration = getConfiguration();
-    String? baseUrl = configuration["apiBaseUrl"];
-    const endpoint = 'invasiveSpecies';
-    String cacheKey = '$baseUrl$endpoint';
-    bool isMoreData = true;
-
-    FileInfo? fileInfo = await _cacheManager.getFileFromCache(cacheKey);
-
-    if (fileInfo == null ||
-        DateTime.now().difference(lastFetchTime!) >
-            const Duration(minutes: 0)) {
-      isMoreData = await fetchData(
-          cacheKey); // Fetch the initial page without last_species_id
-      lastFetchTime = DateTime.now();
-    } else {
-      String response = await fileInfo.file.readAsString();
-      final jsonResponse = json.decode(response);
-      setState(() {
-        speciesData = jsonResponse["species"] as List<dynamic>;
-        nextOffset = jsonResponse["nextOffset"];
-      });
-      debugPrint('Cached file path: ${fileInfo.file.path}');
-    }
+    bool isMoreData = await fetchData(); // Fetch the initial page without last_species_id
 
     // Fetch subsequent pages
     while (isMoreData) {
-      isMoreData = await fetchData(cacheKey);
+      isMoreData = await fetchData();
     }
   }
 
   // Return true if more data is expected, else false
-  Future<bool> fetchData(String cacheKey) async {
+  Future<bool> fetchData() async {
     var configuration = getConfiguration();
     String? baseUrl = configuration["apiBaseUrl"];
     const endpoint = 'invasiveSpecies?rows_per_page=$pageSize';
@@ -194,38 +193,54 @@ class _HomePageState extends State<HomePage> {
 
     String? apiKey = configuration["apiKey"];
     if (apiKey != null && apiKey.isNotEmpty) {
-      final response =
-          await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+      var stringResponseBody;
+      bool isResponseWeb = false;
 
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+      // Try read data from cache first
+      String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
+      FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+      if (file != null && file.file.existsSync()) {
+        stringResponseBody = await file.file.readAsString();
+      } 
+      // Cache missed, get result from the api
+      else{
+        final response = await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+        if (response.statusCode == 200) {
+          stringResponseBody = response.body;
+          isResponseWeb = true;
+        } else{
+          throw Exception('Failed to load data.');
+        }
+      }
 
-        // Check if incoming nextOffset is same as current nextOffset
-        if (jsonResponse["nextOffset"] == nextOffset ||
-            jsonResponse["species"].length < pageSize) {
-          returnValue = false;
+      final jsonResponse = json.decode(stringResponseBody);
+
+      // Check if incoming nextOffset is same as current nextOffset
+      if (jsonResponse["nextOffset"] == nextOffset ||
+          jsonResponse["species"].length < pageSize) {
+        returnValue = false;
+      }
+
+      setState(() {
+        if (nextOffset != null) {
+          // Append fetched data to existing speciesData
+          speciesData.addAll(jsonResponse["species"] as List<dynamic>);
+        } else {
+          speciesData = jsonResponse["species"] as List<dynamic>;
         }
 
-        setState(() {
-          if (nextOffset != null) {
-            // Append fetched data to existing speciesData
-            speciesData.addAll(jsonResponse["species"] as List<dynamic>);
-          } else {
-            speciesData = jsonResponse["species"] as List<dynamic>;
-          }
+        // Get offset of next page, provided by esponse
+        nextOffset = jsonResponse["nextOffset"];
+      });
 
-          // Get offset of next page, provided by esponse
-          nextOffset = jsonResponse["nextOffset"];
-        });
-
+      // Save only if response come from api
+      if(isResponseWeb){
         Directory tempDir = await getTemporaryDirectory();
         String cachePath = '${tempDir.path}/cache_data.json';
         File file = File(cachePath);
-        await file.writeAsString(response.body);
+        await file.writeAsString(stringResponseBody);
 
-        _cacheManager.putFile(cacheKey, file.readAsBytesSync());
-      } else {
-        throw Exception('Failed to load data.');
+        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(), maxAge: Duration(days: maxCacheDay));
       }
 
       return returnValue;

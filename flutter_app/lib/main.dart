@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'package:flutter_app/sign_up_page.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'settings_page.dart';
@@ -82,6 +83,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    //  Debuging for caching
+    // DefaultCacheManager().emptyCache();
   }
 
   @override

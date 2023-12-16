@@ -74,9 +74,15 @@ paths:
             type: string
             format: uuid
         - in: query
-          name: region_code_name
+          name: region_fullname
           required: false
           description: search parameter for region fullname
+          schema: 
+            type: string
+        - in: query
+          name: region_code_name
+          required: false
+          description: search parameter for region code 
           schema: 
             type: string
       responses:

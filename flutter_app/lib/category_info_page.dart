@@ -87,18 +87,6 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                 },
                 icon: const Icon(Icons.arrow_back_ios),
               ),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.add, color: Colors.lightBlue),
-                    ),
-                  ),
-                ),
-              ],
             ),
             body: Consumer2<PlantDetailsNotifier, PlantListNotifier>(
               builder: (context, details, plantList, _) {

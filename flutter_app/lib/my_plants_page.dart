@@ -54,6 +54,7 @@ class UserListsNotifier extends ChangeNotifier {
           userLists[newListName] =
               newList; // Update userLists with new PlantListNotifier
           notifyListeners();
+          retrieveList();
         } else {
           print('list_id not found in the response');
         }
@@ -95,13 +96,11 @@ class UserListsNotifier extends ChangeNotifier {
     final accessToken = await _extractAccessToken();
 
     try {
-      final body = jsonEncode({'list_name': listName, 'saved_species': []});
       final response = await http.delete(
         req,
         headers: {
           'Authorization': accessToken,
         },
-        body: body,
       );
 
       if (response.statusCode == 200) {
@@ -113,6 +112,32 @@ class UserListsNotifier extends ChangeNotifier {
       }
     } catch (e) {
       print('Error sending DELETE request: $e');
+    }
+  }
+
+  Future<void> retrieveList() async {
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final response = await http.get(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print(response.body);
+      } else {
+        print('Failed to send GET request: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending GET request: $e');
     }
   }
 

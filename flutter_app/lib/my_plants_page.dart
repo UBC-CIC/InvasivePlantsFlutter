@@ -17,11 +17,7 @@ class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};
 
   Future<void> addNewList(String listName) async {
-    final newListId = listName; // Create a unique ID for the list
-    userLists[newListId] =
-        PlantListNotifier(); // Initialize the PlantListNotifier
-    notifyListeners();
-
+    final newListName = listName; // Create a unique ID for the list
     var configuration = getConfiguration();
     String? baseUrl = configuration["apiBaseUrl"];
     String endpoint = 'saveList';
@@ -30,7 +26,7 @@ class UserListsNotifier extends ChangeNotifier {
     final accessToken = await _extractAccessToken();
 
     try {
-      final body = jsonEncode({'list_name': newListId, 'saved_species': []});
+      final body = jsonEncode({'list_name': newListName, 'saved_species': []});
       final response = await http.post(
         req,
         headers: {
@@ -43,10 +39,21 @@ class UserListsNotifier extends ChangeNotifier {
         var resDecode = jsonDecode(response.body);
         print('Result: $resDecode');
 
-        // Extract and print the value of list_id
         if (resDecode.containsKey('list_id')) {
           var listIdValue = resDecode['list_id'];
           print('List ID: $listIdValue');
+
+          // Update the PlantListNotifier with list name and list_id
+          PlantListNotifier newList = PlantListNotifier();
+          newList
+              .setImageUrl('assets/images/leaf.png'); // Set default image URL
+          newList.setItemCount(0); // Set default item count
+          newList.listName = newListName; // Assign list name
+          newList.listId = listIdValue; // Assign list_id from response
+
+          userLists[newListName] =
+              newList; // Update userLists with new PlantListNotifier
+          notifyListeners();
         } else {
           print('list_id not found in the response');
         }
@@ -79,9 +86,34 @@ class UserListsNotifier extends ChangeNotifier {
     return inputString.substring(accessTokenStart, accessTokenEnd);
   }
 
-  void removeList(String listId) {
-    userLists.remove(listId);
-    notifyListeners();
+  Future<void> removeList(String listId, String listName) async {
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList/$listId'; // Endpoint with list_id
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final body = jsonEncode({'list_name': listName, 'saved_species': []});
+      final response = await http.delete(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        userLists.remove(listName); // Remove using listName as the key
+        notifyListeners();
+      } else {
+        print('Failed to send DELETE request: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending DELETE request: $e');
+    }
   }
 
   PlantListNotifier getOrCreateList(String listId) {
@@ -552,7 +584,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                   children: [
                                     const SizedBox(height: 10),
                                     Text(
-                                      listId,
+                                      plantListNotifier.listName,
                                       style: const TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
@@ -591,7 +623,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                         return AlertDialog(
                                           title: const Text('Delete List'),
                                           content: Text(
-                                            'Are you sure you want to delete $listId?',
+                                            'Are you sure you want to delete ${plantListNotifier.listName}?',
                                           ),
                                           actions: [
                                             TextButton(
@@ -602,8 +634,9 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                userListsNotifier
-                                                    .removeList(listId);
+                                                userListsNotifier.removeList(
+                                                    plantListNotifier.listId,
+                                                    plantListNotifier.listName);
                                                 Navigator.pop(context);
                                               },
                                               child: const Text(

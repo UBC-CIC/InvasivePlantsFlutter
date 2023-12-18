@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 
 class PlantListNotifier extends ChangeNotifier {
   late List<String> plants = List.generate(10, (index) => 'Plant ${index + 1}');
+  late String _imageUrl = 'assets/images/leaf.png';
+  late int _itemCount = 10;
+  late String listId; // Add listId property
+  late String listName; // Add listName property
+
+  // late String imageUrl = 'assets/images/leaf.png';
+  // late int itemCount = 10;
+  String get imageUrl => _imageUrl;
+  int get itemCount => _itemCount;
 
   void removePlant(int index) {
     if (index >= 0 && index < plants.length) {
@@ -10,16 +19,13 @@ class PlantListNotifier extends ChangeNotifier {
     }
   }
 
-  late String imageUrl = 'assets/images/leaf.png';
-  late int itemCount = 10;
-
   void setImageUrl(String newImageUrl) {
-    imageUrl = newImageUrl;
+    _imageUrl = newImageUrl;
     notifyListeners();
   }
 
   void setItemCount(int newItemCount) {
-    itemCount = newItemCount;
+    _itemCount = newItemCount;
     notifyListeners();
   }
 }

@@ -215,6 +215,8 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
       );
 
       if (response.statusCode == 200) {
+        userListsNotifier.userLists.clear();
+
         final List<dynamic> lists = jsonDecode(response.body);
 
         // Process the fetched lists and update PlantListNotifier
@@ -461,7 +463,11 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                       },
                     );
                   },
-                  icon: const Icon(Icons.add, color: Colors.lightBlue),
+                  icon: const Icon(
+                    Icons.add,
+                    color: Colors.lightBlue,
+                    size: 35,
+                  ),
                 ),
               ),
             ),

@@ -27,9 +27,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const pageSize = 20;   // Number of species per page
-  static const maxCacheDay = 3; // Number of day for each cache
-
+  
   ///
   /// OPERATIONAL Variables
   int? nextOffset; // Track the next offset of pagination

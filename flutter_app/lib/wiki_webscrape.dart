@@ -1,13 +1,30 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter_app/global_variables.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:path_provider/path_provider.dart';
 
 const String mediaWikiApiEndpoint_baseURL = 'en.wikipedia.org';
 const String mediaWikiApiEndpoint_path = '/w/api.php';
 
-Future<Map<String, Object>> webscrapeWikipedia(String scientificName) async {
+late DefaultCacheManager _apiCache = DefaultCacheManager();
+
+Future<Map<String, Object>> webscrapeWikipedia(String scicName) async {
+  String scientificName = scicName.toLowerCase();
+
+  // Try reading data from cache
+  FileInfo? file = await _apiCache.getFileFromCache(scientificName);
+  if (file != null && file.file.existsSync()) {
+    String stringResponseBody = await file.file.readAsString();
+    var objectRes = json.decode(stringResponseBody);
+    return objectRes.cast<String, Object>();
+  }
+
+  // Read data from Wiki API
   try {
     var params = {
       'action': 'query',
@@ -72,6 +89,14 @@ Future<Map<String, Object>> webscrapeWikipedia(String scientificName) async {
 			'speciesImages': imageInfo,
 			'wikiUrl': 'https://en.wikipedia.org/wiki/${Uri.encodeComponent(scientificName)}',
 		};
+
+    // Store data into cache
+    Directory tempDir = await getTemporaryDirectory();
+    String cachePath = '${tempDir.path}/cache_data.json';
+    File file = File(cachePath);
+    await file.writeAsString(jsonEncode(wikiInfo));
+
+    await _apiCache.putFile(scientificName, file.readAsBytesSync());
 
     // Return the final wikiInfo map
     return wikiInfo;

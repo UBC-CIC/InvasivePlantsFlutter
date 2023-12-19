@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/category_info_page.dart';
@@ -8,6 +8,7 @@ import 'home_page.dart';
 import 'package:provider/provider.dart';
 import 'plant_list_notifier.dart';
 import 'lib.dart';
+import 'global_variables.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -54,7 +55,6 @@ class UserListsNotifier extends ChangeNotifier {
           userLists[newListName] =
               newList; // Update userLists with new PlantListNotifier
           notifyListeners();
-          retrieveList();
         } else {
           print('list_id not found in the response');
         }
@@ -90,7 +90,7 @@ class UserListsNotifier extends ChangeNotifier {
   Future<void> removeList(String listId, String listName) async {
     var configuration = getConfiguration();
     String? baseUrl = configuration["apiBaseUrl"];
-    String endpoint = 'saveList/$listId'; // Endpoint with list_id
+    String endpoint = 'saveList/$listId';
     String apiUrl = '$baseUrl$endpoint';
     Uri req = Uri.parse(apiUrl);
     final accessToken = await _extractAccessToken();
@@ -104,40 +104,27 @@ class UserListsNotifier extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        print(response.body);
-        userLists.remove(listName); // Remove using listName as the key
-        notifyListeners();
+        // Successful deletion, update local data
+        if (userLists.containsKey(listId)) {
+          userLists.remove(listId); // Remove locally created list
+        } else {
+          // Remove fetched list if exists
+          String? fetchedListId;
+          userLists.forEach((key, value) {
+            if (value.listName == listName) {
+              fetchedListId = key;
+            }
+          });
+          if (fetchedListId != null) {
+            userLists.remove(fetchedListId);
+          }
+        }
+        notifyListeners(); // Notify listeners after deleting
       } else {
-        print('Failed to send DELETE request: ${response.statusCode}');
+        print('Failed to delete list: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending DELETE request: $e');
-    }
-  }
-
-  Future<void> retrieveList() async {
-    var configuration = getConfiguration();
-    String? baseUrl = configuration["apiBaseUrl"];
-    String endpoint = 'saveList';
-    String apiUrl = '$baseUrl$endpoint';
-    Uri req = Uri.parse(apiUrl);
-    final accessToken = await _extractAccessToken();
-
-    try {
-      final response = await http.get(
-        req,
-        headers: {
-          'Authorization': accessToken,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        print(response.body);
-      } else {
-        print('Failed to send GET request: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error sending GET request: $e');
     }
   }
 
@@ -145,24 +132,6 @@ class UserListsNotifier extends ChangeNotifier {
     return userLists.putIfAbsent(listId, () => PlantListNotifier());
   }
 }
-
-// class PlantListNotifier extends ChangeNotifier {
-//   late String _imageUrl = 'assets/images/leaf.png';
-//   late int _itemCount = 10;
-
-//   String get imageUrl => _imageUrl;
-//   int get itemCount => _itemCount;
-
-//   void setImageUrl(String newImageUrl) {
-//     _imageUrl = newImageUrl;
-//     notifyListeners();
-//   }
-
-//   void setItemCount(int newItemCount) {
-//     _itemCount = newItemCount;
-//     notifyListeners();
-//   }
-// }
 
 class PlantDetailsNotifier extends ChangeNotifier {
   late String _imageUrl =
@@ -198,7 +167,79 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
   @override
   void initState() {
     super.initState();
-    checkUserSignIn(); // Call a method to check user sign-in status on page load
+    checkUserSignIn();
+    if (refreshedLists == 0) {
+      print('fetched lists');
+      fetchSavedLists();
+      refreshedLists = 1;
+    }
+  }
+
+  Future<String> _extractAccessToken() async {
+    final rawResult = await Amplify.Auth.fetchAuthSession();
+    final result = jsonDecode(rawResult.toString());
+    final userPoolTokens = result['userPoolTokens'];
+
+    try {
+      final accessToken = extractAccessToken(userPoolTokens);
+      return accessToken;
+    } catch (e) {
+      print('Error extracting access token: $e');
+    }
+    return "";
+  }
+
+  String extractAccessToken(String inputString) {
+    final accessTokenStart =
+        inputString.indexOf('"accessToken": "') + '"accessToken": "'.length;
+    final accessTokenEnd = inputString.indexOf('"', accessTokenStart);
+    return inputString.substring(accessTokenStart, accessTokenEnd);
+  }
+
+  Future<void> fetchSavedLists() async {
+    final userListsNotifier =
+        Provider.of<UserListsNotifier>(context, listen: false);
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final response = await http.get(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> lists = jsonDecode(response.body);
+
+        // Process the fetched lists and update PlantListNotifier
+        for (var listData in lists) {
+          final listId = listData['list_id'];
+          final listName = listData['list_name'];
+          final savedSpecies = listData['saved_species'];
+
+          // Create or update PlantListNotifier instances with fetched data
+          final plantListNotifier = PlantListNotifier();
+          plantListNotifier.listId = listId;
+          plantListNotifier.listName = listName;
+          plantListNotifier.setItemCount(savedSpecies.length);
+
+          userListsNotifier.userLists[listId] = plantListNotifier;
+        }
+
+        // Notify listeners after updating the lists
+        userListsNotifier.notifyListeners();
+      } else {
+        print('Failed to fetch saved lists: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching saved lists: $e');
+    }
   }
 
   Future<void> checkUserSignIn() async {

@@ -653,7 +653,7 @@ paths:
     get: 
       tags:
         - Save List
-      summary: List all lists in the to database ONLY FOR TESTING, TO BE REMOVE
+      summary: List all lists in the database of the current user
       operationId: saveList_GET
       responses:
         "200": 

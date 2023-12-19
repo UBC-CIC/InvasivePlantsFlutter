@@ -1,6 +1,12 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // import 'ioFileSystem.dart';
 
+/// Number of species per page
+const pageSize = 20;   
+
+/// Number of day for each cache
+const maxCacheDay = 3;
+
 /// Currently selected region
 /// Default, select based on the current regiont or the first region of the regionList[]
 /// Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
@@ -12,8 +18,7 @@ List<dynamic> regionList = [];
 // Currently selected region
 // Default, select based on the current regiont or the first region of the regionList[]
 // Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
-late List<dynamic> speciesData =
-    []; // List of species available from the server
+late List<dynamic> speciesData = []; // List of species available from the server
 
     
 /// Default cache manager

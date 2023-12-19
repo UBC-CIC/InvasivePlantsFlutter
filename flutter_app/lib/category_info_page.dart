@@ -144,7 +144,8 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        plantList.plants[index],
+                                        plantListNotifier
+                                            .listName, // Display list name here
                                         style: const TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,

@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert'; // Import dart:convert to use utf8 decoding
+import 'package:flutter_app/lib.dart';
+import 'package:flutter_app/log_in_page.dart';
+import 'package:flutter_app/my_plants_page.dart';
+import 'global_variables.dart';
 
 import 'package:flutter_app/plant_info_from_category_page.dart';
 import 'wiki_webscrape.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
   final Map<String, dynamic> speciesObject;
@@ -30,9 +36,267 @@ class _PlantInfoFromCategoryInvasivePageState
     with AutomaticKeepAliveClientMixin<PlantInfoFromCategoryInvasivePage> {
   @override
   bool get wantKeepAlive => true;
-  bool isBookmarked = false;
   late Map<String, Object> wikiInfo;
   String firstImage = '';
+  bool isSignedIn = false;
+  Set<String> selectedListItems = <String>{};
+  List<Map<String, dynamic>> listData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    checkUserSignIn();
+  }
+
+  Future<void> checkUserSignIn() async {
+    bool signedIn = await isUserSignedIn();
+    setState(() {
+      isSignedIn = signedIn; // Update the sign-in status
+    });
+  }
+
+  Future<bool> isUserSignedIn() async {
+    final result = await Amplify.Auth.fetchAuthSession();
+    return result.isSignedIn;
+  }
+
+  Future<String> _extractAccessToken() async {
+    final rawResult = await Amplify.Auth.fetchAuthSession();
+    final result = jsonDecode(rawResult.toString());
+    final userPoolTokens = result['userPoolTokens'];
+
+    try {
+      final accessToken = extractAccessToken(userPoolTokens);
+      return accessToken;
+    } catch (e) {
+      print('Error extracting access token: $e');
+    }
+    return "";
+  }
+
+  String extractAccessToken(String inputString) {
+    final accessTokenStart =
+        inputString.indexOf('"accessToken": "') + '"accessToken": "'.length;
+    final accessTokenEnd = inputString.indexOf('"', accessTokenStart);
+    return inputString.substring(accessTokenStart, accessTokenEnd);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchListData() async {
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final response = await http.get(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        listData = List<Map<String, dynamic>>.from(data);
+        return listData;
+      } else {
+        throw Exception('Failed to load list data');
+      }
+    } catch (e) {
+      print('Error fetching saved lists: $e');
+      return [];
+    }
+  }
+
+  void showListDropdown(List<Map<String, dynamic>> listData) {
+    if (listData.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text(
+            'Please create a list first',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MyPlantsPage(),
+                  ),
+                );
+              },
+              child: const Text(
+                'Create',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (_) => StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text(
+                'Select a list:',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  itemCount: listData.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final String listName = listData[index]['list_name'];
+                    final bool isSelected =
+                        selectedListItems.contains(listName);
+
+                    return ListTile(
+                      title: Text(
+                        listName,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      onTap: () {
+                        setState(
+                          () {
+                            if (isSelected) {
+                              selectedListItems.remove(listName);
+                            } else {
+                              selectedListItems.add(listName);
+                            }
+                          },
+                        );
+                      },
+                      trailing: isSelected ? const Icon(Icons.check) : null,
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Cancel',
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    savePlantsToSelectedLists();
+                  },
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Future<void> savePlantToSelectedLists(
+      String listId, String listName, String scientificName) async {
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList/$listId';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final response = await http.get(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final existingSpecies = data
+            .map((item) => item['saved_species'])
+            .expand((i) => i)
+            .toList()
+            .cast<String>();
+
+        // Add the scientificName if it doesn't exist in the existing saved_species
+        if (!existingSpecies.contains(scientificName)) {
+          final updatedSpecies = [...existingSpecies, scientificName];
+          final body = jsonEncode({
+            'list_name': listName,
+            'saved_species': updatedSpecies,
+          });
+
+          final putResponse = await http.put(
+            req,
+            headers: {
+              'Authorization': accessToken,
+            },
+            body: body,
+          );
+
+          if (putResponse.statusCode != 200) {
+            throw Exception('Failed to save plant');
+          }
+          print(putResponse.body);
+        }
+      } else {
+        throw Exception('Failed to load list data');
+      }
+    } catch (e) {
+      print('Error saving plant: $e');
+    }
+  }
+
+  Future<void> savePlantsToSelectedLists() async {
+    List<String> selectedItems = selectedListItems.toList();
+    for (String selectedItem in selectedItems) {
+      final selectedItemData = listData.firstWhere(
+        (element) => element['list_name'] == selectedItem,
+        orElse: () => <String, dynamic>{},
+      );
+      if (selectedItemData.isNotEmpty) {
+        final listId = selectedItemData['list_id'];
+        final scientificName = widget.speciesObject['scientific_name'][0];
+        await savePlantToSelectedLists(listId, selectedItem, scientificName);
+      }
+    }
+    refreshedLists = 0;
+    displaySnackBar();
+  }
+
+  void displaySnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(milliseconds: 2000),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        content: const Text("Plant saved!"),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
 
   String formatSpeciesName(String speciesName) {
     String formattedName =
@@ -104,18 +368,54 @@ class _PlantInfoFromCategoryInvasivePageState
           ),
           actions: [
             IconButton(
-              icon: isBookmarked
-                  ? const Icon(
-                      Icons.bookmark,
-                      color: Colors.lightBlue,
-                    )
-                  : const Icon(Icons.bookmark_border),
-              onPressed: () {
-                setState(
-                  () {
-                    isBookmarked = !isBookmarked;
-                  },
-                );
+              icon: const Icon(
+                Icons.playlist_add,
+                color: Colors.lightBlue,
+                size: 35,
+              ),
+              onPressed: () async {
+                if (!isSignedIn) {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text(
+                        'Please log in to save plants',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Cancel',
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LogInPage()),
+                            );
+                          },
+                          child: const Text(
+                            'Log In',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  try {
+                    List<Map<String, dynamic>> listData = await fetchListData();
+                    showListDropdown(listData);
+                  } catch (e) {
+                    print('Error fetching list data: $e');
+                  }
+                }
               },
             ),
           ],

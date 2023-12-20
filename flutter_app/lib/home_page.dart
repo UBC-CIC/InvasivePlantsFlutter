@@ -10,15 +10,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
-import 'plant_info_from_category_invasive_page.dart';
+import 'invasive_plant_page.dart';
 import 'camera_page.dart';
-import 'my_plants_page.dart';
-import 'settings_page.dart';
+import 'saved_lists_page.dart';
 import 'wiki_webscrape.dart';
 import 'location_function.dart';
-import 'lib.dart';
+import 'GetConfigs.dart';
 import 'package:flutter_app/log_in_page.dart';
-import 'global_variables.dart';
+import 'GlobalVariables.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,7 +26,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
   ///
   /// OPERATIONAL Variables
   int? nextOffset; // Track the next offset of pagination
@@ -42,21 +40,22 @@ class _HomePageState extends State<HomePage> {
     // Get all data from region
     getAllRegions().then((value) => {
           // Select region based on current location
-          if(selectedRegion.keys.isEmpty){
-            getRegionFromCurrentLocation().then((value) => {
-                  if (selectedRegion.keys.isEmpty && regionList.isNotEmpty)
-                    {
-                      // Select first element in the array as selected region
-                      selectedRegion = regionList[0]
-                    }
-                  else
-                    {
-                      ///
-                      /// ERROR CASE
-                      /// Need to find a wait to throw errors
-                    }
-                })
-          }
+          if (selectedRegion.keys.isEmpty)
+            {
+              getRegionFromCurrentLocation().then((value) => {
+                    if (selectedRegion.keys.isEmpty && regionList.isNotEmpty)
+                      {
+                        // Select first element in the array as selected region
+                        selectedRegion = regionList[0]
+                      }
+                    else
+                      {
+                        ///
+                        /// ERROR CASE
+                        /// Need to find a wait to throw errors
+                      }
+                  })
+            }
         });
 
     // Get all species from server
@@ -114,8 +113,8 @@ class _HomePageState extends State<HomePage> {
 
   // Get call regions from server
   Future<void> getAllRegions() async {
-    if(regionList.length > 0){
-      return ;
+    if (regionList.length > 0) {
+      return;
     }
     // Make API request
     var configuration = getConfiguration();
@@ -125,28 +124,28 @@ class _HomePageState extends State<HomePage> {
       String? baseUrl = configuration["apiBaseUrl"];
       String endpoint = 'region';
       String apiUrl = '$baseUrl$endpoint';
-      
+
       String stringResponseBody;
       bool isResponseWeb = false;
-
 
       // Try reading data from cache
       String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
       FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
       if (file != null && file.file.existsSync()) {
         stringResponseBody = await file.file.readAsString();
-      } 
+      }
       // Cache missed, get result from the api
-      else{
-        final response = await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+      else {
+        final response =
+            await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
         if (response.statusCode == 200) {
           stringResponseBody = response.body;
           isResponseWeb = true;
-        } else{
+        } else {
           throw Exception('Failed to load data.');
         }
       }
-      
+
       var resDecode = jsonDecode(stringResponseBody);
 
       setState(() {
@@ -154,13 +153,14 @@ class _HomePageState extends State<HomePage> {
       });
 
       // Save only if response come from api
-      if(isResponseWeb){
+      if (isResponseWeb) {
         Directory tempDir = await getTemporaryDirectory();
         String cachePath = '${tempDir.path}/cache_data.json';
         File file = File(cachePath);
         await file.writeAsString(stringResponseBody);
 
-        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(), maxAge: Duration(days: maxCacheDay));
+        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(),
+            maxAge: Duration(days: maxCacheDay));
       }
     } else {
       throw ("Api key not found.");
@@ -168,7 +168,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchDataIfNeeded() async {
-    bool isMoreData = await fetchData(); // Fetch the initial page without last_species_id
+    bool isMoreData =
+        await fetchData(); // Fetch the initial page without last_species_id
 
     // Fetch subsequent pages
     while (isMoreData) {
@@ -199,14 +200,15 @@ class _HomePageState extends State<HomePage> {
       FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
       if (file != null && file.file.existsSync()) {
         stringResponseBody = await file.file.readAsString();
-      } 
+      }
       // Cache missed, get result from the api
-      else{
-        final response = await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+      else {
+        final response =
+            await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
         if (response.statusCode == 200) {
           stringResponseBody = response.body;
           isResponseWeb = true;
-        } else{
+        } else {
           throw Exception('Failed to load data.');
         }
       }
@@ -232,13 +234,14 @@ class _HomePageState extends State<HomePage> {
       });
 
       // Save only if response come from api
-      if(isResponseWeb){
+      if (isResponseWeb) {
         Directory tempDir = await getTemporaryDirectory();
         String cachePath = '${tempDir.path}/cache_data.json';
         File file = File(cachePath);
         await file.writeAsString(stringResponseBody);
 
-        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(), maxAge: Duration(days: maxCacheDay));
+        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(),
+            maxAge: Duration(days: maxCacheDay));
       }
 
       return returnValue;

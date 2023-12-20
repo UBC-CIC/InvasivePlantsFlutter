@@ -184,18 +184,6 @@ class _LogInPageState extends State<LogInPage> {
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           automaticallyImplyLeading: false,
-          // leading: IconButton(
-          //   icon: const Icon(Icons.close, color: Colors.black),
-          //   onPressed: () {
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => const SettingsPage(
-          //           profileImagePath: 'assets/images/profile.png',
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
         ),
         body: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),

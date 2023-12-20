@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'wiki_webscrape.dart';
-import 'package:flutter_app/lib.dart';
+import 'package:flutter_app/GetConfigs.dart';
 import 'package:flutter_app/log_in_page.dart';
-import 'package:flutter_app/my_plants_page.dart';
-import 'global_variables.dart';
+import 'package:flutter_app/saved_lists_page.dart';
+import 'GlobalVariables.dart';
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';

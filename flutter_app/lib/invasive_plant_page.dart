@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert'; // Import dart:convert to use utf8 decoding
-import 'package:flutter_app/lib.dart';
+import 'package:flutter_app/GetConfigs.dart';
 import 'package:flutter_app/log_in_page.dart';
-import 'package:flutter_app/my_plants_page.dart';
-import 'global_variables.dart';
+import 'package:flutter_app/saved_lists_page.dart';
+import 'GlobalVariables.dart';
 
-import 'package:flutter_app/plant_info_from_category_page.dart';
+import 'package:flutter_app/alternative_plant_page.dart';
 import 'wiki_webscrape.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;

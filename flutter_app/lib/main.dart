@@ -6,16 +6,15 @@ import 'package:flutter_app/sign_up_page.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
-import 'settings_page.dart';
-import 'category_info_page.dart';
-import 'plant_info_from_category_page.dart';
+import 'plant_list_page.dart';
+import 'alternative_plant_page.dart';
 import 'camera_page.dart';
 import 'plant_identification_page.dart';
-import 'my_plants_page.dart';
+import 'saved_lists_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'amplifyconfiguration.dart';
-import 'lib.dart';
+import 'AmplifyConfiguration.dart';
+import 'GetConfigs.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
@@ -99,9 +98,6 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),
-        '/settings': (context) => const SettingsPage(
-              profileImagePath: '',
-            ),
         '/categoryInfo': (context) => const CategoryInfoPage(
               categoryTitle: '',
               listId: '',

@@ -1,14 +1,14 @@
 // ignore_for_file: avoid_print, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/category_info_page.dart';
+import 'package:flutter_app/plant_list_page.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
 import 'plant_list_notifier.dart';
-import 'lib.dart';
-import 'global_variables.dart';
+import 'GetConfigs.dart';
+import 'GlobalVariables.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;

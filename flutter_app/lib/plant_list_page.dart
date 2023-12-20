@@ -1,12 +1,12 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'plant_info_from_saved_list_page.dart';
+import 'saved_plant_page.dart';
 import 'package:provider/provider.dart';
-import 'my_plants_page.dart';
+import 'saved_lists_page.dart';
 import 'plant_list_notifier.dart';
 import 'dart:convert';
-import 'package:flutter_app/lib.dart';
+import 'package:flutter_app/GetConfigs.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 

@@ -15,6 +15,8 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'AmplifyConfig.dart';
 import 'get_configuration.dart';
+import 'package:flutter_app/plant_details_notifier.dart';
+import 'package:flutter_app/user_lists_notifier.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 

@@ -6,22 +6,22 @@ import 'package:provider/provider.dart';
 import 'saved_lists_page.dart';
 import 'plant_list_notifier.dart';
 import 'dart:convert';
-import 'package:flutter_app/GetConfigs.dart';
+import 'package:flutter_app/get_configuration.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class CategoryInfoPage extends StatefulWidget {
+class PlantListPage extends StatefulWidget {
   final String listId;
   final String categoryTitle;
 
-  const CategoryInfoPage(
+  const PlantListPage(
       {super.key, required this.categoryTitle, required this.listId});
 
   @override
-  _CategoryInfoPageState createState() => _CategoryInfoPageState();
+  _PlantListPageState createState() => _PlantListPageState();
 }
 
-class _CategoryInfoPageState extends State<CategoryInfoPage> {
+class _PlantListPageState extends State<PlantListPage> {
   late PlantListNotifier plantListNotifier;
 
   @override
@@ -207,8 +207,7 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    PlantInfoFromSavedListPage(
+                                builder: (context) => SavedPlantPage(
                                   scientificName: plantList.plants[index],
                                 ),
                               ),

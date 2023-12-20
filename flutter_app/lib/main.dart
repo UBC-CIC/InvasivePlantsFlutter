@@ -13,8 +13,8 @@ import 'plant_identification_page.dart';
 import 'saved_lists_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'AmplifyConfiguration.dart';
-import 'GetConfigs.dart';
+import 'AmplifyConfig.dart';
+import 'get_configuration.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
@@ -98,17 +98,17 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),
-        '/categoryInfo': (context) => const CategoryInfoPage(
+        '/categoryInfo': (context) => const PlantListPage(
               categoryTitle: '',
               listId: '',
             ),
         '/plantInfoFromCategory': (context) =>
-            const PlantInfoFromCategoryPage(speciesObject: {}),
+            const AlternativePlantPage(speciesObject: {}),
         '/camera': (context) => const CameraPage(),
         '/plantIdentification': (context) => const PlantIdentificationPage(
               imagePath: '',
             ),
-        '/myPlants': (context) => const MyPlantsPage(),
+        '/myPlants': (context) => const SavedListsPage(),
         '/signup': (context) => const SignUpPage(),
         '/login': (context) => const LogInPage(),
       },

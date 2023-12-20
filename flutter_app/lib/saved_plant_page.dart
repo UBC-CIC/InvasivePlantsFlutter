@@ -4,20 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'wiki_webscrape.dart';
 
-class PlantInfoFromSavedListPage extends StatefulWidget {
+class SavedPlantPage extends StatefulWidget {
   final String scientificName;
-  const PlantInfoFromSavedListPage({
+  const SavedPlantPage({
     super.key,
     required this.scientificName,
   });
 
   @override
-  _PlantInfoFromSavedListPageState createState() =>
-      _PlantInfoFromSavedListPageState();
+  _SavedPlantPageState createState() => _SavedPlantPageState();
 }
 
-class _PlantInfoFromSavedListPageState extends State<PlantInfoFromSavedListPage>
-    with AutomaticKeepAliveClientMixin<PlantInfoFromSavedListPage> {
+class _SavedPlantPageState extends State<SavedPlantPage>
+    with AutomaticKeepAliveClientMixin<SavedPlantPage> {
   @override
   bool get wantKeepAlive => true;
   String firstImage = '';

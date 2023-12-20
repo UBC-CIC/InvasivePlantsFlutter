@@ -1,7 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/GetConfigs.dart';
+import 'package:flutter_app/get_configuration.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'package:flutter_app/saved_lists_page.dart';
 import 'GlobalVariables.dart';
@@ -11,20 +11,19 @@ import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class PlantInfoFromCategoryPage extends StatefulWidget {
+class AlternativePlantPage extends StatefulWidget {
   final Map<String, dynamic> speciesObject;
-  const PlantInfoFromCategoryPage({
+  const AlternativePlantPage({
     super.key,
     required this.speciesObject,
   });
 
   @override
-  _PlantInfoFromCategoryPageState createState() =>
-      _PlantInfoFromCategoryPageState();
+  _AlternativePlantPageState createState() => _AlternativePlantPageState();
 }
 
-class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
-    with AutomaticKeepAliveClientMixin<PlantInfoFromCategoryPage> {
+class _AlternativePlantPageState extends State<AlternativePlantPage>
+    with AutomaticKeepAliveClientMixin<AlternativePlantPage> {
   @override
   bool get wantKeepAlive => true;
   bool isSignedIn = false;
@@ -123,7 +122,7 @@ class _PlantInfoFromCategoryPageState extends State<PlantInfoFromCategoryPage>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MyPlantsPage(),
+                    builder: (context) => const SavedListsPage(),
                   ),
                 );
               },

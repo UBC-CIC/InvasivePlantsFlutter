@@ -8,7 +8,7 @@ import 'package:flutter_app/invasive_plant_page.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'GetConfigs.dart';
+import 'get_configuration.dart';
 import 'GlobalVariables.dart';
 
 class PlantIdentificationPage extends StatefulWidget {
@@ -186,7 +186,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
 
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => PlantInfoFromCategoryInvasivePage(
+                      builder: (context) => InvasivePlantPage(
                           speciesObject: matchingInvasiveSpecies,
                           commonName: firstResultCommonName,
                           regionId: invasiveRegion,
@@ -215,7 +215,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
               debugPrint(firstResultScientificName);
               Navigator.of(context).push(
                 MaterialPageRoute(
-                    builder: (context) => APIResultPage(
+                    builder: (context) => NonInvasivePlantPage(
                         commonName: firstResultCommonName,
                         scientificName: firstResultScientificName,
                         imageUrl: plantNetImageUrl,

@@ -14,8 +14,8 @@ import 'invasive_plant_page.dart';
 import 'camera_page.dart';
 import 'saved_lists_page.dart';
 import 'wiki_webscrape.dart';
-import 'location_function.dart';
-import 'GetConfigs.dart';
+import 'location_functions.dart';
+import 'get_configuration.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'GlobalVariables.dart';
 
@@ -628,7 +628,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MyPlantsPage(),
+                      builder: (context) => const SavedListsPage(),
                     ),
                   );
                 }
@@ -649,7 +649,7 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlantInfoFromCategoryInvasivePage(
+            builder: (context) => InvasivePlantPage(
               speciesObject: species, // Pass the entire species object
             ),
           ),

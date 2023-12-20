@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'wiki_webscrape.dart';
-import 'package:flutter_app/GetConfigs.dart';
+import 'package:flutter_app/get_configuration.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'package:flutter_app/saved_lists_page.dart';
 import 'GlobalVariables.dart';
@@ -13,10 +13,10 @@ import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class APIResultPage extends StatefulWidget {
+class NonInvasivePlantPage extends StatefulWidget {
   final String? commonName, scientificName, imageUrl, accuracyScoreString;
 
-  const APIResultPage(
+  const NonInvasivePlantPage(
       {super.key,
       this.commonName,
       this.scientificName,
@@ -24,11 +24,11 @@ class APIResultPage extends StatefulWidget {
       this.accuracyScoreString});
 
   @override
-  _APIResultPageState createState() => _APIResultPageState();
+  _NonInvasivePlantPageState createState() => _NonInvasivePlantPageState();
 }
 
-class _APIResultPageState extends State<APIResultPage>
-    with AutomaticKeepAliveClientMixin<APIResultPage> {
+class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
+    with AutomaticKeepAliveClientMixin<NonInvasivePlantPage> {
   @override
   bool get wantKeepAlive => true;
   bool isSignedIn = false;
@@ -127,7 +127,7 @@ class _APIResultPageState extends State<APIResultPage>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MyPlantsPage(),
+                    builder: (context) => const SavedListsPage(),
                   ),
                 );
               },

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert'; // Import dart:convert to use utf8 decoding
-import 'package:flutter_app/GetConfigs.dart';
+import 'package:flutter_app/get_configuration.dart';
 import 'package:flutter_app/log_in_page.dart';
 import 'package:flutter_app/saved_lists_page.dart';
 import 'GlobalVariables.dart';
@@ -14,11 +14,11 @@ import 'wiki_webscrape.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 
-class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
+class InvasivePlantPage extends StatefulWidget {
   final Map<String, dynamic> speciesObject;
   final String? commonName, regionId, plantNetImageURL, accuracyScoreString;
 
-  const PlantInfoFromCategoryInvasivePage(
+  const InvasivePlantPage(
       {super.key,
       required this.speciesObject,
       this.commonName,
@@ -27,13 +27,11 @@ class PlantInfoFromCategoryInvasivePage extends StatefulWidget {
       this.accuracyScoreString});
 
   @override
-  _PlantInfoFromCategoryInvasivePageState createState() =>
-      _PlantInfoFromCategoryInvasivePageState();
+  _InvasivePlantPageState createState() => _InvasivePlantPageState();
 }
 
-class _PlantInfoFromCategoryInvasivePageState
-    extends State<PlantInfoFromCategoryInvasivePage>
-    with AutomaticKeepAliveClientMixin<PlantInfoFromCategoryInvasivePage> {
+class _InvasivePlantPageState extends State<InvasivePlantPage>
+    with AutomaticKeepAliveClientMixin<InvasivePlantPage> {
   @override
   bool get wantKeepAlive => true;
   late Map<String, Object> wikiInfo;
@@ -134,7 +132,7 @@ class _PlantInfoFromCategoryInvasivePageState
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MyPlantsPage(),
+                    builder: (context) => const SavedListsPage(),
                   ),
                 );
               },
@@ -1081,7 +1079,7 @@ class _PlantInfoFromCategoryInvasivePageState
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  PlantInfoFromCategoryPage(
+                                                  AlternativePlantPage(
                                                 speciesObject: selectedSpecies,
                                               ),
                                             ),

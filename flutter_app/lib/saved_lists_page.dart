@@ -7,7 +7,7 @@ import 'camera_page.dart';
 import 'home_page.dart';
 import 'package:provider/provider.dart';
 import 'plant_list_notifier.dart';
-import 'GetConfigs.dart';
+import 'get_configuration.dart';
 import 'GlobalVariables.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -143,14 +143,14 @@ class PlantDetailsNotifier extends ChangeNotifier {
   }
 }
 
-class MyPlantsPage extends StatefulWidget {
-  const MyPlantsPage({super.key});
+class SavedListsPage extends StatefulWidget {
+  const SavedListsPage({super.key});
 
   @override
-  State<MyPlantsPage> createState() => _MyPlantsPageState();
+  State<SavedListsPage> createState() => _SavedListsPageState();
 }
 
-class _MyPlantsPageState extends State<MyPlantsPage> {
+class _SavedListsPageState extends State<SavedListsPage> {
   bool isSignedIn = false;
 
   @override
@@ -620,7 +620,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                 MaterialPageRoute(
                                   builder: (context) => ChangeNotifierProvider(
                                     create: (context) => plantListNotifier,
-                                    child: CategoryInfoPage(
+                                    child: PlantListPage(
                                       listId: plantListNotifier.listId,
                                       categoryTitle: plantListNotifier.listName,
                                     ),
@@ -663,7 +663,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                             ChangeNotifierProvider(
                                           create: (context) =>
                                               plantListNotifier,
-                                          child: CategoryInfoPage(
+                                          child: PlantListPage(
                                             listId: plantListNotifier.listId,
                                             categoryTitle:
                                                 plantListNotifier.listName,

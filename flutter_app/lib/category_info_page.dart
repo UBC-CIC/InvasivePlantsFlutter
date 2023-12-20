@@ -1,21 +1,14 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'plant_info_from_category_page.dart';
+import 'plant_info_from_saved_list_page.dart';
 import 'package:provider/provider.dart';
 import 'my_plants_page.dart';
 import 'plant_list_notifier.dart';
-
-// class PlantListNotifier extends ChangeNotifier {
-//   List<String> plants = List.generate(10, (index) => 'Plant ${index + 1}');
-
-//   void removePlant(int index) {
-//     if (index >= 0 && index < plants.length) {
-//       plants.removeAt(index);
-//       notifyListeners();
-//     }
-//   }
-// }
+import 'dart:convert';
+import 'package:flutter_app/lib.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class CategoryInfoPage extends StatefulWidget {
   final String listId;
@@ -30,34 +23,148 @@ class CategoryInfoPage extends StatefulWidget {
 
 class _CategoryInfoPageState extends State<CategoryInfoPage> {
   late PlantListNotifier plantListNotifier;
-  late String imageUrl; // Image URL variable
 
   @override
   void initState() {
     super.initState();
     plantListNotifier =
         context.read<UserListsNotifier>().getOrCreateList(widget.listId);
-    imageUrl = context.read<PlantDetailsNotifier>().imageUrl;
+    fetchData();
+  }
+
+  Future<String> _extractAccessToken() async {
+    final rawResult = await Amplify.Auth.fetchAuthSession();
+    final result = jsonDecode(rawResult.toString());
+    final userPoolTokens = result['userPoolTokens'];
+
+    try {
+      final accessToken = extractAccessToken(userPoolTokens);
+      return accessToken;
+    } catch (e) {
+      print('Error extracting access token: $e');
+    }
+    return "";
+  }
+
+  String extractAccessToken(String inputString) {
+    final accessTokenStart =
+        inputString.indexOf('"accessToken": "') + '"accessToken": "'.length;
+    final accessTokenEnd = inputString.indexOf('"', accessTokenStart);
+    return inputString.substring(accessTokenStart, accessTokenEnd);
+  }
+
+  Future<void> fetchData() async {
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList/${widget.listId}';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final response = await http.get(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(jsonDecode(response.body));
+
+        setState(
+          () {
+            plantListNotifier.plants =
+                List<String>.from(data[0]['saved_species']);
+          },
+        );
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
+
+  Future<void> removePlantFromSavedList(
+      String listId, String listName, String scientificName) async {
+    var configuration = getConfiguration();
+    String? baseUrl = configuration["apiBaseUrl"];
+    String endpoint = 'saveList/$listId';
+    String apiUrl = '$baseUrl$endpoint';
+    Uri req = Uri.parse(apiUrl);
+    final accessToken = await _extractAccessToken();
+
+    try {
+      final response = await http.get(
+        req,
+        headers: {
+          'Authorization': accessToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        print(response.body);
+        List<dynamic> savedSpecies =
+            data.isNotEmpty ? data[0]['saved_species'] : [];
+
+        // Check if the scientificName exists in the saved_species list
+        if (savedSpecies.contains(scientificName)) {
+          savedSpecies.removeWhere((species) =>
+              species == scientificName); // Remove the specified species
+
+          final body = jsonEncode({
+            'list_name': listName,
+            'saved_species': savedSpecies,
+          });
+
+          final putResponse = await http.put(
+            req,
+            headers: {
+              'Authorization': accessToken,
+            },
+            body: body,
+          );
+
+          if (putResponse.statusCode != 200) {
+            throw Exception('Failed to remove plant');
+          }
+          print(putResponse.body);
+        }
+      } else {
+        throw Exception('Failed to load list data');
+      }
+    } catch (e) {
+      print('Error removing plant: $e');
+    }
+  }
+
+  String formatSpeciesName(String speciesName) {
+    String formattedName =
+        speciesName.replaceAll('_', ' '); // Replace underscore with space
+    formattedName = formattedName.trim(); // Remove leading/trailing whitespace
+
+    List<String> words = formattedName.split(' '); // Split into words
+    if (words.isNotEmpty) {
+      // Capitalize the first word and make the rest lowercase
+      String firstWord = words[0].substring(0, 1).toUpperCase() +
+          words[0].substring(1).toLowerCase();
+      // Join the first capitalized word with the rest of the words
+      formattedName = '$firstWord ${words.sublist(1).join(' ').toLowerCase()}';
+    }
+    return formattedName;
   }
 
   @override
   void dispose() {
-    // Don't dispose of the notifier here to prevent early disposal
     super.dispose();
-  }
-
-  void loadPlantsFromDataSource(String listId) {
-    // Load plants for the provided listId and assign them to plantListNotifier
-    // You might fetch data from a database or any other storage mechanism here
-    // For demonstration, let's assume initializing with dummy data
-    List<String> plants = List.generate(10, (index) => 'Plant ${index + 1}');
-    plantListNotifier.plants = plants;
   }
 
   @override
   Widget build(BuildContext context) {
     final plantDetailsNotifier = Provider.of<PlantDetailsNotifier>(context);
-
     return ChangeNotifierProvider.value(
       value: plantListNotifier,
       builder: (context, child) {
@@ -77,21 +184,17 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
               ),
               leading: IconButton(
                 onPressed: () {
-                  plantDetailsNotifier.setImageUrl(imageUrl);
                   plantDetailsNotifier
                       .setItemCount(plantListNotifier.plants.length);
-                  Navigator.pop(context, {
-                    'imageUrl': imageUrl,
-                    'itemCount': plantListNotifier.plants.length
-                  });
+                  Navigator.of(context).pop(
+                    {'itemCount': plantListNotifier.plants.length},
+                  );
                 },
                 icon: const Icon(Icons.arrow_back_ios),
               ),
             ),
             body: Consumer2<PlantDetailsNotifier, PlantListNotifier>(
               builder: (context, details, plantList, _) {
-                imageUrl = details.imageUrl;
-
                 return ListView.builder(
                   itemCount: plantList.plants.length,
                   itemBuilder: (context, index) {
@@ -110,54 +213,34 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                             // );
                           },
                           child: Container(
-                            margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                            margin: const EdgeInsets.fromLTRB(25, 5, 25, 5),
                             padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: const Color.fromARGB(255, 223, 250, 224),
                               borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 3,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
+                              boxShadow: kElevationToShadow[3],
                             ),
                             child: Row(
                               children: <Widget>[
-                                Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(imageUrl),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
                                 const SizedBox(width: 10),
+                                const Icon(
+                                  Icons.circle,
+                                  size: 20,
+                                  color: Color.fromARGB(255, 148, 201, 130),
+                                ),
+                                const SizedBox(width: 15),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        plantListNotifier
-                                            .listName, // Display list name here
+                                        formatSpeciesName(
+                                            plantList.plants[index]),
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      const Text(
-                                        'Scientific Name',
-                                        style: TextStyle(
-                                          color: Colors.blueGrey,
-                                          fontSize: 18,
-                                        ),
+                                            fontSize: 22,
+                                            color: Colors.blueGrey),
                                       ),
                                     ],
                                   ),
@@ -173,7 +256,7 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                           return AlertDialog(
                                             title: const Text('Delete Plant'),
                                             content: Text(
-                                              'Are you sure you want to delete ${plantList.plants[index]}?',
+                                              'Are you sure you want to delete ${formatSpeciesName(plantList.plants[index])}?',
                                             ),
                                             actions: [
                                               TextButton(
@@ -184,6 +267,10 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                                               ),
                                               TextButton(
                                                 onPressed: () {
+                                                  removePlantFromSavedList(
+                                                      widget.listId,
+                                                      widget.categoryTitle,
+                                                      plantList.plants[index]);
                                                   plantList.removePlant(index);
                                                   Navigator.pop(context);
                                                 },

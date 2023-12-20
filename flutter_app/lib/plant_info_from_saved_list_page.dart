@@ -2,13 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:convert'; // Import dart:convert to use utf8 decoding
+import 'wiki_webscrape.dart';
 
 class PlantInfoFromSavedListPage extends StatefulWidget {
-  final Map<String, dynamic> speciesObject; // Define speciesObject here
+  final String scientificName;
   const PlantInfoFromSavedListPage({
     super.key,
-    required this.speciesObject,
+    required this.scientificName,
   });
 
   @override
@@ -20,7 +20,7 @@ class _PlantInfoFromSavedListPageState extends State<PlantInfoFromSavedListPage>
     with AutomaticKeepAliveClientMixin<PlantInfoFromSavedListPage> {
   @override
   bool get wantKeepAlive => true;
-  bool isBookmarked = false;
+  String firstImage = '';
 
   String formatSpeciesName(String speciesName) {
     String formattedName =
@@ -40,22 +40,6 @@ class _PlantInfoFromSavedListPageState extends State<PlantInfoFromSavedListPage>
 
   @override
   Widget build(BuildContext context) {
-    String imageUrl = widget.speciesObject['images'].isEmpty
-        ? 'assets/images/noImageAvailable.png'
-        : (widget.speciesObject['images'][0]['image_url'].isEmpty
-            ? 'assets/images/noImageAvailable.png'
-            : widget.speciesObject['images'][0]['image_url']);
-    String commonName = widget.speciesObject['common_name'].isNotEmpty
-        ? widget.speciesObject['common_name'][0]
-        : widget.speciesObject['scientific_name'][0];
-    String scientificName = widget.speciesObject['scientific_name'][0];
-    // Ensure UTF-8 decoding for the species description to remove special characters
-    String speciesDescription = utf8.decode(
-      widget.speciesObject['species_description'].codeUnits,
-    );
-    List<String> resourceLinks =
-        List<String>.from(widget.speciesObject['resource_links'] ?? []);
-
     super.build(context);
     return WillPopScope(
       onWillPop: () async => true,
@@ -66,133 +50,372 @@ class _PlantInfoFromSavedListPageState extends State<PlantInfoFromSavedListPage>
           backgroundColor: Colors.white,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.black),
-          title: const Text(
-            'Plant Info',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          title: Text(
+            formatSpeciesName(widget.scientificName),
+            style: const TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          actions: [
-            IconButton(
-              icon: isBookmarked
-                  ? const Icon(
-                      Icons.bookmark,
-                      color: Colors.lightBlue,
-                    )
-                  : const Icon(Icons.bookmark_border),
-              onPressed: () {
-                setState(
-                  () {
-                    isBookmarked = !isBookmarked;
-                  },
-                );
-              },
-            ),
-          ],
         ),
         body: Column(
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => Dialog(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: imageUrl.startsWith('https')
-                          ? Image.network(
-                              imageUrl,
-                              fit: BoxFit.contain,
-                            )
-                          : Image.asset(
-                              imageUrl,
-                              fit: BoxFit.contain,
-                            ),
+                if (firstImage != '') {
+                  showDialog(
+                    context: context,
+                    builder: (_) => Dialog(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Image.network(
+                          firstImage,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
               },
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: imageUrl.startsWith('https')
-                        ? NetworkImage(imageUrl)
-                        : AssetImage(imageUrl) as ImageProvider,
-                    fit: BoxFit.cover,
+              child: Stack(
+                children: [
+                  FutureBuilder<Map<String, Object>>(
+                    future: webscrapeWikipedia(widget.scientificName),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            width: double.infinity,
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Retrieving image...',
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                CircularProgressIndicator(),
+                              ],
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            width: double.infinity,
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'No image is available',
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            width: double.infinity,
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'No image is available',
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      } else {
+                        Map<String, Object> wikiInfo = snapshot.data!;
+                        if (wikiInfo['speciesImages'] != null &&
+                            (wikiInfo['speciesImages'] as List).isNotEmpty) {
+                          final speciesImages =
+                              wikiInfo['speciesImages'] as List?;
+                          if (speciesImages != null &&
+                              speciesImages.isNotEmpty) {
+                            firstImage = speciesImages[0];
+                            return Container(
+                              margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: NetworkImage(firstImage),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              height: MediaQuery.of(context).size.height / 2.5,
+                              width: double.infinity,
+                            );
+                          }
+                        }
+                        return Center(
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            width: double.infinity,
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'No image is available',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
-                ),
-                height: MediaQuery.of(context).size.height / 2.5,
-                width: double.infinity,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
-              child: Text(
-                utf8.decode(formatSpeciesName(commonName).codeUnits),
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-              child: Text(
-                utf8.decode(formatSpeciesName(scientificName).codeUnits),
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                ],
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                      child: Text(
-                        speciesDescription,
-                        style: const TextStyle(fontSize: 18),
+              child: FutureBuilder<Map<String, Object>>(
+                future: webscrapeWikipedia(widget.scientificName),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Gathering info...',
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          CircularProgressIndicator(),
+                          SizedBox(
+                            height: 40,
+                          ),
+                        ],
                       ),
-                    ),
-                    if (resourceLinks.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Source:',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                        child: Text('No Wikipedia info available'));
+                  } else {
+                    Map<String, Object> wikiInfo = snapshot.data!;
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Introduction',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(0, 0, 246, 0),
+                            child: Divider(
+                              height: 1,
+                              thickness: 1,
+                              color: Colors.green,
                             ),
-                            const SizedBox(height: 5),
-                            // Generate list of clickable URLs
-                            ...resourceLinks.map(
-                              (link) => GestureDetector(
-                                onTap: () async {
-                                  if (await canLaunch(link)) {
-                                    await launch(link);
-                                  } else {
-                                    throw 'Could not launch $link';
-                                  }
-                                },
-                                child: Text(
-                                  link,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.blue,
-                                      decoration: TextDecoration.underline),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            wikiInfo['overview'].toString(),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          // Display body if available
+                          if (wikiInfo['body'] != null &&
+                              wikiInfo['body'] is List &&
+                              (wikiInfo['body'] as List).isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+                                const Text(
+                                  'Overview',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                              ),
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 274, 0),
+                                  child: Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                ...List.generate(
+                                  (wikiInfo['body'] as List).length,
+                                  (index) {
+                                    final body = wikiInfo['body'] as List?;
+                                    if (body != null && index < body.length) {
+                                      final header =
+                                          body[index]?['header'] ?? '';
+                                      final bodyContent =
+                                          body[index]?['body'] ?? '';
+
+                                      // Check if both header and body content are not empty
+                                      if (header.isNotEmpty &&
+                                          bodyContent.isNotEmpty) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '$header:',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              bodyContent,
+                                              style:
+                                                  const TextStyle(fontSize: 14),
+                                            ),
+                                            const SizedBox(height: 10),
+                                          ],
+                                        );
+                                      }
+                                    }
+                                    return const SizedBox(); // A placeholder or an empty widget
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          // Display speciesImages if available
+                          if (wikiInfo['speciesImages'] != null &&
+                              (wikiInfo['speciesImages'] as List).isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Images',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 294, 0),
+                                  child: Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 150,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        (wikiInfo['speciesImages'] as List)
+                                            .length,
+                                    itemBuilder: (context, index) {
+                                      final speciesImages =
+                                          wikiInfo['speciesImages'] as List?;
+                                      if (speciesImages != null &&
+                                          index < speciesImages.length) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) => Dialog(
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Image.network(
+                                                    speciesImages[index],
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 10, 5, 5),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Image.network(
+                                                speciesImages[index],
+                                                width: 150,
+                                                height: 150,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        return Container();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          // Display wikiUrl as a clickable link
+                          if (wikiInfo['wikiUrl'] != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                const Text(
+                                  'Source',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 296, 0),
+                                  child: Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                GestureDetector(
+                                  onTap: () async {
+                                    // Open Wikipedia link in the browser
+                                    String url = wikiInfo['wikiUrl'].toString();
+                                    if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else {
+                                      throw 'Could not launch $url';
+                                    }
+                                  },
+                                  child: Center(
+                                    child: Text(
+                                      wikiInfo['wikiUrl']!.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 20),
+                        ],
                       ),
-                    const SizedBox(height: 30),
-                  ],
-                ),
+                    );
+                  }
+                },
               ),
             ),
           ],

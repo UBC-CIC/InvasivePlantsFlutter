@@ -187,7 +187,9 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                   plantDetailsNotifier
                       .setItemCount(plantListNotifier.plants.length);
                   Navigator.of(context).pop(
-                    {'itemCount': plantListNotifier.plants.length},
+                    {
+                      'itemCount': plantListNotifier.plants.length,
+                    },
                   );
                 },
                 icon: const Icon(Icons.arrow_back_ios),
@@ -202,15 +204,15 @@ class _CategoryInfoPageState extends State<CategoryInfoPage> {
                       children: <Widget>[
                         GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) =>
-                            //         const PlantInfoFromCategoryPage(
-                            //       speciesObject: {},
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PlantInfoFromSavedListPage(
+                                  scientificName: plantList.plants[index],
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: const EdgeInsets.fromLTRB(25, 5, 25, 5),

@@ -465,103 +465,119 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                 builder: (context, userListsNotifier, child) {
                   final userLists = userListsNotifier.userLists.keys.toList();
                   if (userLists.isEmpty) {
-                    return Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'Click ',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 23,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '+',
-                              style: const TextStyle(
-                                color: Colors.green,
-                                fontSize: 25,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      String newListName = '';
-                                      return AlertDialog(
-                                        title:
-                                            const Text('Enter Your List Name:'),
-                                        content: TextField(
-                                          onChanged: (text) {
-                                            newListName = text;
-                                          },
-                                        ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text(
-                                              'Cancel',
-                                              style:
-                                                  TextStyle(color: Colors.grey),
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Click ',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 23,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '+',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 25,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          String newListName = '';
+                                          return AlertDialog(
+                                            title: const Text(
+                                                'Enter Your List Name:'),
+                                            content: TextField(
+                                              onChanged: (text) {
+                                                newListName = text;
+                                              },
                                             ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              if (newListName.trim().isEmpty) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    duration: const Duration(
-                                                        milliseconds: 1000),
-                                                    behavior: SnackBarBehavior
-                                                        .floating,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                    ),
-                                                    content: const Text(
-                                                        'Please enter a name'),
-                                                    backgroundColor: Colors.red,
-                                                  ),
-                                                );
-                                              } else {
-                                                final userListsNotifier =
-                                                    Provider.of<
-                                                            UserListsNotifier>(
-                                                        context,
-                                                        listen: false);
-                                                userListsNotifier
-                                                    .addNewList(newListName);
-                                                Navigator.of(context).pop();
-                                              }
-                                            },
-                                            child: const Text(
-                                              'Create',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ],
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  if (newListName
+                                                      .trim()
+                                                      .isEmpty) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    1000),
+                                                        behavior:
+                                                            SnackBarBehavior
+                                                                .floating,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        content: const Text(
+                                                            'Please enter a name'),
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    final userListsNotifier =
+                                                        Provider.of<
+                                                                UserListsNotifier>(
+                                                            context,
+                                                            listen: false);
+                                                    userListsNotifier
+                                                        .addNewList(
+                                                            newListName);
+                                                    Navigator.of(context).pop();
+                                                  }
+                                                },
+                                                child: const Text(
+                                                  'Create',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       );
                                     },
-                                  );
-                                },
+                                ),
+                                const TextSpan(
+                                  text: ' to create a list of plants',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 23,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const TextSpan(
-                              text: ' to create a list of plants',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 23,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 110),
+                      ],
                     );
                   }
 
@@ -585,23 +601,38 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                         ),
                         child: GestureDetector(
                           onTap: () async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChangeNotifierProvider(
-                                  create: (context) => plantListNotifier,
-                                  child: CategoryInfoPage(
-                                    listId: plantListNotifier.listId,
-                                    categoryTitle: plantListNotifier.listName,
+                            if (itemCount == 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(milliseconds: 1000),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  content: const Text(
+                                      'Add some plants to this list'),
+                                  backgroundColor: Colors.grey,
+                                ),
+                              );
+                            } else {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChangeNotifierProvider(
+                                    create: (context) => plantListNotifier,
+                                    child: CategoryInfoPage(
+                                      listId: plantListNotifier.listId,
+                                      categoryTitle: plantListNotifier.listName,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                            if (result != null &&
-                                result is Map<String, dynamic>) {
-                              plantListNotifier
-                                  .setItemCount(result['itemCount']);
-                              setState(() {});
+                              );
+                              if (result != null &&
+                                  result is Map<String, dynamic>) {
+                                plantListNotifier
+                                    .setItemCount(result['itemCount']);
+                                setState(() {});
+                              }
                             }
                           },
                           child: Row(
@@ -609,26 +640,43 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                             children: [
                               RawMaterialButton(
                                 onPressed: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChangeNotifierProvider(
-                                        create: (context) => plantListNotifier,
-                                        child: CategoryInfoPage(
-                                          listId: plantListNotifier.listId,
-                                          categoryTitle:
-                                              plantListNotifier.listName,
+                                  if (itemCount == 0) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration:
+                                            const Duration(milliseconds: 1000),
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        content: const Text(
+                                            'Add some plants to this list'),
+                                        backgroundColor: Colors.grey,
+                                      ),
+                                    );
+                                  } else {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChangeNotifierProvider(
+                                          create: (context) =>
+                                              plantListNotifier,
+                                          child: CategoryInfoPage(
+                                            listId: plantListNotifier.listId,
+                                            categoryTitle:
+                                                plantListNotifier.listName,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-
-                                  if (result != null &&
-                                      result is Map<String, dynamic>) {
-                                    plantListNotifier
-                                        .setItemCount(result['itemCount']);
-                                    setState(() {});
+                                    );
+                                    if (result != null &&
+                                        result is Map<String, dynamic>) {
+                                      plantListNotifier
+                                          .setItemCount(result['itemCount']);
+                                      setState(() {});
+                                    }
                                   }
                                 },
                                 materialTapTargetSize:

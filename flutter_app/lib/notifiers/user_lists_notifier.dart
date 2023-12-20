@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'plant_list_notifier.dart';
-import 'get_configuration.dart';
+import '../functions/get_configuration.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

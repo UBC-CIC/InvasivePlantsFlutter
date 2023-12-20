@@ -1,22 +1,22 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/log_in_page.dart';
-import 'package:flutter_app/sign_up_page.dart';
+import './pages/log_in_page.dart';
+import './pages/sign_up_page.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
-import 'home_page.dart';
-import 'plant_list_page.dart';
-import 'alternative_plant_page.dart';
-import 'camera_page.dart';
-import 'plant_identification_page.dart';
-import 'saved_lists_page.dart';
+import './pages/home_page.dart';
+import './pages/plant_list_page.dart';
+import './pages/alternative_plant_page.dart';
+import './pages/camera_page.dart';
+import './pages/plant_identification_page.dart';
+import './pages/saved_lists_page.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'AmplifyConfig.dart';
-import 'get_configuration.dart';
-import 'package:flutter_app/plant_details_notifier.dart';
-import 'package:flutter_app/user_lists_notifier.dart';
+import './configuration/AmplifyConfig.dart';
+import './functions/get_configuration.dart';
+import './notifiers/plant_details_notifier.dart';
+import './notifiers/user_lists_notifier.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 

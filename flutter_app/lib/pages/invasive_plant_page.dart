@@ -1,16 +1,16 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use, avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/camera_page.dart';
+import 'camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert'; // Import dart:convert to use utf8 decoding
-import 'package:flutter_app/get_configuration.dart';
-import 'package:flutter_app/log_in_page.dart';
-import 'package:flutter_app/saved_lists_page.dart';
-import 'GlobalVariables.dart';
+import '../functions/get_configuration.dart';
+import 'log_in_page.dart';
+import 'saved_lists_page.dart';
+import '../global/GlobalVariables.dart';
 
-import 'package:flutter_app/alternative_plant_page.dart';
-import 'wiki_webscrape.dart';
+import 'alternative_plant_page.dart';
+import '../functions/wiki_webscrape.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 

@@ -1,13 +1,13 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/camera_page.dart';
+import 'camera_page.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'wiki_webscrape.dart';
-import 'package:flutter_app/get_configuration.dart';
-import 'package:flutter_app/log_in_page.dart';
-import 'package:flutter_app/saved_lists_page.dart';
-import 'GlobalVariables.dart';
+import '../functions/wiki_webscrape.dart';
+import '../functions/get_configuration.dart';
+import 'log_in_page.dart';
+import 'saved_lists_page.dart';
+import '../global/GlobalVariables.dart';
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';

@@ -1,10 +1,10 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/get_configuration.dart';
-import 'package:flutter_app/log_in_page.dart';
-import 'package:flutter_app/saved_lists_page.dart';
-import 'GlobalVariables.dart';
+import '../functions/get_configuration.dart';
+import 'log_in_page.dart';
+import 'saved_lists_page.dart';
+import '../global/GlobalVariables.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'saved_plant_page.dart';
 import 'package:provider/provider.dart';
 import 'saved_lists_page.dart';
-import 'plant_list_notifier.dart';
+import '../notifiers/plant_list_notifier.dart';
 import 'dart:convert';
-import 'package:flutter_app/get_configuration.dart';
+import '../functions/get_configuration.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../notifiers/user_lists_notifier.dart';
+import '../notifiers/plant_details_notifier.dart';
 
 class PlantListPage extends StatefulWidget {
   final String listId;

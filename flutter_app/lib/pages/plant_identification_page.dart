@@ -2,14 +2,14 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/non_invasive_plant_page.dart';
-import 'package:flutter_app/camera_page.dart';
-import 'package:flutter_app/invasive_plant_page.dart';
+import 'non_invasive_plant_page.dart';
+import 'camera_page.dart';
+import 'invasive_plant_page.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'get_configuration.dart';
-import 'GlobalVariables.dart';
+import '../functions/get_configuration.dart';
+import '../global/GlobalVariables.dart';
 
 class PlantIdentificationPage extends StatefulWidget {
   final String imagePath;

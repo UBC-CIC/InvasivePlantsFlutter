@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter_app/home_page.dart';
+import 'home_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'plant_identification_page.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'wiki_webscrape.dart';
+import '../functions/wiki_webscrape.dart';
 
 class SavedPlantPage extends StatefulWidget {
   final String scientificName;

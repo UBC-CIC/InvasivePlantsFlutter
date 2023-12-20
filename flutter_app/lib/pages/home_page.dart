@@ -13,11 +13,11 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'invasive_plant_page.dart';
 import 'camera_page.dart';
 import 'saved_lists_page.dart';
-import 'wiki_webscrape.dart';
-import 'location_functions.dart';
-import 'get_configuration.dart';
-import 'package:flutter_app/log_in_page.dart';
-import 'GlobalVariables.dart';
+import '../functions/wiki_webscrape.dart';
+import '../functions/location_functions.dart';
+import '../functions/get_configuration.dart';
+import 'log_in_page.dart';
+import '../global/GlobalVariables.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -81,8 +81,7 @@ class _HomePageState extends State<HomePage> {
     String? regionCodeName = currRegion["regionCode"];
     String country = currRegion["countryFullname"];
 
-    if (apiKey != null &&
-        apiKey.isNotEmpty &&
+    if (apiKey!.isNotEmpty &&
         regionCodeName != null &&
         regionCodeName.isNotEmpty) {
       String? baseUrl = configuration["apiBaseUrl"];
@@ -120,7 +119,7 @@ class _HomePageState extends State<HomePage> {
     var configuration = getConfiguration();
     String? apiKey = configuration["apiKey"];
 
-    if (apiKey != null && apiKey.isNotEmpty) {
+    if (apiKey!.isNotEmpty) {
       String? baseUrl = configuration["apiBaseUrl"];
       String endpoint = 'region';
       String apiUrl = '$baseUrl$endpoint';
@@ -191,7 +190,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     String? apiKey = configuration["apiKey"];
-    if (apiKey != null && apiKey.isNotEmpty) {
+    if (apiKey!.isNotEmpty) {
       var stringResponseBody;
       bool isResponseWeb = false;
 

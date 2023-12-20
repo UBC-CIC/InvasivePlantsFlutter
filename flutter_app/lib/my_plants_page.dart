@@ -46,8 +46,6 @@ class UserListsNotifier extends ChangeNotifier {
 
           // Update the PlantListNotifier with list name and list_id
           PlantListNotifier newList = PlantListNotifier();
-          newList
-              .setImageUrl('assets/images/leaf.png'); // Set default image URL
           newList.setItemCount(0); // Set default item count
           newList.listName = newListName; // Assign list name
           newList.listId = listIdValue; // Assign list_id from response
@@ -110,11 +108,13 @@ class UserListsNotifier extends ChangeNotifier {
         } else {
           // Remove fetched list if exists
           String? fetchedListId;
-          userLists.forEach((key, value) {
-            if (value.listName == listName) {
-              fetchedListId = key;
-            }
-          });
+          userLists.forEach(
+            (key, value) {
+              if (value.listName == listName) {
+                fetchedListId = key;
+              }
+            },
+          );
           if (fetchedListId != null) {
             userLists.remove(fetchedListId);
           }
@@ -134,19 +134,8 @@ class UserListsNotifier extends ChangeNotifier {
 }
 
 class PlantDetailsNotifier extends ChangeNotifier {
-  late String _imageUrl =
-      'assets/images/swordfern1.jpeg'; // Initialize with default value
-  late int _itemCount = 10; // Initialize with default value
-
-  String get imageUrl => _imageUrl;
-
+  late int _itemCount = 0;
   int get itemCount => _itemCount;
-
-  // Methods to update values
-  void setImageUrl(String newImageUrl) {
-    _imageUrl = newImageUrl;
-    notifyListeners();
-  }
 
   void setItemCount(int newItemCount) {
     _itemCount = newItemCount;
@@ -162,7 +151,7 @@ class MyPlantsPage extends StatefulWidget {
 }
 
 class _MyPlantsPageState extends State<MyPlantsPage> {
-  bool isSignedIn = false; // Add a boolean to track user sign-in status
+  bool isSignedIn = false;
 
   @override
   void initState() {
@@ -269,7 +258,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
             backgroundColor: Colors.white,
             elevation: 0,
             title: const Text(
-              'MY PLANTS',
+              'MY LISTS',
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
@@ -384,10 +373,6 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
         ),
       );
     }
-    final plantDetailsNotifier = Provider.of<PlantDetailsNotifier>(context);
-
-    String imageUrl = plantDetailsNotifier.imageUrl;
-    int itemCount = plantDetailsNotifier.itemCount;
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -398,7 +383,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
           backgroundColor: Colors.white,
           elevation: 0,
           title: const Text(
-            'MY PLANTS',
+            'MY LISTS',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           actions: [
@@ -465,7 +450,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                   },
                   icon: const Icon(
                     Icons.add,
-                    color: Colors.lightBlue,
+                    color: Colors.green,
                     size: 35,
                   ),
                 ),
@@ -479,9 +464,6 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
               child: Consumer<UserListsNotifier>(
                 builder: (context, userListsNotifier, child) {
                   final userLists = userListsNotifier.userLists.keys.toList();
-                  // final listId = 'list_${userLists.keys.elementAt(index)}'; // Update this line
-                  // final keys = userLists.keys.toList(); // Extract keys to a list
-
                   if (userLists.isEmpty) {
                     return Center(
                       child: RichText(
@@ -498,7 +480,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                             TextSpan(
                               text: '+',
                               style: const TextStyle(
-                                color: Colors.lightBlue,
+                                color: Colors.green,
                                 fontSize: 25,
                               ),
                               recognizer: TapGestureRecognizer()
@@ -591,23 +573,15 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                           userListsNotifier.getOrCreateList(listId);
 
                       // Fetch individual values for each list
-                      String imageUrl = plantListNotifier.imageUrl;
                       int itemCount = plantListNotifier.itemCount;
 
                       return Container(
                         margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        padding: const EdgeInsets.fromLTRB(10, 15, 10, 10),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: const Color.fromARGB(255, 223, 250, 224),
                           borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 3,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+                          boxShadow: kElevationToShadow[3],
                         ),
                         child: GestureDetector(
                           onTap: () async {
@@ -617,56 +591,78 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                 builder: (context) => ChangeNotifierProvider(
                                   create: (context) => plantListNotifier,
                                   child: CategoryInfoPage(
-                                    listId: listId,
-                                    categoryTitle: listId,
+                                    listId: plantListNotifier.listId,
+                                    categoryTitle: plantListNotifier.listName,
                                   ),
                                 ),
                               ),
                             );
-
                             if (result != null &&
                                 result is Map<String, dynamic>) {
-                              // Update the imageUrl and itemCount for the specific list
-                              plantListNotifier.setImageUrl(result['imageUrl']);
                               plantListNotifier
                                   .setItemCount(result['itemCount']);
+                              setState(() {});
                             }
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                child: Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: AssetImage(imageUrl),
-                                      fit: BoxFit.cover,
+                              RawMaterialButton(
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChangeNotifierProvider(
+                                        create: (context) => plantListNotifier,
+                                        child: CategoryInfoPage(
+                                          listId: plantListNotifier.listId,
+                                          categoryTitle:
+                                              plantListNotifier.listName,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  );
+
+                                  if (result != null &&
+                                      result is Map<String, dynamic>) {
+                                    plantListNotifier
+                                        .setItemCount(result['itemCount']);
+                                    setState(() {});
+                                  }
+                                },
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                fillColor:
+                                    const Color.fromARGB(255, 148, 201, 130),
+                                padding:
+                                    const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                                shape: const CircleBorder(),
+                                elevation: 0,
+                                child: const Icon(
+                                  Icons.folder,
+                                  size: 25.0,
+                                  color: Color.fromARGB(255, 190, 255, 192),
                                 ),
                               ),
-                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const SizedBox(height: 10),
                                     Text(
                                       plantListNotifier.listName,
+                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
+                                        color: Colors.blueGrey,
                                       ),
                                     ),
                                     const SizedBox(height: 10),
                                     Row(
                                       children: [
                                         const Text(
-                                          '# of plants: ',
+                                          'Number of plants: ',
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: Colors.blueGrey,
@@ -676,7 +672,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                                           '$itemCount',
                                           style: const TextStyle(
                                               fontSize: 18,
-                                              color: Colors.lightBlue,
+                                              color: Colors.green,
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -686,7 +682,7 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                               ),
                               const SizedBox(width: 10),
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+                                padding: const EdgeInsets.fromLTRB(0, 7, 0, 0),
                                 child: IconButton(
                                   onPressed: () {
                                     showDialog(
@@ -737,7 +733,6 @@ class _MyPlantsPageState extends State<MyPlantsPage> {
                 },
               ),
             ),
-            const SizedBox(height: 110)
           ],
         ),
         bottomNavigationBar: Container(

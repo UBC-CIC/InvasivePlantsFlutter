@@ -328,12 +328,4 @@ class _LogInPageState extends State<LogInPage> {
       ],
     );
   }
-
-  Widget _buildLogoButton(String imagePath) {
-    return SizedBox(
-      width: 50,
-      height: 50,
-      child: Image.asset(imagePath),
-    );
-  }
 }

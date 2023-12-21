@@ -10,7 +10,6 @@ import '../notifiers/plant_list_notifier.dart';
 import '../functions/get_configuration.dart';
 import '../global/GlobalVariables.dart';
 import '../notifiers/user_lists_notifier.dart';
-import '../notifiers/plant_details_notifier.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;

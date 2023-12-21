@@ -1,8 +1,5 @@
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-// import 'ioFileSystem.dart';
-
 /// Number of species per page
-const pageSize = 20;   
+const pageSize = 20;
 
 /// Number of day for each cache
 const maxCacheDay = 3;

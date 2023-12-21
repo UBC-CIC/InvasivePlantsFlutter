@@ -139,10 +139,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
             }
 
             try {
-              // Create the URL for the GET request
-              final apiUrl =
-                  'https://p2ltjqaajb.execute-api.ca-central-1.amazonaws.com/prod/invasiveSpecies?scientific_name=$lowerCaseScientificName';
-
               // Get configurations
               var configuration = getConfiguration();
               String? apiKey = configuration["apiKey"];

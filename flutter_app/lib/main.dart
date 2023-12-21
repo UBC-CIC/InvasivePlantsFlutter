@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import './pages/log_in_page.dart';
 import './pages/sign_up_page.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
 import './pages/home_page.dart';
 import './pages/plant_list_page.dart';

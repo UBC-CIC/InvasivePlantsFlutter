@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:convert';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
@@ -122,7 +120,7 @@ class _SignUpPageState extends State<SignUpPage> {
         confirmationCode: confirmationCode,
       );
       await _handleSignUpResult(result);
-    } on AuthException catch (e) {
+    } on AuthException {
       rethrow; // Propagate exception for handling in _showConfirmationCodeDialog
     }
   }

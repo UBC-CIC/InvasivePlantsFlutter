@@ -76,45 +76,18 @@ class _LogInPageState extends State<LogInPage> {
         password: password,
       );
       await _handleSignInResult(result);
-    } on AuthException catch (e) {
+    } on AuthException {
       _showErrorSnackBar('Invalid credentials. Please try again.');
     }
   }
 
   Future<void> _handleSignInResult(SignInResult result) async {
-    switch (result.nextStep.signInStep) {
-      // case AuthSignInStep.confirmSignInWithSmsMfaCode:
-      //   final codeDeliveryDetails = result.nextStep.codeDeliveryDetails!;
-      //   _showCodeDeliveryDialog(codeDeliveryDetails);
-      //   break;
-      // case AuthSignInStep.confirmSignInWithNewPassword:
-      //   safePrint('Enter a new password to continue signing in');
-      //   break;
-      // case AuthSignInStep.confirmSignInWithCustomChallenge:
-      //   final parameters = result.nextStep.additionalInfo;
-      //   final prompt = parameters['prompt']!;
-      //   safePrint(prompt);
-      //   break;
-      // case AuthSignInStep.resetPassword:
-      //   final resetResult = await Amplify.Auth.resetPassword(
-      //     username: username,
-      //   );
-      //   await _handleResetPasswordResult(resetResult);
-      //   break;
-      // case AuthSignInStep.confirmSignUp:
-      //   // Resend the sign up code to the registered device.
-      //   final resendResult = await Amplify.Auth.resendSignUpCode(
-      //     username: _emailController.text,
-      //   );
-      //   _showCodeDeliveryDialog(resendResult.codeDeliveryDetails);
-      //   break;
-      case AuthSignInStep.done:
-        _showSuccessSnackBar('You are signed in!');
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
-        break;
+    if (result.nextStep.signInStep == AuthSignInStep.done) {
+      _showSuccessSnackBar('You are signed in!');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
     }
   }
 
@@ -148,8 +121,6 @@ class _LogInPageState extends State<LogInPage> {
 
   void checkAuthStatus() async {
     try {
-      // Check if a user is already signed in
-      var currentUser = await Amplify.Auth.getCurrentUser();
       setState(() {
         isSignedIn = true;
       });

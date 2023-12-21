@@ -13,7 +13,6 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'invasive_plant_page.dart';
 import 'camera_page.dart';
 import 'saved_lists_page.dart';
-import '../functions/wiki_webscrape.dart';
 import '../functions/location_functions.dart';
 import '../functions/get_configuration.dart';
 import 'log_in_page.dart';

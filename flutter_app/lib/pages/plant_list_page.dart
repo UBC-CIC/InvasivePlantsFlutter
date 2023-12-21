@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'saved_plant_page.dart';
 import 'package:provider/provider.dart';
-import 'saved_lists_page.dart';
 import '../notifiers/plant_list_notifier.dart';
 import 'dart:convert';
 import '../functions/get_configuration.dart';

@@ -530,21 +530,29 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                     wikiInfo['speciesImages'] as List?;
                                 if (speciesImages != null &&
                                     speciesImages.isNotEmpty) {
-                                  firstImage = speciesImages[0];
-                                  return Container(
-                                    margin:
-                                        const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: NetworkImage(firstImage),
-                                        fit: BoxFit.cover,
+                                  final firstImageURL =
+                                      speciesImages[0] as String;
+                                  final lowerCaseImageUrl =
+                                      firstImageURL.toLowerCase();
+                                  if (lowerCaseImageUrl.endsWith('.jpg') ||
+                                      lowerCaseImageUrl.endsWith('.jpeg') ||
+                                      lowerCaseImageUrl.endsWith('.png')) {
+                                    return Container(
+                                      margin: const EdgeInsets.fromLTRB(
+                                          10, 0, 10, 5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: NetworkImage(firstImageURL),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    ),
-                                    height: MediaQuery.of(context).size.height /
-                                        2.5,
-                                    width: double.infinity,
-                                  );
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              2.5,
+                                      width: double.infinity,
+                                    );
+                                  }
                                 }
                               }
                               return Center(

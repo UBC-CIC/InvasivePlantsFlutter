@@ -622,38 +622,54 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                                           wikiInfo['speciesImages'] as List?;
                                       if (speciesImages != null &&
                                           index < speciesImages.length) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (_) => Dialog(
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Image.network(
-                                                    speciesImages[index],
-                                                    fit: BoxFit.cover,
+                                        final imageUrl =
+                                            speciesImages[index] as String;
+                                        final lowerCaseImageUrl =
+                                            imageUrl.toLowerCase();
+                                        if (lowerCaseImageUrl
+                                                .endsWith('.jpg') ||
+                                            lowerCaseImageUrl
+                                                .endsWith('.jpeg') ||
+                                            lowerCaseImageUrl
+                                                .endsWith('.png')) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) => Dialog(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Image.network(
+                                                      imageUrl,
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 10, 5, 5),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Image.network(
-                                                speciesImages[index],
-                                                width: 150,
-                                                height: 150,
-                                                fit: BoxFit.cover,
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 10, 5, 5),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Image.network(
+                                                  imageUrl,
+                                                  width: 150,
+                                                  height: 150,
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        } else {
+                                          // Invalid image format, return an empty container
+                                          return Container();
+                                        }
                                       } else {
                                         return Container();
                                       }

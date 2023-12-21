@@ -121,14 +121,18 @@ class _LogInPageState extends State<LogInPage> {
 
   void checkAuthStatus() async {
     try {
+      final session = await Amplify.Auth.fetchAuthSession();
       setState(() {
-        isSignedIn = true;
+        isSignedIn = session.isSignedIn;
       });
-      // Navigate to the HomePage if the user is signed in
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+
+      if (isSignedIn) {
+        // Navigate to the HomePage if the user is signed in
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
     } catch (e) {
       print('Error checking authentication state: $e');
     }

@@ -35,7 +35,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
   @override
   bool get wantKeepAlive => true;
   late Map<String, Object> wikiInfo;
-  String firstImage = '';
+  String firstImageURL = '';
   bool isSignedIn = false;
   Set<String> selectedListItems = <String>{};
   List<Map<String, dynamic>> listData = [];
@@ -422,7 +422,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                if (widget.plantNetImageURL != null || firstImage != '') {
+                if (widget.plantNetImageURL != null || firstImageURL != '') {
                   showDialog(
                     context: context,
                     builder: (_) => Dialog(
@@ -436,7 +436,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                 fit: BoxFit.cover,
                               )
                             : Image.network(
-                                firstImage,
+                                firstImageURL,
                                 fit: BoxFit.cover,
                               ),
                       ),

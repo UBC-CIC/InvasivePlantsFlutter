@@ -19,7 +19,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
     with AutomaticKeepAliveClientMixin<SavedPlantPage> {
   @override
   bool get wantKeepAlive => true;
-  String firstImage = '';
+  String firstImageURL = '';
 
   String formatSpeciesName(String speciesName) {
     String formattedName =
@@ -59,7 +59,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                if (firstImage != '') {
+                if (firstImageURL != '') {
                   showDialog(
                     context: context,
                     builder: (_) => Dialog(
@@ -68,7 +68,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
                           Navigator.of(context).pop();
                         },
                         child: Image.network(
-                          firstImage,
+                          firstImageURL,
                           fit: BoxFit.cover,
                         ),
                       ),

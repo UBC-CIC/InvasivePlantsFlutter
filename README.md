@@ -4,7 +4,7 @@ InvasiveID is a mobile app that allows users to identify invasive plants based o
 
 |Index| Description|
 |:----------------|:-----------|
-| [Deployment](#deployment-guide)         |    Learn how to deploy this project yourself |
+| [Deployment Guide](#deployment-guide)         |    Learn how to deploy this project yourself |
 | [User Guide](#user-guide)         |    Learn how to use this application |
 | [Directories](#directories)                             | General project directory structure
 | [Changelog](#changelog)         |    Any changes post publish |

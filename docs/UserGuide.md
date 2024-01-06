@@ -26,7 +26,7 @@ Next, the user can log in or sign up with their email. Signing up is only requir
 |   |   |
 |---|---|
 |<img src="../assets/screenshots/homepage.png" width="100%"> | After logging in or continuing as guest, the user will be directed to the Home Page. This page displays all of the invasive plants that fall within the selected region, which the user has the option to change. The app currently supports invasive plants in British Columbia and Ontario. The user can scroll through and browse these plants or search up a specific invasive plant by scientific name. |
-|<img src="../assets/screenshots/homepagedialog.png" width="100%"> | **Profile Icon**: Located at the top left corner of the Home Page, a profile icon can be pressed. If the user is already signed in, they will have the option to sign out or delete their account. Otherwise, clicking on this icon redirect the user to the login page. |
+|<img src="../assets/screenshots/homepagedialog.png" width="100%"> | **Profile Icon**: Located at the top left corner of the Home Page, a profile icon can be pressed. If the user is already signed in, they will have the option to sign out or delete their account. Otherwise, clicking on this icon redirects the user to the login page. |
 
 
 
@@ -44,7 +44,7 @@ Each main page features a bottom navigation bar with three icons. The home icon 
 
 ## Plant Identification
 
-The following section will explain how a user can identify an invasive plant and follow-up measures to take:
+The following section will explain how a user can identify plants:
 
 ### Camera
 |   |   |
@@ -54,9 +54,7 @@ The following section will explain how a user can identify an invasive plant and
 
 
 ### Plant matches
-The user will be provided with the best matching result for the identified species. Matches are marked as invasive or non-invasive given the user's location. 
-
-Additionally, the user can choose to save the plant to a [list](#lists) by clicking on the save icon on the top-right of the page.
+The user will be provided with the best matching result for the identified species. Matches are marked as invasive or non-invasive given the user's location. Additionally, the user can choose to save the plant to a [list](#lists) by clicking on the save icon on the top-right of the page.
 
 #### Non-invasive
 |   |   |

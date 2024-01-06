@@ -6,7 +6,7 @@
 |:-----------------------------------------------------------|:----------------------------------------------------------| 
 | [Dependencies](#Dependencies)                              | Required services and tools for deployment                                 |
 | [Clone the Repository](#clone-the-repository)              | How to clone this repository                              |
-| [Connect the App to API Gateway and Cognito](#connect-the-app-to-api-gateway)| Connect the app to the backend of this project           |
+| [Connect the App to API Gateway and Cognito](#connect-the-app-to-api-gateway-and-cognito)| Connect the app to the backend of this project           |
 | [Deploy to TestFlight](#deploy-to-testflight)              | Deploy your app to TestFlight for testers to use          |
 
 
@@ -47,7 +47,7 @@ code .
 ```
 
 ## Connect the App to API Gateway and Cognito
-### Setup Environment variable
+### Set up Environment variables
 Create a file called `api-keys.dev.json` at the root level:
 
 ```

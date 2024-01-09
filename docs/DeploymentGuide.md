@@ -56,7 +56,8 @@ Create a file called `api-keys.dev.json` at the root level:
     "API_KEY": "",
     "COGNITO_REGION": "",
     "COGNITO_POOL_ID": "",
-    "COGNITO_APP_CLIENT_ID":""
+    "COGNITO_APP_CLIENT_ID":"",
+    "PLANTNET_API_KEY":""
 }
 ```
 
@@ -85,6 +86,13 @@ To get `"COGNITO_APP_CLIENT_ID"`:
 1. Click into your user pool.
 2. Navigate to the `App Integration` tab.
 3. Scroll to the bottom and the client ID should be on the right.
+
+**Pl@ntNet API**
+1. Create a Pl@ntNet account [here](https://my.plantnet.org/signup)
+   - For plan pricing, choose the free plan, which offers 500 identifications a day.
+2. Log in and navigate to the "Settings" section of your dashboard. 
+3. Find the "Private API key" and enter that as your `"PLANTNET_API_KEY"`.
+   
 
 ### VSCode Setup for debugging
 Create a folder at the root level called `.vscode`. then create a file inside of  it called `launch.json` with the following content:

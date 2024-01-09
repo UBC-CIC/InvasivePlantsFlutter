@@ -31,12 +31,9 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
   String includeRelatedImages = 'true';
   String lang = 'en';
   String noReject = 'true';
-  String apiKey = '2b101Rx4lIHUaJFkbbPAccFmGO';
   bool isLoading = false; // Add this line to manage loading state
 
   Map<String, dynamic> plantnetParams = {
-    'service': 'https://my-api.plantnet.org/v2/identify/all',
-    'api-key': '2b101Rx4lIHUaJFkbbPAccFmGO',
     'organs': [],
     'images': [],
   };
@@ -49,6 +46,8 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
 
       _addImageAndOrganToParams();
 
+      var configuration = getConfiguration();
+      String apiKey = configuration["plantnetAPIKey"]!;
       String url =
           '$baseUrl$project?include-related-images=$includeRelatedImages&no-reject=$noReject&lang=$lang&api-key=$apiKey';
       // debugPrint('URL: $url');

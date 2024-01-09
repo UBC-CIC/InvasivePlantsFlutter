@@ -6,13 +6,15 @@ Map<String, String> getConfiguration() {
   const cognitoRegion = String.fromEnvironment('COGNITO_REGION');
   const cognitoPoolId = String.fromEnvironment('COGNITO_POOL_ID');
   const cognitoAppClientId = String.fromEnvironment('COGNITO_APP_CLIENT_ID');
+  const plantnetAPIKey = String.fromEnvironment('PLANTNET_API_KEY');
 
   // Check for error
   if (apiBaseUrl.isEmpty ||
       apiKey.isEmpty ||
       cognitoRegion.isEmpty ||
       cognitoPoolId.isEmpty ||
-      cognitoAppClientId.isEmpty) {
+      cognitoAppClientId.isEmpty ||
+      plantnetAPIKey.isEmpty) {
     throw AssertionError('Some keys are not set.');
   }
 
@@ -21,6 +23,7 @@ Map<String, String> getConfiguration() {
     "apiKey": apiKey,
     "cognitoRegion": cognitoRegion,
     "cognitoPoolId": cognitoPoolId,
-    "cognitoAppClientId": cognitoAppClientId
+    "cognitoAppClientId": cognitoAppClientId,
+    "plantnetAPIKey": plantnetAPIKey
   };
 }

@@ -46,7 +46,7 @@ And to open the project in VS Code, run:
 code .
 ```
 
-## Connect the App to API Gateway and Cognito
+## Connect the App to the backend
 ### Set up Environment variables
 Create a file called `api-keys.dev.json` at the root level:
 

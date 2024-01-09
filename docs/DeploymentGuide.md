@@ -88,6 +88,7 @@ To get `"COGNITO_APP_CLIENT_ID"`:
 3. Scroll to the bottom and the client ID should be on the right.
 
 **Pl@ntNet API**
+To get `"PLANTNET_API_KEY"`:
 1. Create a Pl@ntNet account [here](https://my.plantnet.org/signup)
    - For plan pricing, choose the free plan, which offers 500 identifications a day.
 2. Log in and navigate to the "Settings" section of your dashboard. 

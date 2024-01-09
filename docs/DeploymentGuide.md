@@ -6,7 +6,7 @@
 |:-----------------------------------------------------------|:----------------------------------------------------------| 
 | [Dependencies](#Dependencies)                              | Required services and tools for deployment                                 |
 | [Clone the Repository](#clone-the-repository)              | How to clone this repository                              |
-| [Connect the App to API Gateway and Cognito](#connect-the-app-to-api-gateway-and-cognito)| Connect the app to the backend of this project           |
+| [Connect the App to the Backend](#connect-the-app-to-the-backend)| Connect the app to the backend of this project           |
 | [Deploy to TestFlight](#deploy-to-testflight)              | Deploy your app to TestFlight for testers to use          |
 
 
@@ -46,7 +46,7 @@ And to open the project in VS Code, run:
 code .
 ```
 
-## Connect the App to the backend
+## Connect the App to the Backend
 ### Set up Environment variables
 Create a file called `api-keys.dev.json` at the root level:
 

@@ -88,6 +88,8 @@ To get `"COGNITO_APP_CLIENT_ID"`:
 3. Scroll to the bottom and the client ID should be on the right.
 
 **Pl@ntNet API**
+    Note: If you are a non-profit organization, contact [Pl@ntNet API](https://my.plantnet.org/contact) to request a non-profit account. This way, you can have more than 500 identifications per day.
+
 To get `"PLANTNET_API_KEY"`:
 1. Create a Pl@ntNet account [here](https://my.plantnet.org/signup)
    - For plan pricing, choose the free plan, which offers 500 identifications a day.

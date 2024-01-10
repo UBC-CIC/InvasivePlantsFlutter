@@ -21,7 +21,10 @@ The full list of steps to create and deploy a new Flutter application from scrat
 - IDE of your choice (For development we recommend: [VS Code](https://docs.flutter.dev/tools/vs-code))
 - [Xcode](https://docs.flutter.dev/get-started/install/macos#install-xcode)
 - [CocoaPods](https://guides.cocoapods.org/using/getting-started.html#installation) - Additionally, if you are installing on an Apple Silicon Mac, follow step 2 of [this section](https://docs.flutter.dev/get-started/install/macos#deploy-to-ios-devices)
-
+- Pl@ntNet API
+  -  Note: If you are a non-profit organization, contact [Pl@ntNet](https://my.plantnet.org/contact) to request a non-profit account. This way, you can have more than 500 identifications per day.
+     - Otherwise, create a Pl@ntNet account [here](https://my.plantnet.org/signup)
+     - For plan pricing, choose the free plan, which offers 500 identifications a day.
 
 
 ## Clone the Repository
@@ -87,13 +90,11 @@ To get `"COGNITO_APP_CLIENT_ID"`:
 2. Navigate to the `App Integration` tab.
 3. Scroll to the bottom and the client ID should be on the right.
 
-**Pl@ntNet API**
-    Note: If you are a non-profit organization, contact [Pl@ntNet API](https://my.plantnet.org/contact) to request a non-profit account. This way, you can have more than 500 identifications per day.
+**Pl@ntNet API Console**
 
 To get `"PLANTNET_API_KEY"`:
-1. Create a Pl@ntNet account [here](https://my.plantnet.org/signup)
-   - For plan pricing, choose the free plan, which offers 500 identifications a day.
-2. Log in and navigate to the "Settings" section of your dashboard. 
+1. Log in to your Pl@ntNet account [here](https://my.plantnet.org/login)
+2. Navigate to the "Settings" section of your dashboard. 
 3. Find the "Private API key" and enter that as your `"PLANTNET_API_KEY"`.
    
 
@@ -138,16 +139,16 @@ The official guide to register your app can be found [here](https://docs.flutter
 1. To get started, sign in to [App Store Connect](https://appstoreconnect.apple.com/) with your Apple Developer account and open the [Identifiers Page](https://developer.apple.com/account/resources/identifiers/list).
 2. Click **+** to create a new Bundle ID.
 3. Select **App ID > App**
-4. Enter a description (name for the Bundle ID) and an **Explicit** unique Bundle Id (e.g. **com.[organization name].parkinsonsApp**)
+4. Enter a description (name for the Bundle ID) and an **Explicit** unique Bundle Id (e.g. **com.[organization name].InvasivePlantsApp**)
 5. Find and select **Push Notifications** under **Capabilites** 
 6. Leave the **App Services** as default and click **Continue>Register**
 
 ### Create an application record on App Store Connect
 1. Now, in the [My Apps](https://appstoreconnect.apple.com/apps) page of App Store Connect, click **+** in the top left corner and select **New App**
 2. Select **iOS** under **Platforms**
-3. Enter a name for the app (e.g. **Balance Test App**)
+3. Enter a name for the app (e.g. **Invasive Plants App**)
 4. Select the **Bundle ID** you have just created
-5. Enter a unique ID for your app under **SKU** (e.g. **com.[organization name].parkinsonsApp**)
+5. Enter a unique ID for your app under **SKU** (e.g. **com.[organization name].InvasivePlantsApp**)
 6. Select **Full Access** for **User Access** and click **Create**
 
 ### Beta Test Information
@@ -161,12 +162,10 @@ For an official guide, please view the **Update Xcode project settings** section
 ```
 open ios/Runner.xcworkspace
 ```
-2. Select the **Runner** with the App Store Connect icon in the Xcode navigator
-![Xcode Navigator](/assets/xcode_navigator.png)
-3. In the **General** tab, choose a display name for the app
-4. Under **Minimum Deployments**, ensure it is set to iOS 11.0
-5. Head to the **Signing & Capabilities** tab and sign in with your Apple Developer account if have not done so already
-![Xcode settings](../assets/xcode_settings.png)
+1. Select the **Runner** with the App Store Connect icon in the Xcode navigator
+2. In the **General** tab, choose a display name for the app
+3. Under **Minimum Deployments**, ensure it is set to iOS 13.0
+4. Head to the **Signing & Capabilities** tab and sign in with your Apple Developer account if have not done so already
 5. Please **ENTER and VERIFY** the **Bundle Identifier** matches with the Bundle Id created in App Store Connect
 6. In the **Signing & Capabilities** tab, ensure **Automatically manage signing** is checked and Team is set to the account/team associated with your Apple Developer account. Under Bundle Identifier, check that the Bundle Id matches with the Bundle Id created in App Store Connect
 
@@ -177,15 +176,13 @@ open ios/Runner.xcworkspace
 version: 1.0.0+1
 ```
 3. In Xcode, set the Target to be: `Runner > Any iOS Device`
-![Xcode Target](../assets/xcode_deployment_target.png)
 4. From the root directory of your project in **Terminal**, run:
 ```
 flutter build ios
 ```
-5. Once the Xcode build is complete, select `Product>Archive` in the Xcode menu bar. Wait for the archive to complete.
-6. Once the archive has completed, a window should appear showing all of your archives. Select the most recent archive and click `Distribute App`
-![Xcode Archives](../assets/xcode_archives.png)
-7. Select `App Store Connect > Upload > Strip Swift Symbols + Upload your app's symbols + Manage Version and Build Number > Automatically manage signing > Upload`
+1. Once the Xcode build is complete, select `Product>Archive` in the Xcode menu bar. Wait for the archive to complete.
+2. Once the archive has completed, a window should appear showing all of your archives. Select the most recent archive and click `Distribute App`
+3. Select `App Store Connect > Upload > Strip Swift Symbols + Upload your app's symbols + Manage Version and Build Number > Automatically manage signing > Upload`
 
 ### Deploy to TestFlight
 

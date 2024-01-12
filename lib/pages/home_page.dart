@@ -196,20 +196,22 @@ class _HomePageState extends State<HomePage> {
       // Try read data from cache first
       String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
       FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-      if (file != null && file.file.existsSync()) {
-        stringResponseBody = await file.file.readAsString();
+      // if (file != null && file.file.existsSync()) {
+      //   stringResponseBody = await file.file.readAsString();
+      //   print(stringResponseBody);
+      // }
+      // // Cache missed, get result from the api
+      // else {
+      final response =
+          await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+      if (response.statusCode == 200) {
+        stringResponseBody = response.body;
+        print(response.body);
+        isResponseWeb = true;
+      } else {
+        throw Exception('Failed to load data.');
       }
-      // Cache missed, get result from the api
-      else {
-        final response =
-            await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
-        if (response.statusCode == 200) {
-          stringResponseBody = response.body;
-          isResponseWeb = true;
-        } else {
-          throw Exception('Failed to load data.');
-        }
-      }
+      // }
 
       final jsonResponse = json.decode(stringResponseBody);
 

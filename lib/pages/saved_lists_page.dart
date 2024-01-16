@@ -465,7 +465,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
 
                       return Container(
                         margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                        padding: const EdgeInsets.fromLTRB(10, 15, 10, 10),
+                        padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 223, 250, 224),
                           borderRadius: BorderRadius.circular(15),

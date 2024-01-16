@@ -93,9 +93,9 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Plant Identification App',
       theme: ThemeData(
-        platform: TargetPlatform.iOS,
-        primarySwatch: Colors.blue,
-      ),
+          platform: TargetPlatform.iOS,
+          primarySwatch: Colors.blue,
+          useMaterial3: false),
       initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),

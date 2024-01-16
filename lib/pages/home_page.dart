@@ -195,7 +195,7 @@ class _HomePageState extends State<HomePage> {
 
       // Try read data from cache first
       String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-      FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+      // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
       // if (file != null && file.file.existsSync()) {
       //   stringResponseBody = await file.file.readAsString();
       //   print(stringResponseBody);

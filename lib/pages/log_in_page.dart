@@ -154,10 +154,6 @@ class _LogInPageState extends State<LogInPage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
-            'LOG IN',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
           automaticallyImplyLeading: false,
         ),
         body: SingleChildScrollView(
@@ -165,10 +161,16 @@ class _LogInPageState extends State<LogInPage> {
           child: Container(
             color: Colors.white,
             height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Image(
+                  image: AssetImage('assets/images/logo.png'),
+                  height: 150,
+                  width: 150,
+                ),
+                const SizedBox(height: 30),
                 _buildTextFieldWithLabel(
                   "Email",
                   errorText: _emailError,

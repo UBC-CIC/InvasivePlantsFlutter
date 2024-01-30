@@ -264,10 +264,6 @@ class _SignUpPageState extends State<SignUpPage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
-            'SIGN UP',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
           automaticallyImplyLeading: false,
         ),
         body: SingleChildScrollView(
@@ -275,10 +271,16 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Container(
             color: Colors.white,
             height: MediaQuery.of(context).size.height,
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Image(
+                  image: AssetImage('assets/images/logo.png'),
+                  height: 150,
+                  width: 150,
+                ),
+                const SizedBox(height: 20),
                 _buildTextFieldWithLabel(
                   "Email",
                   hintText: "example@gmail.com",

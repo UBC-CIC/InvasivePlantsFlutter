@@ -744,7 +744,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                           CrossAxisAlignment.center,
                                       children: [
                                         const Text(
-                                          'Source:',
+                                          'Source(s):',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16),

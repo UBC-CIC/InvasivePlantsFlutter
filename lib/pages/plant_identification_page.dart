@@ -101,7 +101,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
           String? firstResultScientificName,
               firstResultCommonName,
               plantNetImageUrl,
-              invasiveRegion,
               lowerCaseScientificName,
               accuracyScoreString;
           double? accuracyScoreRaw;
@@ -161,17 +160,9 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                   var parsedResponse = json.decode(getResponse.body);
 
                   //
-                  var matchingInvasiveSpecies = parsedResponse["species"][0]; //
-                  var invasiveRegionId =
-                      parsedResponse["species"][0]['region_id'][0];
-
-                  if (invasiveRegionId ==
-                      '7ae91c1e-3444-42b9-83a9-c0d9e25d1981') {
-                    invasiveRegion = 'British Columbia';
-                  } else if (invasiveRegionId ==
-                      '82c70f8d-e00a-47af-a312-e5dda299e1af') {
-                    invasiveRegion = 'Ontario';
-                  }
+                  var matchingInvasiveSpecies = parsedResponse["species"][0];
+                  var invasiveRegion =
+                      matchingInvasiveSpecies['region_code_names'].join(', ');
 
                   debugPrint(
                       "matchingInvasiveSpecies: $matchingInvasiveSpecies");

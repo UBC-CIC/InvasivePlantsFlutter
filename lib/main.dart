@@ -16,6 +16,7 @@ import './configuration/AmplifyConfig.dart';
 import './functions/get_configuration.dart';
 import './notifiers/plant_details_notifier.dart';
 import './notifiers/user_lists_notifier.dart';
+import './global/GlobalVariables.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
@@ -93,9 +94,13 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Plant Identification App',
       theme: ThemeData(
-          platform: TargetPlatform.iOS,
-          primarySwatch: Colors.blue,
-          useMaterial3: false),
+        platform: TargetPlatform.iOS,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColors.primaryColor,
+            primary: AppColors.primaryColor,
+            secondary: AppColors.secondaryColor),
+      ),
       initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),

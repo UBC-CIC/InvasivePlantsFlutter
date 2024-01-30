@@ -291,7 +291,8 @@ class _HomePageState extends State<HomePage> {
           return AlertDialog(
             title: const Text(
               'Actions:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: AppColors.primaryColor),
               textAlign: TextAlign.center,
             ),
             content: Column(
@@ -308,7 +309,7 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         content: const Text('Signed out'),
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.primaryColor,
                       ),
                     );
                     Navigator.pop(context);
@@ -322,6 +323,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(15),
                     ),
                     elevation: 3,
+                    color: AppColors.primaryColor,
                     child: const Padding(
                       padding: EdgeInsets.all(12.0),
                       child: Row(
@@ -330,14 +332,14 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             'Sign Out',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           Icon(
                             Icons.exit_to_app,
-                            color: Colors.blue,
+                            color: Colors.white,
                           ),
                         ],
                       ),
@@ -358,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           content: const Text('User Deleted'),
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColors.primaryColor,
                         ),
                       );
                       Navigator.pop(context);
@@ -415,12 +417,15 @@ class _HomePageState extends State<HomePage> {
         return AlertDialog(
           title: const Text(
             'Are you sure?',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: AppColors.primaryColor),
             textAlign: TextAlign.center,
           ),
           content: const Text(
             'This will delete your user permanently. You cannot undo this action.',
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 18, color: AppColors.primaryColor),
           ),
           actions: <Widget>[
             TextButton(
@@ -429,7 +434,7 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: AppColors.primaryColor),
               ),
             ),
             TextButton(
@@ -503,8 +508,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           title: const Text(
-            "Invasive Species",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            "invasiveID",
+            style: TextStyle(
+                color: AppColors.primaryColor, fontWeight: FontWeight.bold),
           ),
         ),
         body: Column(
@@ -512,7 +518,14 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: CupertinoSearchTextField(
-                placeholder: 'Search',
+                backgroundColor: AppColors.secondaryColor,
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                ),
+                placeholderStyle: TextStyle(
+                  color: AppColors.primaryColor,
+                ),
+                placeholder: 'Scientific Name',
                 onChanged: (value) {
                   setState(() {
                     searchText = value;
@@ -526,7 +539,7 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 const Icon(
                   Icons.location_on,
-                  color: Colors.black,
+                  color: AppColors.primaryColor,
                 ),
                 const SizedBox(width: 5),
                 DropdownButtonHideUnderline(
@@ -539,7 +552,9 @@ class _HomePageState extends State<HomePage> {
                               value:
                                   formatRegionName(value["region_fullname"]!),
                               child: Text(
-                                  formatRegionName(value["region_fullname"]!)),
+                                formatRegionName(value["region_fullname"]!),
+                                style: TextStyle(color: AppColors.primaryColor),
+                              ),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {
@@ -560,7 +575,12 @@ class _HomePageState extends State<HomePage> {
                             );
                           },
                         )
-                      : const Text('No region selected'),
+                      : const Text(
+                          'No region selected',
+                          style: TextStyle(
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -659,7 +679,7 @@ class _HomePageState extends State<HomePage> {
         margin: const EdgeInsets.all(2),
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.secondaryColor,
           borderRadius: BorderRadius.circular(10.0),
           boxShadow: [
             BoxShadow(
@@ -675,7 +695,7 @@ class _HomePageState extends State<HomePage> {
             formattedName,
             style: const TextStyle(
               fontSize: 18,
-              color: Colors.black,
+              color: AppColors.primaryColor,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,

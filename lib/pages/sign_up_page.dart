@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'log_in_page.dart';
+import '../global/GlobalVariables.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -228,7 +229,7 @@ class _SignUpPageState extends State<SignUpPage> {
           borderRadius: BorderRadius.circular(10),
         ),
         content: const Text('Registration Success! Please log in.'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryColor,
       ),
     );
   }
@@ -280,7 +281,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   height: 150,
                   width: 150,
                 ),
-                const SizedBox(height: 20),
                 _buildTextFieldWithLabel(
                   "Email",
                   hintText: "example@gmail.com",
@@ -321,6 +321,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
+                    backgroundColor: AppColors.primaryColor,
                   ),
                   child: Container(
                     height: 50,
@@ -371,7 +372,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       TextSpan(
                         text: "Log in",
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.blue),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             Navigator.push(

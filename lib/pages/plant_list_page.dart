@@ -10,6 +10,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 import '../notifiers/user_lists_notifier.dart';
 import '../notifiers/plant_details_notifier.dart';
+import '../global/GlobalVariables.dart';
 
 class PlantListPage extends StatefulWidget {
   final String listId;
@@ -177,11 +178,13 @@ class _PlantListPageState extends State<PlantListPage> {
             appBar: AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.black),
+              iconTheme: const IconThemeData(
+                color: AppColors.secondaryColor,
+              ),
               title: Text(
                 widget.categoryTitle,
                 style: const TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold),
+                    color: AppColors.primaryColor, fontWeight: FontWeight.bold),
               ),
               leading: IconButton(
                 onPressed: () {
@@ -218,7 +221,7 @@ class _PlantListPageState extends State<PlantListPage> {
                             margin: const EdgeInsets.fromLTRB(25, 5, 25, 5),
                             padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 223, 250, 224),
+                              color: AppColors.secondaryColor,
                               borderRadius: BorderRadius.circular(15),
                               boxShadow: kElevationToShadow[3],
                             ),
@@ -228,7 +231,7 @@ class _PlantListPageState extends State<PlantListPage> {
                                 const Icon(
                                   Icons.circle,
                                   size: 20,
-                                  color: Color.fromARGB(255, 148, 201, 130),
+                                  color: AppColors.primaryColor,
                                 ),
                                 const SizedBox(width: 15),
                                 Expanded(
@@ -241,8 +244,9 @@ class _PlantListPageState extends State<PlantListPage> {
                                             plantList.plants[index]),
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                            fontSize: 22,
-                                            color: Colors.blueGrey),
+                                          fontSize: 22,
+                                          color: AppColors.primaryColor,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -256,9 +260,17 @@ class _PlantListPageState extends State<PlantListPage> {
                                         context: context,
                                         builder: (context) {
                                           return AlertDialog(
-                                            title: const Text('Delete Plant'),
+                                            title: const Text(
+                                              'Delete Plant',
+                                              style: TextStyle(
+                                                  color: AppColors.primaryColor,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                             content: Text(
                                               'Are you sure you want to delete ${formatSpeciesName(plantList.plants[index])}?',
+                                              style: TextStyle(
+                                                color: AppColors.primaryColor,
+                                              ),
                                             ),
                                             actions: [
                                               TextButton(
@@ -290,7 +302,7 @@ class _PlantListPageState extends State<PlantListPage> {
                                       );
                                     },
                                     icon: const Icon(Icons.delete),
-                                    color: Colors.blueGrey,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                               ],

@@ -3,6 +3,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/global/GlobalVariables.dart';
 import 'home_page.dart';
 import 'sign_up_page.dart';
 
@@ -114,7 +115,7 @@ class _LogInPageState extends State<LogInPage> {
           borderRadius: BorderRadius.circular(10),
         ),
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryColor,
       ),
     );
   }
@@ -197,11 +198,11 @@ class _LogInPageState extends State<LogInPage> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      backgroundColor: AppColors.primaryColor),
                   child: Container(
                     height: 50,
                     alignment: Alignment.center,
@@ -251,7 +252,8 @@ class _LogInPageState extends State<LogInPage> {
                       TextSpan(
                         text: "Sign Up",
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.blue),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             Navigator.push(

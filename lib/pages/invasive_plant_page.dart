@@ -115,7 +115,11 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
         builder: (_) => AlertDialog(
           title: const Text(
             'Please create a list first',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryColor,
+            ),
           ),
           actions: [
             TextButton(
@@ -152,7 +156,11 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
             return AlertDialog(
               title: const Text(
                 'Select a list:',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                ),
               ),
               content: SizedBox(
                 width: double.maxFinite,
@@ -166,7 +174,10 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                     return ListTile(
                       title: Text(
                         listName,
-                        style: const TextStyle(fontSize: 20),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                       onTap: () {
                         setState(
@@ -179,7 +190,12 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                           },
                         );
                       },
-                      trailing: isSelected ? const Icon(Icons.check) : null,
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: AppColors.primaryColor,
+                            )
+                          : null,
                     );
                   },
                 ),
@@ -291,7 +307,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
           borderRadius: BorderRadius.circular(10),
         ),
         content: const Text("Plant saved!"),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryColor,
       ),
     );
   }
@@ -331,7 +347,9 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(
+            color: AppColors.secondaryColor,
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -351,16 +369,16 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
             children: [
               Icon(
                 Icons.warning,
-                color: Colors.red,
+                color: AppColors.secondaryColor,
               ),
               Text(
                 ' Invasive Plant ',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.primaryColor, fontWeight: FontWeight.bold),
               ),
               Icon(
                 Icons.warning,
-                color: Colors.red,
+                color: AppColors.secondaryColor,
               ),
             ],
           ),
@@ -368,7 +386,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
             IconButton(
               icon: const Icon(
                 Icons.playlist_add,
-                color: Colors.lightBlue,
+                color: AppColors.primaryColor,
                 size: 35,
               ),
               onPressed: () async {
@@ -378,7 +396,10 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                     builder: (_) => AlertDialog(
                       title: const Text(
                         'Please log in to save plants',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                       actions: [
                         TextButton(
@@ -627,10 +648,10 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                     const Padding(
                       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: TabBar(
-                        indicatorColor: Color.fromARGB(255, 76, 175, 130),
+                        indicatorColor: AppColors.primaryColor,
                         indicatorSize: TabBarIndicatorSize.tab,
-                        unselectedLabelColor: Colors.black,
-                        labelColor: Colors.black,
+                        unselectedLabelColor: AppColors.primaryColor,
+                        labelColor: AppColors.primaryColor,
                         unselectedLabelStyle:
                             TextStyle(fontWeight: FontWeight.normal),
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -804,7 +825,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                         child: Divider(
                                           height: 1,
                                           thickness: 1,
-                                          color: Colors.green,
+                                          color: AppColors.primaryColor,
                                         ),
                                       ),
                                       const SizedBox(height: 10),
@@ -833,7 +854,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                               child: Divider(
                                                 height: 1,
                                                 thickness: 1,
-                                                color: Colors.green,
+                                                color: AppColors.primaryColor,
                                               ),
                                             ),
                                             const SizedBox(height: 10),
@@ -907,7 +928,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                               child: Divider(
                                                 height: 1,
                                                 thickness: 1,
-                                                color: Colors.green,
+                                                color: AppColors.primaryColor,
                                               ),
                                             ),
                                             SizedBox(
@@ -1013,7 +1034,7 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                               child: Divider(
                                                 height: 1,
                                                 thickness: 1,
-                                                color: Colors.green,
+                                                color: AppColors.primaryColor,
                                               ),
                                             ),
                                             const SizedBox(height: 5),
@@ -1169,6 +1190,8 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.bold,
+                                                        color: AppColors
+                                                            .primaryColor,
                                                       ),
                                                     ),
                                                     const SizedBox(height: 5),
@@ -1184,8 +1207,8 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
                                                             .ellipsis,
                                                         style: const TextStyle(
                                                           fontSize: 14,
-                                                          color: Color.fromARGB(
-                                                              255, 43, 75, 90),
+                                                          color: AppColors
+                                                              .primaryColor,
                                                         ),
                                                       ),
                                                     ),

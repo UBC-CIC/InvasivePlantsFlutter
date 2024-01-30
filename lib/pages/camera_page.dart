@@ -252,9 +252,7 @@ class _CameraPageState extends State<CameraPage> {
           ),
           title: const Text(
             "Take A Photo",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         body: Column(

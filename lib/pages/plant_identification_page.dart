@@ -313,9 +313,8 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
           leading: IconButton(
-            icon: const Icon(Icons.clear, color: Colors.black),
+            icon: const Icon(Icons.clear, color: AppColors.secondaryColor),
             onPressed: () {
               dispose();
               Navigator.of(context).push(
@@ -328,7 +327,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
           title: const Text(
             'SELECT PLANT ORGAN',
             style: TextStyle(
-              color: Colors.black,
+              color: AppColors.primaryColor,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -398,8 +397,8 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                                   fontWeight: FontWeight.bold)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: isItemSelected
-                                ? Colors.green
-                                : const Color.fromARGB(255, 221, 221, 221),
+                                ? AppColors.primaryColor
+                                : AppColors.secondaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),

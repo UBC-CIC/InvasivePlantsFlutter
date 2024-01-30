@@ -105,7 +105,11 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
         builder: (_) => AlertDialog(
           title: const Text(
             'Please create a list first',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryColor,
+            ),
           ),
           actions: [
             TextButton(
@@ -142,7 +146,11 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
             return AlertDialog(
               title: const Text(
                 'Select a list:',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                ),
               ),
               content: SizedBox(
                 width: double.maxFinite,
@@ -156,7 +164,10 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
                     return ListTile(
                       title: Text(
                         listName,
-                        style: const TextStyle(fontSize: 20),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                       onTap: () {
                         setState(
@@ -169,7 +180,12 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
                           },
                         );
                       },
-                      trailing: isSelected ? const Icon(Icons.check) : null,
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: AppColors.primaryColor,
+                            )
+                          : null,
                     );
                   },
                 ),
@@ -281,7 +297,7 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
           borderRadius: BorderRadius.circular(10),
         ),
         content: const Text("Plant saved!"),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryColor,
       ),
     );
   }
@@ -329,16 +345,17 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: AppColors.secondaryColor),
           title: const Text(
             'Plant Info',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: AppColors.primaryColor, fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(
               icon: const Icon(
                 Icons.playlist_add,
-                color: Colors.lightBlue,
+                color: AppColors.primaryColor,
                 size: 35,
               ),
               onPressed: () async {
@@ -348,7 +365,10 @@ class _AlternativePlantPageState extends State<AlternativePlantPage>
                     builder: (_) => AlertDialog(
                       title: const Text(
                         'Please log in to save plants',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                       actions: [
                         TextButton(

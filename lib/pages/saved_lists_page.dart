@@ -131,8 +131,8 @@ class _SavedListsPageState extends State<SavedListsPage> {
             elevation: 0,
             title: const Text(
               'MY LISTS',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppColors.primaryColor, fontWeight: FontWeight.bold),
             ),
           ),
           body: Column(
@@ -160,7 +160,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                         TextSpan(
                           text: 'Log In',
                           style: const TextStyle(
-                            color: Colors.lightBlue,
+                            color: AppColors.primaryColor,
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
                           ),
@@ -217,7 +217,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                     icon: Icon(
                       Icons.bookmark,
                       size: 40,
-                      color: Colors.blue,
+                      color: AppColors.primaryColor,
                     ),
                     label: '',
                   ),
@@ -256,7 +256,8 @@ class _SavedListsPageState extends State<SavedListsPage> {
           elevation: 0,
           title: const Text(
             'MY LISTS',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: AppColors.primaryColor, fontWeight: FontWeight.bold),
           ),
           actions: [
             Padding(
@@ -283,7 +284,6 @@ class _SavedListsPageState extends State<SavedListsPage> {
                               },
                               child: const Text(
                                 'Cancel',
-                                style: TextStyle(color: Colors.grey),
                               ),
                             ),
                             TextButton(
@@ -322,7 +322,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                   },
                   icon: const Icon(
                     Icons.add,
-                    color: Colors.green,
+                    color: AppColors.primaryColor,
                     size: 35,
                   ),
                 ),
@@ -356,7 +356,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                 TextSpan(
                                   text: '+',
                                   style: const TextStyle(
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                     fontSize: 25,
                                   ),
                                   recognizer: TapGestureRecognizer()
@@ -380,8 +380,6 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                                 },
                                                 child: const Text(
                                                   'Cancel',
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
                                                 ),
                                               ),
                                               TextButton(
@@ -467,7 +465,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                         margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
                         padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 223, 250, 224),
+                          color: AppColors.secondaryColor,
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: kElevationToShadow[3],
                         ),
@@ -483,7 +481,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                   ),
                                   content: const Text(
                                       'Add some plants to this list'),
-                                  backgroundColor: Colors.grey,
+                                  backgroundColor: AppColors.secondaryColor,
                                 ),
                               );
                             } else {
@@ -524,7 +522,8 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                         ),
                                         content: const Text(
                                             'Add some plants to this list'),
-                                        backgroundColor: Colors.grey,
+                                        backgroundColor:
+                                            AppColors.secondaryColor,
                                       ),
                                     );
                                   } else {
@@ -553,8 +552,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                 },
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.shrinkWrap,
-                                fillColor:
-                                    const Color.fromARGB(255, 148, 201, 130),
+                                fillColor: AppColors.primaryColor,
                                 padding:
                                     const EdgeInsets.fromLTRB(15, 15, 15, 15),
                                 shape: const CircleBorder(),
@@ -562,7 +560,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                 child: const Icon(
                                   Icons.folder,
                                   size: 25.0,
-                                  color: Color.fromARGB(255, 190, 255, 192),
+                                  color: AppColors.secondaryColor,
                                 ),
                               ),
                               Expanded(
@@ -575,7 +573,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                       style: const TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.blueGrey,
+                                        color: AppColors.primaryColor,
                                       ),
                                     ),
                                     const SizedBox(height: 10),
@@ -585,14 +583,14 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                           'Number of plants: ',
                                           style: TextStyle(
                                             fontSize: 18,
-                                            color: Colors.blueGrey,
+                                            color: AppColors.primaryColor,
                                           ),
                                         ),
                                         Text(
                                           '$itemCount',
                                           style: const TextStyle(
                                               fontSize: 18,
-                                              color: Colors.green,
+                                              color: AppColors.primaryColor,
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -609,9 +607,17 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                       context: context,
                                       builder: (context) {
                                         return AlertDialog(
-                                          title: const Text('Delete List'),
+                                          title: const Text(
+                                            'Delete List',
+                                            style: TextStyle(
+                                                color: AppColors.primaryColor,
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                           content: Text(
                                             'Are you sure you want to delete ${plantListNotifier.listName}?',
+                                            style: TextStyle(
+                                              color: AppColors.primaryColor,
+                                            ),
                                           ),
                                           actions: [
                                             TextButton(
@@ -641,7 +647,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                                     );
                                   },
                                   icon: const Icon(Icons.delete),
-                                  color: Colors.blueGrey,
+                                  color: AppColors.primaryColor,
                                 ),
                               ),
                             ],
@@ -689,7 +695,7 @@ class _SavedListsPageState extends State<SavedListsPage> {
                   icon: Icon(
                     Icons.bookmark,
                     size: 40,
-                    color: Colors.blue,
+                    color: AppColors.primaryColor,
                   ),
                   label: '',
                 ),

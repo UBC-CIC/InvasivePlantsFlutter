@@ -110,7 +110,10 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
         builder: (_) => AlertDialog(
           title: const Text(
             'Please create a list first',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryColor),
           ),
           actions: [
             TextButton(
@@ -147,7 +150,10 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
             return AlertDialog(
               title: const Text(
                 'Select a list:',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryColor),
               ),
               content: SizedBox(
                 width: double.maxFinite,
@@ -161,7 +167,8 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                     return ListTile(
                       title: Text(
                         listName,
-                        style: const TextStyle(fontSize: 20),
+                        style: const TextStyle(
+                            fontSize: 20, color: AppColors.primaryColor),
                       ),
                       onTap: () {
                         setState(
@@ -174,7 +181,12 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                           },
                         );
                       },
-                      trailing: isSelected ? const Icon(Icons.check) : null,
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              color: AppColors.primaryColor,
+                            )
+                          : null,
                     );
                   },
                 ),
@@ -286,7 +298,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
           borderRadius: BorderRadius.circular(10),
         ),
         content: const Text("Plant saved!"),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryColor,
       ),
     );
   }
@@ -302,7 +314,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: AppColors.secondaryColor),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -318,16 +330,16 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
             children: [
               Icon(
                 Icons.check_box,
-                color: Colors.green,
+                color: AppColors.secondaryColor,
               ),
               Text(
                 ' Safe Plant ',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.primaryColor, fontWeight: FontWeight.bold),
               ),
               Icon(
                 Icons.check_box,
-                color: Colors.green,
+                color: AppColors.secondaryColor,
               ),
             ],
           ),
@@ -335,7 +347,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
             IconButton(
               icon: const Icon(
                 Icons.playlist_add,
-                color: Colors.lightBlue,
+                color: AppColors.primaryColor,
                 size: 35,
               ),
               onPressed: () async {
@@ -345,7 +357,10 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                     builder: (_) => AlertDialog(
                       title: const Text(
                         'Please log in to save plants',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor),
                       ),
                       actions: [
                         TextButton(
@@ -519,7 +534,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                             child: Divider(
                               height: 1,
                               thickness: 1,
-                              color: Colors.green,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -546,7 +561,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -607,7 +622,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                                 SizedBox(
@@ -695,7 +710,7 @@ class _NonInvasivePlantPageState extends State<NonInvasivePlantPage>
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                                 const SizedBox(height: 5),

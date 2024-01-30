@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../functions/wiki_webscrape.dart';
+import '../global/GlobalVariables.dart';
 
 class SavedPlantPage extends StatefulWidget {
   final String scientificName;
@@ -48,11 +49,13 @@ class _SavedPlantPageState extends State<SavedPlantPage>
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(
+            color: AppColors.secondaryColor,
+          ),
           title: Text(
             formatSpeciesName(widget.scientificName),
             style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold),
+                color: AppColors.primaryColor, fontWeight: FontWeight.bold),
           ),
         ),
         body: Column(
@@ -229,7 +232,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
                             child: Divider(
                               height: 1,
                               thickness: 1,
-                              color: Colors.green,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -256,7 +259,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -317,7 +320,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                                 SizedBox(
@@ -405,7 +408,7 @@ class _SavedPlantPageState extends State<SavedPlantPage>
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.green,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                                 const SizedBox(height: 5),

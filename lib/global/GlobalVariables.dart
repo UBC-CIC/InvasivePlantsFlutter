@@ -1,3 +1,11 @@
+import 'package:flutter/material.dart';
+
+/// Color Scheme of App
+class AppColors {
+  static const Color primaryColor = Color(0xFF607C3C);
+  static const Color secondaryColor = Color(0xFFB7BF96);
+}
+
 /// Number of species per page
 const pageSize = 20;
 

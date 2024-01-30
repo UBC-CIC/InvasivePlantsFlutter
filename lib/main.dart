@@ -17,12 +17,13 @@ import './functions/get_configuration.dart';
 import './notifiers/plant_details_notifier.dart';
 import './notifiers/user_lists_notifier.dart';
 import './global/GlobalVariables.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensure that the binding is initialized
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp]); // Lock to portrait mode
 
@@ -71,6 +72,8 @@ void main() async {
       child: const MyApp(),
     ),
   );
+
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatefulWidget {

@@ -18,6 +18,7 @@ import './notifiers/plant_details_notifier.dart';
 import './notifiers/user_lists_notifier.dart';
 import './global/GlobalVariables.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter/services.dart'; // Import SystemChrome class
 
@@ -29,6 +30,7 @@ void main() async {
 
   Future<void> configureAmplify() async {
     try {
+      await dotenv.load();
       final auth = AmplifyAuthCognito();
       await Amplify.addPlugin(auth);
       final amplifyConfigString = jsonDecode(amplifyconfig);

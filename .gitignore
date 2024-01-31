@@ -45,3 +45,4 @@ app.*.map.json
 
 # Secret files
 api-keys.dev.json
+*.env

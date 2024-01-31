@@ -1,20 +1,30 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 // Get configuration values
 Map<String, String> getConfiguration() {
   // Get secret name
-  const apiBaseUrl = String.fromEnvironment('BASE_API_URL');
-  const apiKey = String.fromEnvironment('API_KEY');
-  const cognitoRegion = String.fromEnvironment('COGNITO_REGION');
-  const cognitoPoolId = String.fromEnvironment('COGNITO_POOL_ID');
-  const cognitoAppClientId = String.fromEnvironment('COGNITO_APP_CLIENT_ID');
-  const plantnetAPIKey = String.fromEnvironment('PLANTNET_API_KEY');
+  final apiBaseUrl = dotenv.env['BASE_API_URL'];
+  final apiKey = dotenv.env['API_KEY'];
+  final cognitoRegion = dotenv.env['COGNITO_REGION'];
+  final cognitoPoolId = dotenv.env['COGNITO_POOL_ID'];
+  final cognitoAppClientId = dotenv.env['COGNITO_APP_CLIENT_ID'];
+  final plantnetAPIKey = dotenv.env['PLANTNET_API_KEY'];
+
+  // Print debugging information
+  print('apiBaseUrl: $apiBaseUrl');
+  print('apiKey: $apiKey');
+  print('cognitoRegion: $cognitoRegion');
+  print('cognitoPoolId: $cognitoPoolId');
+  print('cognitoAppClientId: $cognitoAppClientId');
+  print('plantnetAPIKey: $plantnetAPIKey');
 
   // Check for error
-  if (apiBaseUrl.isEmpty ||
-      apiKey.isEmpty ||
-      cognitoRegion.isEmpty ||
-      cognitoPoolId.isEmpty ||
-      cognitoAppClientId.isEmpty ||
-      plantnetAPIKey.isEmpty) {
+  if (apiBaseUrl == null ||
+      apiKey == null ||
+      cognitoRegion == null ||
+      cognitoPoolId == null ||
+      cognitoAppClientId == null ||
+      plantnetAPIKey == null) {
     throw AssertionError('Some keys are not set.');
   }
 

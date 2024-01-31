@@ -51,17 +51,15 @@ code .
 
 ## Connect the App to the Backend
 ### Set up Environment variables
-Create a file called `api-keys.dev.json` at the root level:
+Create a file called `.env` at the root level:
 
 ```
-{
-    "BASE_API_URL": "",
-    "API_KEY": "",
-    "COGNITO_REGION": "",
-    "COGNITO_POOL_ID": "",
-    "COGNITO_APP_CLIENT_ID":"",
-    "PLANTNET_API_KEY":""
-}
+BASE_API_URL=""
+API_KEY=""
+COGNITO_REGION=""
+COGNITO_POOL_ID=""
+COGNITO_APP_CLIENT_ID=""
+PLANTNET_API_KEY=""
 ```
 
 After backend deployment is completed, look for the values here:
@@ -98,33 +96,9 @@ To get `"PLANTNET_API_KEY"`:
 3. Find the "Private API key" and enter that as your `"PLANTNET_API_KEY"`.
    
 
-### VSCode Setup for debugging
-Create a folder at the root level called `.vscode`. then create a file inside of  it called `launch.json` with the following content:
+To run the app, use the command below:
 ```
-{
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Launch",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main.dart",
-            "args": [
-              "--dart-define-from-file",
-              "api-keys.dev.json"
-            ]
-        }
-    ]
-}
-```
-**Ensure that both the `api-keys.dev.json` and `launch.json` files are excluded from version control via the `.gitignore` file.**
-
-To run the app, use the command below,
-```
-flutter run --dart-define-from-file=api-keys.dev.json
+flutter run 
 ```
 
 
@@ -140,8 +114,7 @@ The official guide to register your app can be found [here](https://docs.flutter
 2. Click **+** to create a new Bundle ID.
 3. Select **App ID > App**
 4. Enter a description (name for the Bundle ID) and an **Explicit** unique Bundle Id (e.g. **com.[organization name].InvasivePlantsApp**)
-5. Find and select **Push Notifications** under **Capabilites** 
-6. Leave the **App Services** as default and click **Continue>Register**
+5. Leave the **App Services** as default and click **Continue>Register**
 
 ### Create an application record on App Store Connect
 1. Now, in the [My Apps](https://appstoreconnect.apple.com/apps) page of App Store Connect, click **+** in the top left corner and select **New App**
@@ -178,7 +151,7 @@ version: 1.0.0+1
 3. In Xcode, set the Target to be: `Runner > Any iOS Device`
 4. From the root directory of your project in **Terminal**, run:
 ```
-flutter build ios
+flutter build ios --release
 ```
 1. Once the Xcode build is complete, select `Product>Archive` in the Xcode menu bar. Wait for the archive to complete.
 2. Once the archive has completed, a window should appear showing all of your archives. Select the most recent archive and click `Distribute App`

@@ -16,8 +16,8 @@ Next, the user can log in or sign up with their email. Signing up is only requir
 
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/loginpage.png" width="100%"> | **Login Page**: The user enters their credentials. |
-|<img src="../assets/screenshots/signuppage.png" width="100%">  | **Signup Page**: For the sign-up process, after the user enters valid credentials, a 6-digit verification code is sent to their email. After entering the code correctly, they will be directed back to the login page. |
+|<img src="../assets/screenshots/loginpage.jpg" width="100%"> | **Login Page**: The user enters their credentials. |
+|<img src="../assets/screenshots/signuppage.jpg" width="100%">  | **Signup Page**: For the sign-up process, after the user enters valid credentials, a 6-digit verification code is sent to their email. After entering the code correctly, they will be directed back to the login page. |
 
 
 
@@ -25,8 +25,8 @@ Next, the user can log in or sign up with their email. Signing up is only requir
 
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/homepage.png" width="100%"> | After logging in or continuing as guest, the user will be directed to the Home Page. This page displays all of the invasive plants that fall within the selected region, which the user has the option to change. The app currently supports invasive plants in British Columbia and Ontario. The user can scroll through and browse these plants or search up a specific invasive plant by scientific name. |
-|<img src="../assets/screenshots/homepagedialog.png" width="100%"> | **Profile Icon**: Located at the top left corner of the Home Page, a profile icon can be pressed. If the user is already signed in, they will have the option to sign out or delete their account. Otherwise, clicking on this icon redirects the user to the login page. |
+|<img src="../assets/screenshots/homepage.jpg" width="100%"> | After logging in or continuing as guest, the user will be directed to the Home Page. This page displays all of the invasive plants that fall within the selected region, which the user has the option to change. The app currently supports invasive plants in British Columbia and Ontario. The user can scroll through and browse these plants or search up a specific invasive plant by scientific name. |
+|<img src="../assets/screenshots/homepagedialog.jpg" width="100%"> | **Profile Icon**: Located at the top left corner of the Home Page, a profile icon can be pressed. If the user is already signed in, they will have the option to sign out or delete their account. Otherwise, clicking on this icon redirects the user to the login page. |
 
 
 
@@ -39,7 +39,7 @@ After pressing an invasive plant on the home page, the user will be provided wit
 
 Each main page features a bottom navigation bar with three icons. The home icon brings the user to the [Home Page](#home-page), the camera icon to the [camera](#camera), and the save icon to the user's [lists](#lists).
 
-<img src="../assets/screenshots/navigationbar.png" width="60%">
+<img src="../assets/screenshots/navigationbar.jpg" width="60%">
 
 
 ## Plant Identification
@@ -49,27 +49,27 @@ The following section will explain how a user can identify plants:
 ### Camera
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/camerapage.png" width="100%"> | The app will first ask the user for camera, microphone, and image gallery (if they choose photos) permissions. The user can either take a photo of a plant or upload an existing photo for identification. |
-<img src="../assets/screenshots/identificationpage.png" width="100%"> | Next, the user can select the part of the plant they've photographed, choosing from the plant organs - leaf, flower, fruit, and bark. Clicking on the `Find Matches` button will direct them to the identification result. |
+|<img src="../assets/screenshots/camerapage.jpg" width="100%"> | The app will first ask the user for camera, microphone, and image gallery (if they choose photos) permissions. The user can either take a photo of a plant or upload an existing photo for identification. |
+<img src="../assets/screenshots/identificationpage.jpg" width="100%"> | Next, the user can select the part of the plant they've photographed, choosing from the plant organs - leaf, flower, fruit, and bark. Clicking on the `Find Matches` button will direct them to the identification result. |
 
 
 ### Plant matches
-The user will be provided with the best matching result for the identified species. Matches are marked as invasive or non-invasive given the user's location. Additionally, the user can choose to save the plant to a [list](#lists) by clicking on the save icon on the top-right of the page.
+The user will be provided with the best matching result for the identified species. Matches are marked as invasive or non-invasive given the user's location. Additionally, the user can choose to save the plant to a [list](#lists) by clicking on the add icon on the top-right of the page.
 
 #### Non-invasive
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/safeplantpage.png" width="100%"> | If the species is non-invasive, the match preview will provide the plant's scientific name, common name, an accuracy score, a plant image, and a scrollable list of information about the plant provided through Wikipedia. |
+|<img src="../assets/screenshots/safeplantpage.jpg" width="100%"> | If the species is non-invasive, the match preview will provide the plant's scientific name, common name, an accuracy score, a plant image, and a scrollable list of information about the plant provided through Wikipedia. |
 
 #### Invasive
 
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/invasiveplantpage.png" width="100%"> | If the result is invasive, there are three tabs of information shown: About, Wikipedia, and Alternatives. The "About" tab shows a basic summary of the plant from the official invasive plants page of the province. The "Wikipedia" tab shows the information from Wikipedia. And the "Alternatives" Tab displays a list of alternative species to plant instead (if there exists such species).   |
+|<img src="../assets/screenshots/invasiveplantpage.jpg" width="100%"> | If the result is invasive, there are three tabs of information shown: About, Wikipedia, and Alternatives. The "About" tab shows a basic summary of the plant from the official invasive plants page of the province. The "Wikipedia" tab shows the information from Wikipedia. And the "Alternatives" Tab displays a list of alternative species to plant instead (if there exists such species).   |
 
 ## Lists
 
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/plantlistpage.png" width="100%"> | To access the lists feature, users are required to be [logged in](#log-in-and-sign-up). This functionality allows users to create personalized plant lists for better organization and convenient future access of plant information. Users can create as many lists as they would like, and delete them as well. |
-<img src="../assets/screenshots/listofplantspage.png" width="100%"> | Each list will display the saved species through their scientific names. Pressing on any of these species will display some basic information of each species. Users can only delete species from their lists on this page.  |
+|<img src="../assets/screenshots/plantlistpage.jpg" width="100%"> | To access the lists feature, users are required to be [logged in](#log-in-and-sign-up). This functionality allows users to create personalized plant lists for better organization and convenient future access of plant information. Users can create as many lists as they would like, and delete them as well. |
+<img src="../assets/screenshots/listofplantspage.jpg" width="100%"> | Each list will display the saved species through their scientific names. Pressing on any of these species will display some basic information of each species. Users can only delete species from their lists on this page.  |

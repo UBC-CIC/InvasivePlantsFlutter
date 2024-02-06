@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -195,23 +196,23 @@ class _HomePageState extends State<HomePage> {
 
       // Try read data from cache first
       String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-      // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-      // if (file != null && file.file.existsSync()) {
-      //   stringResponseBody = await file.file.readAsString();
-      //   print(stringResponseBody);
-      // }
-      // // Cache missed, get result from the api
-      // else {
-      final response =
-          await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
-      if (response.statusCode == 200) {
-        stringResponseBody = response.body;
-        print(response.body);
-        isResponseWeb = true;
-      } else {
-        throw Exception('Failed to load data.');
+      FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+      if (file != null && file.file.existsSync()) {
+        stringResponseBody = await file.file.readAsString();
+        print(stringResponseBody);
       }
-      // }
+      // Cache missed, get result from the api
+      else {
+        final response =
+            await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+        if (response.statusCode == 200) {
+          stringResponseBody = response.body;
+          print(response.body);
+          isResponseWeb = true;
+        } else {
+          throw Exception('Failed to load data.');
+        }
+      }
 
       final jsonResponse = json.decode(stringResponseBody);
 
@@ -661,8 +662,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildGridItem(Map<String, dynamic> species) {
-    String speciesName = species['scientific_name'][0];
-    String formattedName = formatSpeciesName(speciesName);
+    String speciesScientificName = species['scientific_name'][0];
+    String speciesCommonName = species['common_name'][0];
+    String speciesImageURL = species['images'][0]['image_url'];
+    String formattedScientificName = formatSpeciesName(speciesScientificName);
+    String formattedCommonName = formatSpeciesName(speciesCommonName);
 
     return GestureDetector(
       onTap: () {
@@ -676,29 +680,60 @@ class _HomePageState extends State<HomePage> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.all(2),
-        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+        margin: const EdgeInsets.all(1),
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         decoration: BoxDecoration(
-          color: AppColors.secondaryColor,
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(speciesImageURL),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.5),
+              BlendMode.darken,
+            ),
+          ),
           borderRadius: BorderRadius.circular(10.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 3,
-              blurRadius: 6,
+              color: AppColors.primaryColor.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 5,
               offset: const Offset(0, 3),
             ),
           ],
         ),
         child: Center(
-          child: Text(
-            formattedName,
-            style: const TextStyle(
-              fontSize: 18,
-              color: AppColors.primaryColor,
-              fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(5, 0, 5, 10),
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                Text(
+                  formattedCommonName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        offset: Offset(1, 1),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 5),
+                Text(
+                  formattedScientificName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),

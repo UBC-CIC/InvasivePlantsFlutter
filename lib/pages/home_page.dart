@@ -508,10 +508,19 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          title: const Text(
-            "invasiveID",
-            style: TextStyle(
-                color: AppColors.primaryColor, fontWeight: FontWeight.bold),
+          title: Row(
+            children: [
+              SizedBox(width: 58),
+              const Text(
+                "invasiveID",
+                style: TextStyle(color: AppColors.primaryColor),
+              ),
+              Image.asset(
+                'assets/images/logo.png',
+                width: 40,
+                height: 40,
+              ),
+            ],
           ),
         ),
         body: Column(
@@ -526,7 +535,7 @@ class _HomePageState extends State<HomePage> {
                 placeholderStyle: TextStyle(
                   color: AppColors.primaryColor,
                 ),
-                placeholder: 'Scientific Name',
+                placeholder: 'Name or Description',
                 onChanged: (value) {
                   setState(() {
                     searchText = value;
@@ -756,9 +765,13 @@ class _HomePageState extends State<HomePage> {
 
       String speciesName = species['scientific_name'][0];
       String formattedName = formatSpeciesName(speciesName);
+      String commonName = species['common_name'][0];
+      String speciesDescription = species['species_description'];
 
-      // Check if the search text matches the formatted name
-      if (formattedName.toLowerCase().contains(searchText.toLowerCase())) {
+      // Check if the search text matches the formatted name, common name, or species description
+      if (formattedName.toLowerCase().contains(searchText.toLowerCase()) ||
+          commonName.toLowerCase().contains(searchText.toLowerCase()) ||
+          speciesDescription.toLowerCase().contains(searchText.toLowerCase())) {
         matchingItems.add(_buildGridItem(species));
       }
     }

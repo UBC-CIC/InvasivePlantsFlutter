@@ -10,6 +10,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'dart:collection'; // Import HashSet
 
 import 'invasive_plant_page.dart';
 import 'camera_page.dart';
@@ -176,6 +177,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Set<dynamic> speciesData = HashSet<dynamic>();
+
   // Return true if more data is expected, else false
   Future<bool> fetchData() async {
     var configuration = getConfiguration();
@@ -194,14 +197,14 @@ class _HomePageState extends State<HomePage> {
       var stringResponseBody;
       bool isResponseWeb = false;
 
-      // Try read data from cache first
+      // Try reading data from cache first
       String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
       FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
       if (file != null && file.file.existsSync()) {
         stringResponseBody = await file.file.readAsString();
         print(stringResponseBody);
       }
-      // Cache missed, get result from the api
+      // Cache missed, get result from the API
       else {
         final response =
             await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
@@ -224,17 +227,17 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         if (nextOffset != null) {
-          // Append fetched data to existing speciesData
+          // Add fetched data to existing speciesData
           speciesData.addAll(jsonResponse["species"] as List<dynamic>);
         } else {
-          speciesData = jsonResponse["species"] as List<dynamic>;
+          speciesData = jsonResponse["species"].toSet(); // Convert to Set
         }
 
-        // Get offset of next page, provided by esponse
+        // Get offset of next page, provided by response
         nextOffset = jsonResponse["nextOffset"];
       });
 
-      // Save only if response come from api
+      // Save only if response comes from the API
       if (isResponseWeb) {
         Directory tempDir = await getTemporaryDirectory();
         String cachePath = '${tempDir.path}/cache_data.json';

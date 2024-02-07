@@ -149,7 +149,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                   apiKey.isNotEmpty) {
                 // Make API request
                 String endpoint =
-                    'invasiveSpecies?scientific_name=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
+                    'invasiveSpecies?search_input=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
                 String apiUrl = '$baseUrl$endpoint';
                 // Make the GET request
                 var getResponse = await http

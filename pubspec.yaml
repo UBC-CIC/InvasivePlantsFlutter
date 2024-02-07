@@ -50,6 +50,7 @@ dependencies:
   flutter_native_splash: ^2.3.7
   flutter_dotenv: ^5.1.0
   cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.9
 
 
 dev_dependencies:

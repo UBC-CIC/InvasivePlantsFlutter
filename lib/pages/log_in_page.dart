@@ -8,6 +8,7 @@ import 'home_page.dart';
 import 'sign_up_page.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -266,6 +267,12 @@ class _LogInPageState extends State<LogInPage> {
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 30),
+                SvgPicture.asset(
+                  'assets/images/plantnet.svg',
+                  width: 50,
+                  height: 50,
                 ),
               ],
             ),

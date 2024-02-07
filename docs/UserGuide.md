@@ -25,7 +25,7 @@ Next, the user can log in or sign up with their email. Signing up is only requir
 
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/homepage.jpg" width="100%"> | After logging in or continuing as guest, the user will be directed to the Home Page. This page displays all of the invasive plants that fall within the selected region, which the user has the option to change. The app currently supports invasive plants in British Columbia and Ontario. The user can scroll through and browse these plants or search up a specific invasive plant by scientific name. |
+|<img src="../assets/screenshots/homepage.jpg" width="100%"> | After logging in or continuing as guest, the user will be directed to the Home Page. This page displays all of the invasive plants that fall within the selected region, which the user has the option to change. The app currently supports invasive plants in British Columbia and Ontario. The user can scroll through and browse these plants or search up a specific invasive plant by scientific name, common name, or description. |
 |<img src="../assets/screenshots/homepagedialog.jpg" width="100%"> | **Profile Icon**: Located at the top left corner of the Home Page, a profile icon can be pressed. If the user is already signed in, they will have the option to sign out or delete their account. Otherwise, clicking on this icon redirects the user to the login page. |
 
 

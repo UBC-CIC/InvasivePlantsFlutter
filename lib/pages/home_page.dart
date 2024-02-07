@@ -386,7 +386,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Delete User',
+                            'Delete Account',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

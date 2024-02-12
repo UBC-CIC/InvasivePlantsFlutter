@@ -36,8 +36,6 @@
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Please allow microphone access</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Please allow image gallery access</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

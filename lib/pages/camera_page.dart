@@ -21,20 +21,19 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
-    _initializeCameraAndMicrophoneAndGallery();
+    _initializeCameraAndGallery();
   }
 
-  Future<void> _initializeCameraAndMicrophoneAndGallery() async {
+  Future<void> _initializeCameraAndGallery() async {
     final cameraStatus = await Permission.camera.status;
-    final microphoneStatus = await Permission.microphone.status;
     final galleryStatus = await Permission.photos.status;
 
     if (cameraStatus.isGranted &&
-        microphoneStatus.isGranted &&
         (galleryStatus.isGranted || galleryStatus.isLimited)) {
       final cameras = await availableCameras();
       if (cameras.isNotEmpty) {
-        _controller = CameraController(cameras[0], ResolutionPreset.max);
+        _controller = CameraController(cameras[0], ResolutionPreset.max,
+            enableAudio: false);
         await _controller!.initialize();
         await _controller!.lockCaptureOrientation();
 
@@ -44,21 +43,19 @@ class _CameraPageState extends State<CameraPage> {
     } else {
       final statuses = await [
         Permission.camera,
-        Permission.microphone,
         Permission.photos,
       ].request();
 
       if (statuses[Permission.camera]!.isGranted &&
-          statuses[Permission.microphone]!.isGranted &&
           statuses[Permission.photos]!.isGranted) {
         final cameras = await availableCameras();
         if (cameras.isNotEmpty) {
-          _controller = CameraController(cameras[0], ResolutionPreset.max);
+          _controller = CameraController(cameras[0], ResolutionPreset.max,
+              enableAudio: false);
           await _controller!.initialize();
           if (!mounted) return;
           setState(() {});
         } else if (statuses[Permission.camera]!.isDenied ||
-            statuses[Permission.microphone]!.isDenied ||
             statuses[Permission.photos]!.isDenied) {
           showDialog(
               context: context,
@@ -66,7 +63,7 @@ class _CameraPageState extends State<CameraPage> {
                 return AlertDialog(
                   title: const Text("Permission Denied"),
                   content: const Text(
-                      "Please enable camera, microphone, and gallery permissions in settings to use this feature."),
+                      "Please enable camera and gallery permissions in settings to use this feature."),
                   actions: <Widget>[
                     TextButton(
                       child: const Text("OK"),
@@ -78,7 +75,6 @@ class _CameraPageState extends State<CameraPage> {
                 );
               });
         } else if (statuses[Permission.camera]!.isPermanentlyDenied ||
-            statuses[Permission.microphone]!.isPermanentlyDenied ||
             statuses[Permission.photos]!.isPermanentlyDenied) {
           showDialog(
               context: context,
@@ -86,7 +82,7 @@ class _CameraPageState extends State<CameraPage> {
                 return AlertDialog(
                   title: const Text("Permission Denied"),
                   content: const Text(
-                      "You have permanently denied camera, microphone, and gallery permissions. Please enable them in device settings to use this feature."),
+                      "You have permanently denied camera and gallery permissions. Please enable them in device settings to use this feature."),
                   actions: <Widget>[
                     TextButton(
                       child: const Text("Open Settings"),
@@ -115,12 +111,11 @@ class _CameraPageState extends State<CameraPage> {
       }
 
       final cameraStatus = await Permission.camera.status;
-      final microphoneStatus = await Permission.microphone.status;
-      if (cameraStatus.isGranted && microphoneStatus.isGranted) {
+      if (cameraStatus.isGranted) {
         final XFile image = await _controller!.takePicture();
 
         navigateToPlantIdentificationPage(image.path);
-      } else if (cameraStatus.isDenied || microphoneStatus.isDenied) {
+      } else if (cameraStatus.isDenied) {
         showDialog(
             context: context,
             builder: (context) {
@@ -138,8 +133,7 @@ class _CameraPageState extends State<CameraPage> {
                 ],
               );
             });
-      } else if (cameraStatus.isPermanentlyDenied ||
-          microphoneStatus.isPermanentlyDenied) {
+      } else if (cameraStatus.isPermanentlyDenied) {
         showDialog(
             context: context,
             builder: (context) {
@@ -159,7 +153,7 @@ class _CameraPageState extends State<CameraPage> {
             });
       }
     } catch (error) {
-      throw ("Error: not enough permission with camera and microphone.");
+      throw ("Error: not enough permission with camera.");
     }
   }
 
@@ -183,7 +177,7 @@ class _CameraPageState extends State<CameraPage> {
               return AlertDialog(
                 title: const Text("Permission Denied"),
                 content: const Text(
-                    "Please enable camera, and gallery permissions in settings to use this feature."),
+                    "Please enable gallery permissions in settings to use this feature."),
                 actions: <Widget>[
                   TextButton(
                     child: const Text("OK"),
@@ -201,7 +195,7 @@ class _CameraPageState extends State<CameraPage> {
               return AlertDialog(
                 title: const Text("Permission Denied"),
                 content: const Text(
-                    "You have permanently denied camera, and gallery permissions. Please enable them in device settings to use this feature."),
+                    "You have permanently denied gallery permissions. Please enable them in device settings to use this feature."),
                 actions: <Widget>[
                   TextButton(
                     child: const Text("Open Settings"),

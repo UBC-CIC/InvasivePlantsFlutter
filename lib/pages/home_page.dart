@@ -129,22 +129,22 @@ class _HomePageState extends State<HomePage> {
       bool isResponseWeb = false;
 
       // Try reading data from cache
-      String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-      FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-      if (file != null && file.file.existsSync()) {
-        stringResponseBody = await file.file.readAsString();
+      // String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
+      // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+      // if (file != null && file.file.existsSync()) {
+      //   stringResponseBody = await file.file.readAsString();
+      // }
+      // // Cache missed, get result from the api
+      // else {
+      final response =
+          await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+      if (response.statusCode == 200) {
+        stringResponseBody = response.body;
+        isResponseWeb = true;
+      } else {
+        throw Exception('Failed to load data.');
       }
-      // Cache missed, get result from the api
-      else {
-        final response =
-            await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
-        if (response.statusCode == 200) {
-          stringResponseBody = response.body;
-          isResponseWeb = true;
-        } else {
-          throw Exception('Failed to load data.');
-        }
-      }
+      // }
 
       var resDecode = jsonDecode(stringResponseBody);
 
@@ -159,7 +159,7 @@ class _HomePageState extends State<HomePage> {
         File file = File(cachePath);
         await file.writeAsString(stringResponseBody);
 
-        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(),
+        await _apiCache.putFile(apiUrl, file.readAsBytesSync(),
             maxAge: Duration(days: maxCacheDay));
       }
     } else {

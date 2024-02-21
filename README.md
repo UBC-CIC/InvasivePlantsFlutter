@@ -1,6 +1,6 @@
 # InvasiveID
 
-InvasiveID is a mobile app that allows users to identify invasive plants based on their region and suggests alternative non-invasive plants to plant instead. Authorized users can also create their own lists of plants. For more information, please visit the [CIC Website](https://cic.ubc.ca/).
+InvasiveID is a mobile app that allows users to identify invasive plants based on their region and suggests alternative non-invasive plants to plant instead. Authorized users can also create their own lists of plants. For more information, please visit the [Invasive Plants Admin App](https://github.com/UBC-CIC/InvasivePlants).
 
 |Index| Description|
 |:----------------|:-----------|

@@ -32,6 +32,8 @@
 	<string>Please allow camera access</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Please allow image gallery access</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

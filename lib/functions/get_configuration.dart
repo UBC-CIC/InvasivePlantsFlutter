@@ -10,14 +10,6 @@ Map<String, String> getConfiguration() {
   final cognitoAppClientId = dotenv.env['COGNITO_APP_CLIENT_ID'];
   final plantnetAPIKey = dotenv.env['PLANTNET_API_KEY'];
 
-  // Print debugging information
-  print('apiBaseUrl: $apiBaseUrl');
-  print('apiKey: $apiKey');
-  print('cognitoRegion: $cognitoRegion');
-  print('cognitoPoolId: $cognitoPoolId');
-  print('cognitoAppClientId: $cognitoAppClientId');
-  print('plantnetAPIKey: $plantnetAPIKey');
-
   // Check for error
   if (apiBaseUrl == null ||
       apiKey == null ||

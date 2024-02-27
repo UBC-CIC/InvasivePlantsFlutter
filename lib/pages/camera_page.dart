@@ -26,10 +26,8 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _initializeCameraAndGallery() async {
     final cameraStatus = await Permission.camera.status;
-    final galleryStatus = await Permission.photos.status;
 
-    if (cameraStatus.isGranted &&
-        (galleryStatus.isGranted || galleryStatus.isLimited)) {
+    if (cameraStatus.isGranted) {
       final cameras = await availableCameras();
       if (cameras.isNotEmpty) {
         _controller = CameraController(cameras[0], ResolutionPreset.max,
@@ -43,11 +41,9 @@ class _CameraPageState extends State<CameraPage> {
     } else {
       final statuses = await [
         Permission.camera,
-        Permission.photos,
       ].request();
 
-      if (statuses[Permission.camera]!.isGranted &&
-          statuses[Permission.photos]!.isGranted) {
+      if (statuses[Permission.camera]!.isGranted) {
         final cameras = await availableCameras();
         if (cameras.isNotEmpty) {
           _controller = CameraController(cameras[0], ResolutionPreset.max,
@@ -55,8 +51,7 @@ class _CameraPageState extends State<CameraPage> {
           await _controller!.initialize();
           if (!mounted) return;
           setState(() {});
-        } else if (statuses[Permission.camera]!.isDenied ||
-            statuses[Permission.photos]!.isDenied) {
+        } else if (statuses[Permission.camera]!.isDenied) {
           showDialog(
               context: context,
               builder: (context) {
@@ -74,8 +69,7 @@ class _CameraPageState extends State<CameraPage> {
                   ],
                 );
               });
-        } else if (statuses[Permission.camera]!.isPermanentlyDenied ||
-            statuses[Permission.photos]!.isPermanentlyDenied) {
+        } else if (statuses[Permission.camera]!.isPermanentlyDenied) {
           showDialog(
               context: context,
               builder: (context) {
@@ -161,8 +155,8 @@ class _CameraPageState extends State<CameraPage> {
     final galleryStatus = await Permission.photos.status;
 
     if (galleryStatus.isGranted || galleryStatus.isLimited) {
-      final XFile? image =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
+      final XFile? image = await ImagePicker()
+          .pickImage(source: ImageSource.gallery, requestFullMetadata: false);
 
       if (image != null) {
         navigateToPlantIdentificationPage(image.path);

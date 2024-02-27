@@ -249,28 +249,56 @@ class _CameraPageState extends State<CameraPage> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: Column(
+        body: Stack(
           children: <Widget>[
-            Expanded(
-              child: CameraPreview(_controller!),
+            Column(
+              children: <Widget>[
+                Expanded(
+                  child: CameraPreview(_controller!),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 50),
+            Positioned(
+              bottom: 45,
+              left: 30,
+              right: 30,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: _selectImageFromGallery,
-                    child: const Icon(Icons.image_outlined,
-                        color: Colors.white, size: 60),
+                children: <Widget>[
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: _selectImageFromGallery,
+                        child: const Icon(Icons.image_outlined,
+                            color: Colors.white, size: 60),
+                      ),
+                    ),
                   ),
-                  const SizedBox(
-                    width: 90,
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        padding: const EdgeInsets.all(15),
+                        child: GestureDetector(
+                          onTap: _takePicture,
+                          child: const Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.black,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  GestureDetector(
-                    onTap: _takePicture,
-                    child: const Icon(Icons.camera_alt_outlined,
-                        color: Colors.white, size: 60),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(),
+                    ),
                   ),
                 ],
               ),

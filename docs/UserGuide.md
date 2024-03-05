@@ -49,7 +49,7 @@ The following section will explain how a user can identify plants:
 ### Camera
 |   |   |
 |---|---|
-|<img src="../assets/screenshots/camerapage.jpg" width="100%"> | The app will first ask the user for camera, microphone, and image gallery (if they choose photos) permissions. The user can either take a photo of a plant or upload an existing photo for identification. |
+|<img src="../assets/screenshots/camerapage.jpg" width="100%"> | The app will first ask the user for camera permissions. The user can either take a photo of a plant or upload an existing photo for identification. If the user decides to choose an image from their phone gallery, then they would also need to grant permissions to their phone gallery. Note that granting limited access would still allow access to the entire gallery. |
 <img src="../assets/screenshots/identificationpage.jpg" width="100%"> | Next, the user can select the part of the plant they've photographed, choosing from the plant organs - leaf, flower, fruit, and bark. Clicking on the `Find Matches` button will direct them to the identification result. |
 
 

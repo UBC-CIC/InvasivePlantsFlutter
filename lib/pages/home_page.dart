@@ -675,7 +675,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildGridItem(Map<String, dynamic> species) {
     String speciesScientificName = species['scientific_name'][0];
-    String speciesCommonName = species['common_name'][0];
+    String speciesCommonName = species['common_name'].isNotEmpty
+        ? species['common_name'][0]
+        : speciesScientificName;
     String speciesImageURL = species['images'][0]['image_url'];
     String formattedScientificName = formatSpeciesName(speciesScientificName);
     String formattedCommonName = formatSpeciesName(speciesCommonName);
@@ -768,7 +770,9 @@ class _HomePageState extends State<HomePage> {
 
       String speciesName = species['scientific_name'][0];
       String formattedName = formatSpeciesName(speciesName);
-      String commonName = species['common_name'][0];
+      String commonName = species['common_name'].isNotEmpty
+          ? species['common_name'][0]
+          : speciesName;
       String speciesDescription = species['species_description'];
 
       // Check if the search text matches the formatted name, common name, or species description

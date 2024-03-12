@@ -8,6 +8,7 @@
 | [Clone the Repository](#clone-the-repository)              | How to clone this repository                              |
 | [Connect the App to the Backend](#connect-the-app-to-the-backend)| Connect the app to the backend of this project           |
 | [Deploy to TestFlight](#deploy-to-testflight)              | Deploy your app to TestFlight for testers to use          |
+| [Deploy to Android](#deploy-to-android)              | Deploy your app to the Android platform         |
 
 
 ## Dependencies
@@ -166,3 +167,80 @@ flutter build ios --release
 5. Testers can then install TestFlight from the Apple App Store on an iPhone running iOS 13.0 or later and sign in with their Apple ID. 
 6. In TestFlight, testers can press the `Redeem` button and enter the TestFlight code from their email. The app should then appear in TestFlight under Apps and testers will be able to install the build.
 7. Builds uploaded to TestFlight have a lifespan of 90 days and will expire after that. To create another build of the app to upload to TestFlight after the 90 day period, please follow the steps above to [create another build](#create-a-build) and [upload to TestFlight](#deploy-to-testflight-1).
+
+## Deploy to Android
+
+Make sure you have **[Android Studio 2023.1 (Hedgehog)](https://developer.android.com/studio/install)** or later installed for running Android Emulators. Install the **[Flutter SDK](https://docs.flutter.dev/get-started/install/macos/mobile-android#install-the-flutter-sdk)** (if you haven’t already)
+
+1. Follow [these steps](https://docs.flutter.dev/get-started/install/macos/mobile-android?tab=virtual#configure-android-development) to configure Android development, which includes:
+   - Configuring the Android toolchain in Android Studio
+   - Configuring your target Android device
+
+2. Check that you have the development setup done correctly by using the command `flutter doctor`. You should see an output like this:
+
+      ```
+      Doctor summary (to see all details, run flutter doctor -v):
+      [✓] Flutter (Channel stable, 3.19.0, on macOS A.B chipset, locale en)
+      [✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+      [!] Chrome - develop for the web
+      [!] Xcode - develop for iOS and macOS (Xcode not installed)
+      [✓] Android Studio (version 2023.1 (Hedgehog) or later)
+      [✓] VS Code (version 1.86)
+      [✓] Connected device (1 available)
+      [✓] Network resources
+
+      ! Doctor found issues in 2 categories.
+      ```
+
+
+**Running The Flutter App**
+   - First, start your emulator in Android Studio
+   - Then select your emulator as the device in VS Code
+   - Use the command `flutter run`
+     - this also generates an apk file, which can be used for running the app on physical devices
+
+
+
+If your app makes HTTP requests or uses the phone’s camera, location, etc., modify your AndroidManifest.xml file at `/android/app/src/debug/AndroidManifest.xml`:
+   - For HTTP, add these two lines:
+     ```xml
+     <uses-permission android:name="android.permission.INTERNET" />
+     android:usesCleartextTraffic="true"
+     ```
+   - For Camera:
+     ```xml
+     <uses-permission android:name="android.permission.CAMERA" />
+     <uses-feature android:name="android.hardware.camera" android:required="true" />
+     ```
+   - For other permissions like location, add them like this:
+     ```xml
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+     ```
+
+Example of what it looks like:
+<img src="../assets/screenshots/androidmanifest.png" width="100%">
+
+If you make any changes to the manifest file, make sure you run the commands:
+   - `flutter clean`
+   - `flutter pub get`
+
+before running your app again.
+
+**To Test on a Physical Android device:**
+   - Connect your Android device to your computer.
+   - Run the command: `flutter install`
+     - If necessary, locate the APK file generated in `/build/app/outputs/flutter-apk/app-debug.apk`.
+
+
+**To deploy for internal testing on the Google Play Console:**
+
+   - Create a [developer account ](https://play.google.com/console/u/0/signup)
+   - Set Up [Internal Testing](https://play.google.com/console/about/internal-testing/) on Google Play Console:
+     - Go to the Google Play Console.
+     - Create a new project if you haven't already.
+     - In the left sidebar, go to "Internal testing."
+     - Upload the APK generated earlier.
+     - Add testers by email address. Testers will receive an invitation to test the app.
+
+   - Download on Android Device:
+     - Testers can download the app on their Android devices by joining the internal testing program. They will receive an email with instructions on how to download the app from the Google Play Store.

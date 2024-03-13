@@ -227,9 +227,44 @@ If you make any changes to the manifest file, make sure you run the commands:
 before running your app again.
 
 **To Test on a Physical Android device:**
-   - Connect your Android device to your computer.
-   - Run the command: `flutter install`
-     - If necessary, locate the APK file generated in `/build/app/outputs/flutter-apk/app-debug.apk`.
+
+First build the APK file using `flutter build apk --debug`
+Then follow these steps to install and run that APK file on your Android device:
+
+1. Enable Installation from Unknown Sources
+
+- On your Android device, go to **Settings**.
+- Navigate to **Security** (or **Biometrics and security**, depending on your device).
+- Enable the **"Unknown sources"** option. This allows you to install applications from sources other than the Google Play Store.
+
+2. Transfer the APK to Your Device
+
+- Connect your Android device to your computer using a USB cable.
+- Transfer the APK file to your device. The previously generated APK file should be located at `/build/app/outputs/flutter-apk/app-debug.apk`
+- You can place the file in the device's internal storage or an SD card.
+
+3. Locate the APK File on Your Device
+
+- Use a file manager app on your Android device to navigate to the location where you transferred the APK file.
+
+4. Install the APK
+
+- Tap on the APK file to begin the installation process.
+- You may be prompted to confirm that you want to install the application. Tap **"Install"** to proceed.
+
+5. Complete the Installation
+
+- After the installation is complete, you may see an **"Open"** button. Tap it to launch the installed application.
+- Alternatively, you can find the installed app in your device's app drawer or home screen.
+
+6. Grant Necessary Permissions (if prompted)
+
+- Depending on the permissions required by the application, you may be prompted to grant certain permissions. Review the permissions and tap **"Accept"** or **"Allow"** as needed.
+
+7. Enjoy Your App
+
+- Once installed, you can use the app just like any other app installed from the Google Play Store.
+
 
 
 **To deploy for internal testing on the Google Play Console:**

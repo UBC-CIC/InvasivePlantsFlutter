@@ -19,7 +19,7 @@ The full list of steps to create and deploy a new Flutter application from scrat
 - [GitHub Account](https://github.com/)
 - [Git](https://git-scm.com/) v2.14.1 or later
 - [Flutter](https://docs.flutter.dev/get-started/install/macos#get-sdk) version 3.3 or higher
-- IDE of your choice (For development we recommend: [VS Code](https://docs.flutter.dev/tools/vs-code))
+- IDE of your choice (for development we recommend: [VS Code](https://docs.flutter.dev/tools/vs-code))
 - [Xcode](https://docs.flutter.dev/get-started/install/macos#install-xcode)
 - [CocoaPods](https://guides.cocoapods.org/using/getting-started.html#installation) - Additionally, if you are installing on an Apple Silicon Mac, follow step 2 of [this section](https://docs.flutter.dev/get-started/install/macos#deploy-to-ios-devices)
 - Pl@ntNet API
@@ -38,7 +38,7 @@ First, clone the github repository onto your machine. To do this:
 git clone https://github.com/UBC-CIC/InvasivePlantsFlutter.git
 ```
 
-The code should now be copied into the new folder.
+The code will now be copied into the new folder.
 
 
 In terminal, **cd** into root directory of the project folder by running the following command from the newly created folder's directory:
@@ -69,12 +69,12 @@ After backend deployment is completed, look for the values here:
 ![API Gateway Screen](../assets/screenshots/apigateway.png)
 
 To get `"BASE_API_URL"`:
-1. Go to API Gateway in the AWS Console and click on the project's API
-2. Go to `Stages` and look for `Invoke URL`
+1. Go to API Gateway in the AWS Console and click on the project's API.
+2. Go to `Stages` and look for `Invoke URL`.
 
 To get `"API_KEY"`:
-1. Go to `API Keys`
-2. Look for key with the name `InvasivePlantsCustomizedAPIKey` or something similiar
+1. Go to `API Keys`.
+2. Look for key with the name `InvasivePlantsCustomizedAPIKey` or something similar.
 
 **Cognito Console**
 ![API Gateway Screen](../assets/screenshots/cognito.png)
@@ -87,7 +87,7 @@ To get `"COGNITO_POOL_ID"`:
 To get `"COGNITO_APP_CLIENT_ID"`:
 1. Click into your user pool.
 2. Navigate to the `App Integration` tab.
-3. Scroll to the bottom and the client ID should be on the right.
+3. Scroll to the bottom and the client ID will be on the right.
 
 **Pl@ntNet API Console**
 
@@ -113,70 +113,70 @@ The official guide to register your app can be found [here](https://docs.flutter
 ### Register a Bundle ID
 1. To get started, sign in to [App Store Connect](https://appstoreconnect.apple.com/) with your Apple Developer account and open the [Identifiers Page](https://developer.apple.com/account/resources/identifiers/list).
 2. Click **+** to create a new Bundle ID.
-3. Select **App ID > App**
-4. Enter a description (name for the Bundle ID) and an **Explicit** unique Bundle Id (e.g. **com.[organization name].InvasivePlantsApp**)
-5. Leave the **App Services** as default and click **Continue>Register**
+3. Select **App ID > App**.
+4. Enter a description (name for the Bundle ID) and an **Explicit** unique Bundle ID (e.g. **com.[organization name].InvasivePlantsApp**).
+5. Leave the **App Services** as default and click **Continue>Register**.
 
 ### Create an application record on App Store Connect
-1. Now, in the [My Apps](https://appstoreconnect.apple.com/apps) page of App Store Connect, click **+** in the top left corner and select **New App**
-2. Select **iOS** under **Platforms**
-3. Enter a name for the app (e.g. **Invasive Plants App**)
-4. Select the **Bundle ID** you have just created
-5. Enter a unique ID for your app under **SKU** (e.g. **com.[organization name].InvasivePlantsApp**)
-6. Select **Full Access** for **User Access** and click **Create**
+1. Now, in the [My Apps](https://appstoreconnect.apple.com/apps) page of App Store Connect, click **+** in the top left corner and select **New App**.
+2. Select **iOS** under **Platforms**.
+3. Enter a name for the app (e.g. **Invasive Plants App**).
+4. Select the **Bundle ID** you have just created.
+5. Enter a unique ID for your app under **SKU** (e.g. **com.[organization name].InvasivePlantsApp**).
+6. Select **Full Access** for **User Access** and click **Create**.
 
 ### Beta Test Information
-To start testing with TestFlight, fill out the **Beta App Information**  in the `General Information > Test Information` page of your app in App Store Connect.
+To start testing with TestFlight, fill out the **Beta App Information** in the `General Information > Test Information` page of your app in App Store Connect.
 
 
 ### Update Xcode project settings
 For an official guide, please view the **Update Xcode project settings** section of the page found [here](https://docs.flutter.dev/deployment/ios#review-xcode-project-settings).
 
-1. Navigate to your project settings by running the following command from the root directory of your project
+1. Navigate to your project settings by running the following command from the root directory of your project:
 ```
 open ios/Runner.xcworkspace
 ```
-1. Select the **Runner** with the App Store Connect icon in the Xcode navigator
-2. In the **General** tab, choose a display name for the app
-3. Under **Minimum Deployments**, ensure it is set to iOS 13.0
-4. Head to the **Signing & Capabilities** tab and sign in with your Apple Developer account if have not done so already
-5. Please **ENTER and VERIFY** the **Bundle Identifier** matches with the Bundle Id created in App Store Connect
-6. In the **Signing & Capabilities** tab, ensure **Automatically manage signing** is checked and Team is set to the account/team associated with your Apple Developer account. Under Bundle Identifier, check that the Bundle Id matches with the Bundle Id created in App Store Connect
+2. Select the **Runner** with the App Store Connect icon in the Xcode navigator.
+3. In the **General** tab, choose a display name for the app.
+4. Under **Minimum Deployments**, ensure it is set to iOS 13.0.
+5. Head to the **Signing & Capabilities** tab and sign in with your Apple Developer account if have not done so already.
+6. Please **ENTER and VERIFY** the **Bundle Identifier** matches with the Bundle ID created in App Store Connect.
+7. In the **Signing & Capabilities** tab, ensure **Automatically manage signing** is checked and Team is set to the account/team associated with your Apple Developer account. Under Bundle Identifier, check that the Bundle ID matches with the Bundle ID created in App Store Connect.
 
 ### Create a Build
-1. In Xcode, in the General tab under Identity, check that the Version number is set to 1.0.0 and the Build number is set to 1 **for your first deployment**. For future deployments, increment the Version number and reset the Build number for major updates (e.g. 1.0.1+1). For minor updates, incrementing just the Build number is sufficient (e.g. 1.0.0+2). 
+1. In Xcode, in the General tab under Identity, check that the Version number is set to 1.0.0 and the Build number is set to 1 **for your first deployment**. For future deployments, increment the Version number and reset the Build number for major updates (e.g. 1.0.1+1). For minor updates, incrementing only the Build number is sufficient (e.g. 1.0.0+2). 
 2. In your IDE, open the **pubspec.yaml** file located in the root directory of your project. Set the version and build number located near the top of the file to match with the version and build number of the current deployment and save the file:
 ```yaml
 version: 1.0.0+1
 ```
-3. In Xcode, set the Target to be: `Runner > Any iOS Device`
+3. In Xcode, set the Target to be: `Runner > Any iOS Device`.
 4. From the root directory of your project in **Terminal**, run:
 ```
 flutter build ios --release
 ```
 1. Once the Xcode build is complete, select `Product>Archive` in the Xcode menu bar. Wait for the archive to complete.
-2. Once the archive has completed, a window should appear showing all of your archives. Select the most recent archive and click `Distribute App`
-3. Select `App Store Connect > Upload > Strip Swift Symbols + Upload your app's symbols + Manage Version and Build Number > Automatically manage signing > Upload`
+2. Once the archive has completed, a window will appear showing all of your archives. Select the most recent archive and click `Distribute App`.
+3. Select `App Store Connect > Upload > Strip Swift Symbols + Upload your app's symbols + Manage Version and Build Number > Automatically manage signing > Upload`.
 
 ### Deploy to TestFlight
 
-1. Once the Xcode upload is complete, navigate to your app page in App Store Connect. Under `Builds > iOS`, there should be a list of builds uploaded from Xcode. Builds may take a few minutes to appear here. 
-2. Once the uploaded build appears, click on it, fill in the Test Details, and **add Testers by their Apple ID**
-3. Once a tester is added, the app should be automatically submitted for review. The reviewing process could take a few days to process.
+1. Once the Xcode upload is complete, navigate to your app page in App Store Connect. A list of builds uploaded from Xcode can be found under `Builds > iOS`. Builds may take a few minutes to appear here. 
+2. Once the uploaded build appears, click on it, fill in the Test Details, and **add Testers by their Apple ID**.
+3. Once a tester is added, the app will be automatically submitted for review. The reviewing process can take a few days to process.
 4. Once the build is processed, testers will receive a code in their email for TestFlight.
 5. Testers can then install TestFlight from the Apple App Store on an iPhone running iOS 13.0 or later and sign in with their Apple ID. 
-6. In TestFlight, testers can press the `Redeem` button and enter the TestFlight code from their email. The app should then appear in TestFlight under Apps and testers will be able to install the build.
-7. Builds uploaded to TestFlight have a lifespan of 90 days and will expire after that. To create another build of the app to upload to TestFlight after the 90 day period, please follow the steps above to [create another build](#create-a-build) and [upload to TestFlight](#deploy-to-testflight-1).
+6. In TestFlight, testers can press the `Redeem` button and enter the TestFlight code from their email. The app will then appear in TestFlight under Apps and testers will be able to install the build.
+7. Builds uploaded to TestFlight have a lifespan of 90 days and will expire after that. To create another build of the app for uploading to TestFlight after the 90 day period, please follow the steps above to [create another build](#create-a-build) and [upload to TestFlight](#deploy-to-testflight-1).
 
 ## Deploy to Android
 
-Make sure you have **[Android Studio 2023.1 (Hedgehog)](https://developer.android.com/studio/install)** or later installed for running Android Emulators. Install the **[Flutter SDK](https://docs.flutter.dev/get-started/install/macos/mobile-android#install-the-flutter-sdk)** (if you haven’t already)
+Make sure you have **[Android Studio 2023.1 (Hedgehog)](https://developer.android.com/studio/install)** or later installed for running Android Emulators. Install the **[Flutter SDK](https://docs.flutter.dev/get-started/install/macos/mobile-android#install-the-flutter-sdk)** if you haven’t already.
 
 1. Follow [these steps](https://docs.flutter.dev/get-started/install/macos/mobile-android?tab=virtual#configure-android-development) to configure Android development, which includes:
    - Configuring the Android toolchain in Android Studio
    - Configuring your target Android device
 
-2. Check that you have the development setup done correctly by using the command `flutter doctor`. You should see an output like this:
+2. Check that you have the development setup done correctly by using the command `flutter doctor`. An output similar to the following will appear:
 
       ```
       Doctor summary (to see all details, run flutter doctor -v):
@@ -194,41 +194,14 @@ Make sure you have **[Android Studio 2023.1 (Hedgehog)](https://developer.androi
 
 
 **Running The Flutter App**
-   - First, start your emulator in Android Studio
-   - Then select your emulator as the device in VS Code
-   - Use the command `flutter run`
-     - this also generates an apk file, which can be used for running the app on physical devices
-
-
-
-If your app makes HTTP requests or uses the phone’s camera, location, etc., modify your AndroidManifest.xml file at `/android/app/src/debug/AndroidManifest.xml`:
-   - For HTTP, add these two lines:
-     ```xml
-     <uses-permission android:name="android.permission.INTERNET" />
-     android:usesCleartextTraffic="true"
-     ```
-   - For Camera:
-     ```xml
-     <uses-permission android:name="android.permission.CAMERA" />
-     <uses-feature android:name="android.hardware.camera" android:required="true" />
-     ```
-   - For other permissions like location, add them like this:
-     ```xml
-     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-     ```
-
-Example of what it looks like:
-<img src="../assets/screenshots/androidmanifest.png" width="100%">
-
-If you make any changes to the manifest file, make sure you run the commands:
-   - `flutter clean`
-   - `flutter pub get`
-
-before running your app again.
+   - First start your emulator in Android Studio.
+   - Select your emulator as the device in VS Code.
+   - Use the command `flutter run`.
+     - this also generates an APK file, which can be used for running the app on physical devices.
 
 **To Test on a Physical Android device:**
 
-First build the APK file using `flutter build apk --debug`
+First build the APK file using `flutter build apk --debug`.
 Then follow these steps to install and run that APK file on your Android device:
 
 1. Enable Installation from Unknown Sources
@@ -240,7 +213,7 @@ Then follow these steps to install and run that APK file on your Android device:
 2. Transfer the APK to Your Device
 
 - Connect your Android device to your computer using a USB cable.
-- Transfer the APK file to your device. The previously generated APK file should be located at `/build/app/outputs/flutter-apk/app-debug.apk`
+- Transfer the APK file to your device. The previously generated APK file should be located at `/build/app/outputs/flutter-apk/app-debug.apk`.
 - You can place the file in the device's internal storage or an SD card.
 
 3. Locate the APK File on Your Device

@@ -55,12 +55,12 @@ code .
 Create a file called `.env` at the root level:
 
 ```
-BASE_API_URL=""
-API_KEY=""
-COGNITO_REGION=""
-COGNITO_POOL_ID=""
-COGNITO_APP_CLIENT_ID=""
-PLANTNET_API_KEY=""
+BASE_API_URL="..."
+COGNITO_REGION="..."
+COGNITO_POOL_ID="..."
+COGNITO_IDENTITY_POOL_ID="..."
+COGNITO_APP_CLIENT_ID="..."
+PLANTNET_API_KEY="..."
 ```
 
 After backend deployment is completed, look for the values here:
@@ -71,18 +71,19 @@ After backend deployment is completed, look for the values here:
 To get `"BASE_API_URL"`:
 1. Go to API Gateway in the AWS Console and click on the project's API.
 2. Go to `Stages` and look for `Invoke URL`.
-
-To get `"API_KEY"`:
-1. Go to `API Keys`.
-2. Look for key with the name `InvasivePlantsCustomizedAPIKey` or something similar.
+3. Make sure you add a `/` at the end of your URL.
 
 **Cognito Console**
 ![API Gateway Screen](../assets/screenshots/cognito.png)
 
-For `"COGNITO_REGION"`, enter `ca-central-1`.
+For `"COGNITO_REGION"`, enter `ca-central-1`, or whatever is at the start of your User Pool ID.
 
 To get `"COGNITO_POOL_ID"`:
 1. Copy the `User Pool ID` of your user pool.
+
+To get `"COGNITO_IDENTITY_POOL_ID"`:
+1. Go to `Identity Pools`.
+2. Copy the `Identity Pool ID` of your identity pool.
 
 To get `"COGNITO_APP_CLIENT_ID"`:
 1. Click into your user pool.
@@ -92,7 +93,7 @@ To get `"COGNITO_APP_CLIENT_ID"`:
 **Pl@ntNet API Console**
 
 To get `"PLANTNET_API_KEY"`:
-1. Log in to your Pl@ntNet account [here](https://my.plantnet.org/login)
+1. Log in to your Pl@ntNet account [here](https://my.plantnet.org/login).
 2. Navigate to the "Settings" section of your dashboard. 
 3. Find the "Private API key" and enter that as your `"PLANTNET_API_KEY"`.
    

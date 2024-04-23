@@ -333,7 +333,13 @@ class _InvasivePlantPageState extends State<InvasivePlantPage>
   Widget build(BuildContext context) {
     super.build(context);
     String scientificName = widget.speciesObject['scientific_name'][0];
-    String commonName = widget.speciesObject['common_name'][0];
+    String commonName = '';
+    if (widget.speciesObject['common_name'] != null &&
+        widget.speciesObject['common_name'].isNotEmpty) {
+      commonName = widget.speciesObject['common_name'][0];
+    } else {
+      commonName = widget.speciesObject['scientific_name'][0];
+    }
     String speciesImageURL = widget.speciesObject['images'][0]['image_url'];
 
     // Ensure UTF-8 decoding for the species description to remove special characters

@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/functions/get_credentials.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -10,7 +11,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'dart:collection'; // Import HashSet
+import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
+import 'dart:collection';
 
 import 'invasive_plant_page.dart';
 import 'camera_page.dart';
@@ -78,19 +80,28 @@ class _HomePageState extends State<HomePage> {
 
     // Make API request
     var configuration = getConfiguration();
-    String? apiKey = configuration["apiKey"];
     String? regionCodeName = currRegion["regionCode"];
     String country = currRegion["countryFullname"];
 
-    if (apiKey!.isNotEmpty &&
-        regionCodeName != null &&
-        regionCodeName.isNotEmpty) {
+    if (regionCodeName != null && regionCodeName.isNotEmpty) {
       String? baseUrl = configuration["apiBaseUrl"];
-      String endpoint = 'region?region_code_name=$regionCodeName';
-      String apiUrl = '$baseUrl$endpoint';
+      final credentials = await getCredentials();
 
-      Uri req = Uri.parse(apiUrl);
-      final response = await http.get(req, headers: {'x-api-key': apiKey});
+      final awsSigV4Client = AwsSigV4Client(
+          credentials.accessKeyId, credentials.secretAccessKey, baseUrl!,
+          sessionToken: credentials.sessionToken,
+          region: configuration["cognitoRegion"]!);
+
+      final signedRequest = SigV4Request(awsSigV4Client,
+          method: 'GET',
+          path: 'region',
+          queryParams: {'region_code_name': regionCodeName});
+
+      final response = await http.get(
+        Uri.parse(signedRequest.url!),
+        headers: signedRequest.headers!
+            .map((key, value) => MapEntry(key, value ?? "")),
+      );
 
       var resDecode = jsonDecode(response.body);
 
@@ -107,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         }
       }
     } else {
-      throw ("Api key not found.");
+      throw ("Region not found.");
     }
   }
 
@@ -116,34 +127,45 @@ class _HomePageState extends State<HomePage> {
     if (regionList.length > 0) {
       return;
     }
+
     // Make API request
     var configuration = getConfiguration();
-    String? apiKey = configuration["apiKey"];
+    String? baseUrl = configuration["apiBaseUrl"];
+    final credentials = await getCredentials();
 
-    if (apiKey!.isNotEmpty) {
-      String? baseUrl = configuration["apiBaseUrl"];
-      String endpoint = 'region';
-      String apiUrl = '$baseUrl$endpoint';
+    final awsSigV4Client = AwsSigV4Client(
+        credentials.accessKeyId, credentials.secretAccessKey, baseUrl!,
+        sessionToken: credentials.sessionToken,
+        region: configuration["cognitoRegion"]!);
 
-      String stringResponseBody;
-      bool isResponseWeb = false;
+    final signedRequest = SigV4Request(
+      awsSigV4Client,
+      method: 'GET',
+      path: 'region',
+    );
 
-      // Try reading data from cache
-      // String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-      // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-      // if (file != null && file.file.existsSync()) {
-      //   stringResponseBody = await file.file.readAsString();
-      // }
-      // // Cache missed, get result from the api
-      // else {
-      final response =
-          await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
-      if (response.statusCode == 200) {
-        stringResponseBody = response.body;
-        isResponseWeb = true;
-      } else {
-        throw Exception('Failed to load data.');
-      }
+    final response = await http.get(
+      Uri.parse(signedRequest.url!),
+      headers: signedRequest.headers!
+          .map((key, value) => MapEntry(key, value ?? "")),
+    );
+
+    String stringResponseBody;
+    bool isResponseWeb = false;
+
+    // Try reading data from cache
+    // String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
+    // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+    // if (file != null && file.file.existsSync()) {
+    //   stringResponseBody = await file.file.readAsString();
+    // }
+    // // Cache missed, get result from the api
+    // else {
+
+    if (response.statusCode == 200) {
+      stringResponseBody = response.body;
+      isResponseWeb = true;
+
       // }
 
       var resDecode = jsonDecode(stringResponseBody);
@@ -153,17 +175,17 @@ class _HomePageState extends State<HomePage> {
       });
 
       // Save only if response come from api
-      if (isResponseWeb) {
-        Directory tempDir = await getTemporaryDirectory();
-        String cachePath = '${tempDir.path}/cache_data.json';
-        File file = File(cachePath);
-        await file.writeAsString(stringResponseBody);
+      // if (isResponseWeb) {
+      //   Directory tempDir = await getTemporaryDirectory();
+      //   String cachePath = '${tempDir.path}/cache_data.json';
+      //   File file = File(cachePath);
+      //   await file.writeAsString(stringResponseBody);
 
-        await _apiCache.putFile(apiUrl, file.readAsBytesSync(),
-            maxAge: Duration(days: maxCacheDay));
-      }
+      //   await _apiCache.putFile(apiUrl, file.readAsBytesSync(),
+      //       maxAge: Duration(days: maxCacheDay));
+      // }
     } else {
-      throw ("Api key not found.");
+      print(response.statusCode);
     }
   }
 
@@ -183,75 +205,82 @@ class _HomePageState extends State<HomePage> {
   Future<bool> fetchData() async {
     var configuration = getConfiguration();
     String? baseUrl = configuration["apiBaseUrl"];
-    const endpoint = 'invasiveSpecies?rows_per_page=$pageSize';
     bool returnValue = true;
 
-    // Modify URL to include last_species_id if available
-    String apiUrl = '$baseUrl$endpoint';
-    if (nextOffset != null) {
-      apiUrl += '&curr_offset=$nextOffset';
-    }
+    final credentials = await getCredentials();
 
-    String? apiKey = configuration["apiKey"];
-    if (apiKey!.isNotEmpty) {
-      var stringResponseBody;
-      bool isResponseWeb = false;
+    final awsSigV4Client = AwsSigV4Client(
+        credentials.accessKeyId, credentials.secretAccessKey, baseUrl!,
+        sessionToken: credentials.sessionToken,
+        region: configuration["cognitoRegion"]!);
 
-      // Try reading data from cache first
-      String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-      FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-      if (file != null && file.file.existsSync()) {
-        stringResponseBody = await file.file.readAsString();
-        print(stringResponseBody);
-      }
-      // Cache missed, get result from the API
-      else {
-        final response =
-            await http.get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
-        if (response.statusCode == 200) {
-          stringResponseBody = response.body;
-          print(response.body);
-          isResponseWeb = true;
-        } else {
-          throw Exception('Failed to load data.');
-        }
-      }
+    final signedRequest = SigV4Request(awsSigV4Client,
+        method: 'GET',
+        path: 'invasiveSpecies',
+        queryParams: {
+          'curr_offset': nextOffset?.toString() ?? '',
+          'rows_per_page': pageSize.toString(),
+        });
 
-      final jsonResponse = json.decode(stringResponseBody);
+    var stringResponseBody;
+    bool isResponseWeb = false;
 
-      // Check if incoming nextOffset is same as current nextOffset
-      if (jsonResponse["nextOffset"] == nextOffset ||
-          jsonResponse["species"].length < pageSize) {
-        returnValue = false;
-      }
+    // Try reading data from cache first
+    // String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
+    // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
+    // if (file != null && file.file.existsSync()) {
+    //   stringResponseBody = await file.file.readAsString();
+    //   print(stringResponseBody);
+    // }
+    // Cache missed, get result from the API
+    // else {
+    final response = await http.get(
+      Uri.parse(signedRequest.url!),
+      headers: signedRequest.headers!
+          .map((key, value) => MapEntry(key, value ?? "")),
+    );
 
-      setState(() {
-        if (nextOffset != null) {
-          // Add fetched data to existing speciesData
-          speciesData.addAll(jsonResponse["species"] as List<dynamic>);
-        } else {
-          speciesData = jsonResponse["species"].toSet(); // Convert to Set
-        }
-
-        // Get offset of next page, provided by response
-        nextOffset = jsonResponse["nextOffset"];
-      });
-
-      // Save only if response comes from the API
-      if (isResponseWeb) {
-        Directory tempDir = await getTemporaryDirectory();
-        String cachePath = '${tempDir.path}/cache_data.json';
-        File file = File(cachePath);
-        await file.writeAsString(stringResponseBody);
-
-        await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(),
-            maxAge: Duration(days: maxCacheDay));
-      }
-
-      return returnValue;
+    if (response.statusCode == 200) {
+      stringResponseBody = response.body;
+      print(response.body);
+      isResponseWeb = true;
     } else {
-      throw Exception('Invalid API key.');
+      throw Exception('Failed to load data.');
     }
+    // }
+
+    final jsonResponse = json.decode(stringResponseBody);
+
+    // Check if incoming nextOffset is same as current nextOffset
+    if (jsonResponse["nextOffset"] == nextOffset ||
+        jsonResponse["species"].length < pageSize) {
+      returnValue = false;
+    }
+
+    setState(() {
+      if (nextOffset != null) {
+        // Add fetched data to existing speciesData
+        speciesData.addAll(jsonResponse["species"] as List<dynamic>);
+      } else {
+        speciesData = jsonResponse["species"].toSet(); // Convert to Set
+      }
+
+      // Get offset of next page, provided by response
+      nextOffset = jsonResponse["nextOffset"];
+    });
+
+    // Save only if response comes from the API
+    // if (isResponseWeb) {
+    //   Directory tempDir = await getTemporaryDirectory();
+    //   String cachePath = '${tempDir.path}/cache_data.json';
+    //   File file = File(cachePath);
+    //   await file.writeAsString(stringResponseBody);
+
+    //   await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(),
+    //       maxAge: Duration(days: maxCacheDay));
+    // }
+
+    return returnValue;
   }
 
   List<dynamic> getSpeciesByRegion(String regionId) {

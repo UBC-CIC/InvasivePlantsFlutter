@@ -1,7 +1,10 @@
 // ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages, prefer_typing_uninitialized_variables
 
 import 'dart:io';
+import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/functions/get_credentials.dart';
 import 'non_invasive_plant_page.dart';
 import 'camera_page.dart';
 import 'invasive_plant_page.dart';
@@ -37,6 +40,27 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
     'organs': [],
     'images': [],
   };
+
+  Future<String> _extractAccessToken() async {
+    final rawResult = await Amplify.Auth.fetchAuthSession();
+    final result = jsonDecode(rawResult.toString());
+    final userPoolTokens = result['userPoolTokens'];
+
+    try {
+      final accessToken = extractAccessToken(userPoolTokens);
+      return accessToken;
+    } catch (e) {
+      print('Error extracting access token: $e');
+    }
+    return "";
+  }
+
+  String extractAccessToken(String inputString) {
+    final accessTokenStart =
+        inputString.indexOf('"accessToken": "') + '"accessToken": "'.length;
+    final accessTokenEnd = inputString.indexOf('"', accessTokenStart);
+    return inputString.substring(accessTokenStart, accessTokenEnd);
+  }
 
   void _navigateToResultPage(BuildContext context) async {
     if (selectedOrgan != null) {
@@ -137,29 +161,36 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
             }
 
             try {
-              // Get configurations
               var configuration = getConfiguration();
-              String? apiKey = configuration["apiKey"];
               String? baseUrl = configuration["apiBaseUrl"];
+              final credentials = await getCredentials();
 
               if (lowerCaseScientificName != null &&
                   lowerCaseScientificName.isNotEmpty &&
-                  selectedRegion["region_id"] != null &&
-                  apiKey != null &&
-                  apiKey.isNotEmpty) {
-                // Make API request
-                String endpoint =
-                    'invasiveSpecies?search_input=$lowerCaseScientificName&region_id=${selectedRegion["region_id"]}';
-                String apiUrl = '$baseUrl$endpoint';
-                // Make the GET request
-                var getResponse = await http
-                    .get(Uri.parse(apiUrl), headers: {'x-api-key': apiKey});
+                  selectedRegion["region_id"] != null) {
+                final awsSigV4Client = AwsSigV4Client(credentials.accessKeyId,
+                    credentials.secretAccessKey, baseUrl!,
+                    sessionToken: credentials.sessionToken,
+                    region: configuration["cognitoRegion"]!);
+
+                final signedRequest = SigV4Request(awsSigV4Client,
+                    method: 'GET',
+                    path: 'invasiveSpecies',
+                    queryParams: {
+                      'search_input': lowerCaseScientificName.toString(),
+                      'region_id': selectedRegion["region_id"].toString(),
+                    });
+
+                final getResponse = await http.get(
+                  Uri.parse(signedRequest.url!),
+                  headers: signedRequest.headers!
+                      .map((key, value) => MapEntry(key, value ?? "")),
+                );
 
                 if (getResponse.statusCode == 200) {
                   // Parse the response body
                   var parsedResponse = json.decode(getResponse.body);
 
-                  //
                   var matchingInvasiveSpecies = parsedResponse["species"][0];
                   var invasiveRegion =
                       matchingInvasiveSpecies['region_code_names'].join(', ');

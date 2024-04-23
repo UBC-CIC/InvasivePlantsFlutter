@@ -85,7 +85,7 @@ Licenses of libraries and tools used by the system are listed below:
 
 [MIT License](https://opensource.org/license/mit/)
 
-- For cupertino_icons, permission_handler, provider, flutter_cache_manager, geolocator, geocoding, flutter_launcher_icons, flutter_native_splash, flutter_dotenv, cached_network_image, and flutter_svg
+- For cupertino_icons, permission_handler, provider, flutter_cache_manager, geolocator, geocoding, flutter_launcher_icons, flutter_native_splash, flutter_dotenv, cached_network_image, flutter_svg, and amazon_cognito_identity_dart_2
 
 [BSD 3-clause](https://opensource.org/license/bsd-3-clause/)
 

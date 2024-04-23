@@ -38,11 +38,13 @@ void main() async {
       String? poolId = configuration["cognitoPoolId"];
       String? clientId = configuration["cognitoAppClientId"];
       String? region = configuration["cognitoRegion"];
+      String? identityPoolId = configuration["cognitoIdentityPoolId"];
 
       if (amplifyConfigString != null &&
           poolId != null &&
           clientId != null &&
-          region != null) {
+          region != null &&
+          identityPoolId != null) {
         // amplifyConfigString.auth.plugins.awsCognitoAuthPlugin.CognitoUserPool.Default.PoolId = poolId;
         amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
             ["CognitoUserPool"]["Default"]["PoolId"] = poolId;
@@ -50,6 +52,12 @@ void main() async {
             ["CognitoUserPool"]["Default"]["AppClientId"] = clientId;
         amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
             ["CognitoUserPool"]["Default"]["Region"] = region;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
+                ["CredentialsProvider"]["CognitoIdentity"]["Default"]
+            ["PoolId"] = identityPoolId;
+        amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
+                ["CredentialsProvider"]["CognitoIdentity"]["Default"]
+            ["Region"] = region;
 
         var configString = json.encode(amplifyConfigString);
         print(configString);

@@ -7,6 +7,14 @@ const amplifyconfig = ''' {
         "IdentityManager": {
           "Default": {}
         },
+        "CredentialsProvider": {
+          "CognitoIdentity": {
+            "Default": {
+              "PoolId": "[COGNITO IDENTITY POOL ID]",
+              "Region": "[REGION]"
+            }
+          }
+        },
         "CognitoUserPool": {
           "Default": {
             "PoolId": "[COGNITO USER POOL ID]",

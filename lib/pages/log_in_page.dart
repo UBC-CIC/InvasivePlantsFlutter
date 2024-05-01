@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter/gestures.dart';
@@ -227,8 +227,6 @@ class _LogInPageState extends State<LogInPage> {
                     const Expanded(child: Divider()),
                     TextButton(
                       onPressed: () async {
-                        // await signOutCurrentUser();
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(

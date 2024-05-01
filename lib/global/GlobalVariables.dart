@@ -13,16 +13,16 @@ const pageSize = 20;
 const maxCacheDay = 3;
 
 /// Currently selected region
-/// Default, select based on the current regiont or the first region of the regionList[]
-/// Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
+/// Default, select based on the current region or the first region of the regionList[]
+/// Manual selection, user can switch between regions manually and the value of this variable update based on selection
 var selectedRegion = {};
 
-/// List of region availabled
+/// List of regions available
 List<dynamic> regionList = [];
 
 // Currently selected region
-// Default, select based on the current regiont or the first region of the regionList[]
-// Mannual selection, user can switch between regions mannually and the value of this variable update based on selection
+// Default, select based on the current region or the first region of the regionList[]
+// Manual selection, user can switch between regions manually and the value of this variable update based on selection
 List<dynamic> speciesData = []; // List of species available from the server
 
 int refreshedLists = 0;

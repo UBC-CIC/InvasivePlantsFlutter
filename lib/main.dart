@@ -45,7 +45,6 @@ void main() async {
           clientId != null &&
           region != null &&
           identityPoolId != null) {
-        // amplifyConfigString.auth.plugins.awsCognitoAuthPlugin.CognitoUserPool.Default.PoolId = poolId;
         amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
             ["CognitoUserPool"]["Default"]["PoolId"] = poolId;
         amplifyConfigString["auth"]["plugins"]["awsCognitoAuthPlugin"]
@@ -97,8 +96,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    //  Debuging for caching
-    // DefaultCacheManager().emptyCache();
   }
 
   @override

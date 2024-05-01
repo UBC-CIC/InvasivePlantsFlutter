@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// a notifier that tracks the removal of plants and updates the plant count
 class PlantListNotifier extends ChangeNotifier {
   late List<String> plants = [];
 

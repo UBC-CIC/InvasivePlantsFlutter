@@ -1,8 +1,7 @@
-// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages, prefer_typing_uninitialized_variables
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages, prefer_typing_uninitialized_variables, deprecated_member_use
 
 import 'dart:io';
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/functions/get_credentials.dart';
 import 'non_invasive_plant_page.dart';
@@ -27,33 +26,17 @@ class PlantIdentificationPage extends StatefulWidget {
 class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
   String? selectedOrgan;
   bool isItemSelected = false;
-  // int imageCounter = 1;
-  // int organCounter = 1;
   String baseUrl = 'https://my-api.plantnet.org/v2/identify/';
   String project = 'all';
   String includeRelatedImages = 'true';
   String lang = 'en';
   String noReject = 'true';
-  bool isLoading = false; // Add this line to manage loading state
+  bool isLoading = false;
 
   Map<String, dynamic> plantnetParams = {
     'organs': [],
     'images': [],
   };
-
-  Future<String> _extractAccessToken() async {
-    final rawResult = await Amplify.Auth.fetchAuthSession();
-    final result = jsonDecode(rawResult.toString());
-    final userPoolTokens = result['userPoolTokens'];
-
-    try {
-      final accessToken = extractAccessToken(userPoolTokens);
-      return accessToken;
-    } catch (e) {
-      print('Error extracting access token: $e');
-    }
-    return "";
-  }
 
   String extractAccessToken(String inputString) {
     final accessTokenStart =
@@ -74,7 +57,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
       String apiKey = configuration["plantnetAPIKey"]!;
       String url =
           '$baseUrl$project?include-related-images=$includeRelatedImages&no-reject=$noReject&lang=$lang&api-key=$apiKey';
-      // debugPrint('URL: $url');
 
       // Create the multipart request
       var request = http.MultipartRequest('POST', Uri.parse(url));
@@ -83,8 +65,7 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
       request.headers['accept'] = 'application/json';
       request.headers['Content-Type'] = 'multipart/form-data';
 
-      // // Add images to the multipart request
-      // for (var i = 0; i < plantnetParams['images'].length; i++) {
+      // Add images to the multipart request
       File imageFile = File(plantnetParams['images'][0]);
       if (imageFile.existsSync()) {
         request.files.add(
@@ -95,23 +76,9 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
             contentType: MediaType('image', 'jpeg'),
           ),
         );
-        // debugPrint('added an image');
       }
-      // }
 
       request.fields['organs'] = plantnetParams['organs'][0];
-
-      // // add organs to the multipart request
-      // for (var i = 0; i < plantnetParams['organs'].length; i++) {
-      //   request.fields['organs'] = plantnetParams['organs'][i];
-      //   debugPrint('added an organ');
-      // }
-
-      // debugPrint(request.toString());
-      // debugPrint(request.headers.toString());
-      // debugPrint(request.fields.toString());
-      // debugPrint(request.fields['organs']?.length.toString());
-      // debugPrint(request.fields['images']?.length.toString());
 
       try {
         var response = await request.send();
@@ -211,15 +178,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                           accuracyScoreString: accuracyScoreString),
                     ),
                   );
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => APIResultPage(
-                  //         imagePath: widget.imagePath,
-                  //         plantnetParams: plantnetParams,
-                  //         firstResult: firstResult,
-                  //         invasiveInfo: parsedResponse),
-                  //   ),
-                  // );
                 } else {
                   debugPrint(
                       'GET Request failed with status: ${getResponse.statusCode}');
@@ -276,12 +234,9 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
   }
 
   void _addImageAndOrganToParams() {
-    // if (imageCounter <= 5 && organCounter <= 5) {
     if (selectedOrgan != null) {
       plantnetParams['organs'].add(selectedOrgan!.toLowerCase());
       plantnetParams['images'].add(widget.imagePath);
-      // imageCounter++;
-      // organCounter++;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -297,22 +252,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
         ),
       );
     }
-    // }
-    //else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       duration: const Duration(milliseconds: 1000),
-    //       behavior: SnackBarBehavior.floating,
-    //       shape: RoundedRectangleBorder(
-    //         borderRadius: BorderRadius.circular(10),
-    //       ),
-    //       content: const Text('You have uploaded the maximum amount of photos'),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
-
-    // debugPrint('Plantnet Params: $plantnetParams');
   }
 
   @override
@@ -324,7 +263,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
       }
     }
     super.dispose();
-    // debugPrint('Plantnet Params: $plantnetParams');
   }
 
   @override
@@ -385,26 +323,6 @@ class _PlantIdentificationPageState extends State<PlantIdentificationPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    // Expanded(
-                    //   child: Container(
-                    //     margin: const EdgeInsets.fromLTRB(7, 2, 5, 4),
-                    //     child: ElevatedButton.icon(
-                    //       onPressed: () {
-                    //         _addImageAndOrganToParams();
-                    //       },
-                    //       icon: const Icon(Icons.add, color: Colors.black),
-                    //       label: const Text('Upload Another',
-                    //           style: TextStyle(color: Colors.black)),
-                    //       style: ElevatedButton.styleFrom(
-                    //         foregroundColor: Colors.black,
-                    //         backgroundColor: const Color.fromARGB(255, 221, 221, 221),
-                    //         shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(10.0),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.fromLTRB(14, 0, 14, 4),

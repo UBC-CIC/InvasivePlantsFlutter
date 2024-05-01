@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously, deprecated_member_use
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/functions/get_credentials.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
@@ -33,12 +30,10 @@ class _HomePageState extends State<HomePage> {
   /// OPERATIONAL Variables
   int? nextOffset; // Track the next offset of pagination
   String searchText = '';
-  late DefaultCacheManager _apiCache;
 
   @override
   void initState() {
     super.initState();
-    _apiCache = DefaultCacheManager();
 
     // Get all data from region
     getAllRegions().then((value) => {
@@ -51,12 +46,6 @@ class _HomePageState extends State<HomePage> {
                         // Select first element in the array as selected region
                         selectedRegion = regionList[0]
                       }
-                    else
-                      {
-                        ///
-                        /// ERROR CASE
-                        /// Need to find a wait to throw errors
-                      }
                   })
             }
         });
@@ -64,8 +53,6 @@ class _HomePageState extends State<HomePage> {
     // Get all species from server
     fetchDataIfNeeded();
 
-    // Testing Functions
-    // webscrapeWikipedia("nymphaea odorata");
     getCurrentProvince();
   }
 
@@ -122,7 +109,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Get call regions from server
+  // Get all regions from server
   Future<void> getAllRegions() async {
     if (regionList.length > 0) {
       return;
@@ -151,39 +138,15 @@ class _HomePageState extends State<HomePage> {
     );
 
     String stringResponseBody;
-    bool isResponseWeb = false;
-
-    // Try reading data from cache
-    // String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-    // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-    // if (file != null && file.file.existsSync()) {
-    //   stringResponseBody = await file.file.readAsString();
-    // }
-    // // Cache missed, get result from the api
-    // else {
 
     if (response.statusCode == 200) {
       stringResponseBody = response.body;
-      isResponseWeb = true;
-
-      // }
 
       var resDecode = jsonDecode(stringResponseBody);
 
       setState(() {
         regionList = resDecode["regions"];
       });
-
-      // Save only if response come from api
-      // if (isResponseWeb) {
-      //   Directory tempDir = await getTemporaryDirectory();
-      //   String cachePath = '${tempDir.path}/cache_data.json';
-      //   File file = File(cachePath);
-      //   await file.writeAsString(stringResponseBody);
-
-      //   await _apiCache.putFile(apiUrl, file.readAsBytesSync(),
-      //       maxAge: Duration(days: maxCacheDay));
-      // }
     } else {
       print(response.statusCode);
     }
@@ -223,17 +186,7 @@ class _HomePageState extends State<HomePage> {
         });
 
     var stringResponseBody;
-    bool isResponseWeb = false;
 
-    // Try reading data from cache first
-    // String modifiedUrl = apiUrl.replaceAll('&', 'a').replaceAll('=', 'e');
-    // FileInfo? file = await _apiCache.getFileFromCache(modifiedUrl);
-    // if (file != null && file.file.existsSync()) {
-    //   stringResponseBody = await file.file.readAsString();
-    //   print(stringResponseBody);
-    // }
-    // Cache missed, get result from the API
-    // else {
     final response = await http.get(
       Uri.parse(signedRequest.url!),
       headers: signedRequest.headers!
@@ -243,11 +196,9 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode == 200) {
       stringResponseBody = response.body;
       print(response.body);
-      isResponseWeb = true;
     } else {
       throw Exception('Failed to load data.');
     }
-    // }
 
     final jsonResponse = json.decode(stringResponseBody);
 
@@ -268,17 +219,6 @@ class _HomePageState extends State<HomePage> {
       // Get offset of next page, provided by response
       nextOffset = jsonResponse["nextOffset"];
     });
-
-    // Save only if response comes from the API
-    // if (isResponseWeb) {
-    //   Directory tempDir = await getTemporaryDirectory();
-    //   String cachePath = '${tempDir.path}/cache_data.json';
-    //   File file = File(cachePath);
-    //   await file.writeAsString(stringResponseBody);
-
-    //   await _apiCache.putFile(modifiedUrl, file.readAsBytesSync(),
-    //       maxAge: Duration(days: maxCacheDay));
-    // }
 
     return returnValue;
   }

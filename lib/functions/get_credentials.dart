@@ -3,6 +3,7 @@
 import 'package:amplify_core/amplify_core.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
+// retrieves 3 credentials from current cognito session to use for GET requests
 class Credentials {
   final String accessKeyId;
   final String secretAccessKey;

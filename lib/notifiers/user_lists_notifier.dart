@@ -5,6 +5,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// a notifier that handles list creation and deletion while updating the backend
 class UserListsNotifier extends ChangeNotifier {
   Map<String, PlantListNotifier> userLists = {};
 
